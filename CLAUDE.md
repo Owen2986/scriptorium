@@ -74,6 +74,7 @@
 ### Outils installés
 
 - Git, Node, Python, gh CLI (connecté au compte Owen2986 sur l'ordinateur), Chrome DevTools MCP, plugin frontend-design.
+- Skill **unslop** (heydamir/unslop, plugin Claude Code, installé sur l’ordinateur Windows le 2026-11-16) : enlève l’aspect « fait par une IA » d’une interface (`/unslop`). Sur un autre appareil : `claude plugin marketplace add heydamir/unslop` puis `claude plugin install unslop@heydamir`.
 - **Graphify** : graphe du projet dans `graphify-out/` (ignoré par git, à reconstruire sur chaque appareil). Il ne se met pas à jour tout seul : lancer `/graphify . --update` au début d'une étape importante.
 - PC Linux : mêmes outils (Python = `python3`, gh dans `~/.local/bin`, non connecté : l'envoi passe par SSH), WebStorm dans `/opt/WebStorm`, Chrome de test dans `~/.local/share/chrome-test` (Ubuntu bloque son bac à sable sans droits admin : lancé avec `--no-sandbox`, choix de l'utilisateur, uniquement pour tester le site en local).
 
@@ -136,3 +137,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : dépôt Windows remis à jour (passage sur `develop`), nom git local « Owen » noté.
 - 2026-11-16, ordinateur : émojis des types remplacés par des icônes game-icons.net en silhouette (consigne : pas d'émojis) ; 9 tests OK, vérifié dans Chrome.
 - 2026-11-16, ordinateur : icônes validées ; consigne : ne jamais utiliser d'émojis.
+- 2026-11-16, ordinateur : skill unslop (heydamir) installé.
