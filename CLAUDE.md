@@ -21,6 +21,7 @@
 - **Demander avant chaque action importante** (nouvelle étape, choix de conception) et poser toutes les questions utiles. Proposer → attendre validation → faire.
   - Exception : commit et push se font sans demander.
 - Avant de faire une demande complexe, **reformuler ce qu'on a compris** pour vérification quand l'utilisateur le demande.
+- **Objectif : l'application la plus complète possible.** À chaque étape, proposer aussi les fonctions supplémentaires utiles (l'utilisateur choisit). Ponytail s'applique à la façon d'écrire le code (pas de code inutile), pas au nombre de fonctions.
 - Garder le **mode ponytail** actif (solution la plus simple qui marche entièrement, pas de code inutile).
 - Installer les outils utiles quand il l'autorise.
 - IDE : **WebStorm** (JetBrains). Pas besoin de VS Code.
@@ -108,3 +109,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, PC Linux : dépôt récupéré, connexion GitHub par clé SSH, installation de gh, Chrome de test, Chrome DevTools MCP et plugin frontend-design.
 - 2026-11-16, PC Linux : `graphify-out/` ajouté au `.gitignore`, graphe du projet construit.
 - 2026-11-16, PC Linux : questions de l'étape 2 posées, choix enregistrés ci-dessus.
+- 2026-11-16, PC Linux : nouvelle consigne, viser l'application la plus complète possible.
