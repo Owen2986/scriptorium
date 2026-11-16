@@ -122,7 +122,7 @@
 - Pas fait volontairement : le bouton « Plus… » de la maquette (dupliquer, corbeille) viendra au morceau 5.
 - **Unslop des fiches (2026-11-16, validé)** : titres de section en couleur de texte (la couleur du type reste dans les vignettes) ; cases courtes (nombre, liste) par deux, colonne de droite 21rem ; cadre d'image vide discret « Ajouter une image » (cliquable) ; « Enregistré » affiché 2 s après chaque modification. Le choix d'image se fait aussi au clavier.
 - **Morceau 4, choix de l'utilisateur (2026-11-16)** : clic sur un lien `[[ ]]` = curseur placé + petite bulle « Ouvrir » (pareil sur téléphone) ; lien vers une fiche absente = affiché autrement + la bulle propose de la créer (choix du type) ; surnoms dans un champ « Autres noms » sous le nom de la fiche (comme des étiquettes) ; renommer une fiche met à jour tous les `[[Ancien nom]]` de l'univers. Par défaut : majuscules et accents ignorés pour reconnaître un nom, liens actifs aussi dans les secrets.
-- **Morceau 4, style des liens choisi (2026-11-16)** : B « pointillé discret » (texte normal, pointillé couleur d'accent dessous ; fiche absente = tirets gris + italique). Maquette : `apercu/maquette-liens.html?v=b` (ouvrable sans serveur).
+- **Morceau 4, style des liens choisi (2026-11-16)** : B « pointillé discret » (texte normal ; fiche existante = tirets gris dessous ; fiche absente = points couleur d'accent + italique, inversé à la demande de l'utilisateur). Maquette : `apercu/maquette-liens.html?v=b` (ouvrable sans serveur).
 - **Prochaine action** : morceau 4, attendre l'avis sur les maquettes téléphone (bulle + champ « Autres noms ») avant de construire.
 
 ## Journal
@@ -159,3 +159,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : questions du morceau 4 (liens et surnoms) posées, choix notés.
 - 2026-11-16, ordinateur : maquettes des liens (3 styles), style B choisi ; maquettes téléphone envoyées.
 - 2026-11-16, ordinateur : consigne, le site doit s'adapter à tous les formats d'écran.
+- 2026-11-16, ordinateur : marques des liens inversées (tirets gris = fiche existante, points rouges = fiche absente).
