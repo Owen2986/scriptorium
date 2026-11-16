@@ -1,6 +1,6 @@
 [data-theme="epure"] {
-  --police-titre: system-ui, "Segoe UI", sans-serif;
-  --police-texte: system-ui, "Segoe UI", sans-serif;
+  --police-titre: "Inter", system-ui, sans-serif;
+  --police-texte: "Inter", system-ui, sans-serif;
   --fond: #ffffff;
   --surface: #f6f6f6;
   --texte: #1a1a1a;

@@ -1,6 +1,6 @@
 [data-theme="grimoire"] {
-  --police-titre: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-  --police-texte: Georgia, "Times New Roman", serif;
+  --police-titre: "Cinzel", "Palatino Linotype", Georgia, serif;
+  --police-texte: "EB Garamond", Georgia, serif;
   --fond: #f4ecd8;
   --surface: #fbf6ea;
   --texte: #2b2118;

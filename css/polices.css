@@ -1,0 +1,16 @@
+/* Polices libres (OFL ; Special Elite : Apache 2.0), copiées depuis Fontsource, jeu de caractères latin. */
+@font-face { font-family: "Cinzel"; font-weight: 700; font-style: normal; font-display: swap; src: url("../polices/cinzel-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "EB Garamond"; font-weight: 400; font-style: italic; font-display: swap; src: url("../polices/eb-garamond-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: swap; src: url("../polices/eb-garamond-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "EB Garamond"; font-weight: 700; font-style: normal; font-display: swap; src: url("../polices/eb-garamond-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-weight: 400; font-style: italic; font-display: swap; src: url("../polices/exo-2-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-weight: 400; font-style: normal; font-display: swap; src: url("../polices/exo-2-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-weight: 700; font-style: normal; font-display: swap; src: url("../polices/exo-2-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 400; font-style: italic; font-display: swap; src: url("../polices/inter-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: swap; src: url("../polices/inter-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 700; font-style: normal; font-display: swap; src: url("../polices/inter-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Libre Baskerville"; font-weight: 400; font-style: italic; font-display: swap; src: url("../polices/libre-baskerville-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Libre Baskerville"; font-weight: 400; font-style: normal; font-display: swap; src: url("../polices/libre-baskerville-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Libre Baskerville"; font-weight: 700; font-style: normal; font-display: swap; src: url("../polices/libre-baskerville-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Orbitron"; font-weight: 700; font-style: normal; font-display: swap; src: url("../polices/orbitron-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Special Elite"; font-weight: 400; font-style: normal; font-display: swap; src: url("../polices/special-elite-latin-400-normal.woff2") format("woff2"); }

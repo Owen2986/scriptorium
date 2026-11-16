@@ -1,20 +1,20 @@
 [data-theme="archive"] {
-  --police-titre: "Courier New", Courier, monospace;
-  --police-texte: Georgia, "Times New Roman", serif;
-  --fond: #efefea;
-  --surface: #fafaf7;
+  --police-titre: "Special Elite", "Courier New", monospace;
+  --police-texte: "Libre Baskerville", Georgia, serif;
+  --fond: #f2efe3;
+  --surface: #fbf9f2;
   --texte: #1e1e1e;
   --texte-doux: #5a5a55;
   --accent: #7a5c1e;
   --sur-accent: #ffffff;
-  --bordure: #cfcfc6;
+  --bordure: #d5d0c0;
 }
 [data-theme="archive"][data-mode="sombre"] {
-  --fond: #161615;
-  --surface: #1f1f1d;
+  --fond: #2a2925;
+  --surface: #34322e;
   --texte: #e4e2db;
   --texte-doux: #a19f97;
   --accent: #d4a84a;
-  --sur-accent: #161615;
-  --bordure: #34332f;
+  --sur-accent: #2a2925;
+  --bordure: #4a4843;
 }

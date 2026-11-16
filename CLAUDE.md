@@ -23,6 +23,7 @@
 - Avant de faire une demande complexe, **reformuler ce qu'on a compris** pour vérification quand l'utilisateur le demande.
 - **Objectif : l'application la plus complète possible.** À chaque étape, proposer aussi les fonctions supplémentaires utiles (l'utilisateur choisit). Ponytail s'applique à la façon d'écrire le code (pas de code inutile), pas au nombre de fonctions.
 - Les zones de texte se redimensionnent **en hauteur seulement**, jamais en largeur.
+- Aimer voir des **captures d'écran** avant de valider un choix visuel : les copier dans `~/Images/apercu-polices/` (ou un dossier d'aperçu) et les ouvrir avec `xdg-open` ; les chemins affichés dans le terminal ne sont pas cliquables pour lui.
 - Garder le **mode ponytail** actif (solution la plus simple qui marche entièrement, pas de code inutile).
 - Installer les outils utiles quand il l'autorise.
 - IDE : **WebStorm** (JetBrains). Pas besoin de VS Code.
@@ -95,7 +96,9 @@
 
 - Étape 1 terminée : 5 tests OK, appli vérifiée dans Chrome (navigation, thèmes, affichage 375 px).
 - Projet sur GitHub (public) : on peut travailler depuis le téléphone via claude.ai/code sur ce dépôt.
-- **Reporté** : sprite d'icônes, polices copiées localement (polices système pour l'instant), sauvegarde `.scriptorium` en zip (avec JSZip).
+- **Reporté** : sprite d'icônes, sauvegarde `.scriptorium` en zip (avec JSZip), réduction automatique de la taille des images.
+- **Polices** (validées le 2026-11-16) : copiées dans `polices/` (woff2, latin, licences libres), déclarées dans `css/polices.css`. Grimoire = Cinzel + EB Garamond ; Station = Orbitron + Exo 2 ; Archive = Special Elite + Libre Baskerville ; Épure = Inter. Raison : les anciennes polices Windows n'existaient pas sur Linux/téléphone, plusieurs thèmes se ressemblaient.
+- Archive : fond clair légèrement jaunâtre (#f2efe3) et fond sombre gris anthracite chaud (#2a2925) au lieu du noir, à la demande de l'utilisateur.
 - **Étape 2, choix validés (2026-11-16)** : univers + fiches + liens `[[Nom de fiche]]` ; types de fiches de base modifiables (Personnage, Lieu, Objet, Groupe/Faction, Créature, Notion) ; une fiche = titre + champs propres au type + texte mis en forme + image facultative ; univers d'exemple fantasy ajouté dès cette étape.
 - **Étape 2, fonctions en plus (toutes retenues)** : étiquettes, favoris, fiches imbriquées, recherche dans tout le texte ; galerie d'images, surnoms reconnus par les liens, cases de plusieurs sortes (texte, nombre, liste, lien vers fiche), zone secrets/notes d'auteur ; corbeille, historique des versions, dupliquer, annuler/rétablir ; présentation de l'univers (description, couverture, couleur), statistiques, export Markdown/PDF, fiches orphelines et liens vers fiches inexistantes.
 - **Plan de l'étape 2 validé (2026-11-16)**, 8 morceaux : 1 univers (liste, créer/renommer/supprimer/dupliquer, présentation, univers d'exemple) ; 2 types de fiches et cases ; 3 fiches (texte riche, secrets, images, étiquettes, favoris, parente, enregistrement automatique) ; 4 liens `[[ ]]` + surnoms ; 5 corbeille, versions, dupliquer, annuler/rétablir ; 6 recherche, statistiques, orphelines/liens cassés ; 7 export Markdown + PDF (impression) ; 8 tests + vérif Chrome + volume.
@@ -120,3 +123,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, PC Linux : plan de l'étape 2 validé (8 morceaux), fonctions en plus a–e reportées à la fin de l'étape.
 - 2026-11-16, PC Linux : étape 2, morceau 1 (univers) fait et vérifié.
 - 2026-11-16, PC Linux : zones de texte redimensionnables en hauteur seulement (demande de l'utilisateur).
+- 2026-11-16, PC Linux : polices des thèmes copiées dans le projet, couleurs d'Archive adoucies, bouton « Retirer l'image » caché quand il n'y a pas d'image.

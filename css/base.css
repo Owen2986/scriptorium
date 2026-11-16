@@ -1,4 +1,5 @@
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; } /* sinon les styles des boutons l'emportent sur l'attribut hidden */
 
 html { color-scheme: light; }
 html[data-mode="sombre"] { color-scheme: dark; }
