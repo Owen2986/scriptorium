@@ -2,6 +2,9 @@ import { creerStockage } from '../js/stockage/adaptateur.js';
 import { MIGRATIONS } from '../js/stockage/migrations.js';
 import { attendre } from '../js/stockage/indexeddb.js';
 import { dupliquerUnivers, supprimerUnivers } from '../js/modele/univers.js';
+import { nettoyer } from '../js/ui/texte-riche.js';
+import { parentesPossibles } from '../js/modele/fiches.js';
+import { creerExempleSiBesoin } from '../js/modele/exemple.js';
 import { assurerTypes, typesUnivers, supprimerType, nouveauType, ICONES } from '../js/modele/types.js';
 
 const NOM = 'scriptorium-test';
@@ -153,6 +156,35 @@ test('supprimer un type : fiches déplacées (valeurs gardées par nom de case) 
   egal(await s.get('typesFiches', lieu.id), undefined);
   egal((await s.get('typesFiches', perso.id)).cases[0].typeCibleId, null);
   egal((await s.get('typesFiches', nouveau.id)).nom, 'Région');
+  s.fermer();
+});
+
+test('texte mis en forme : balises dangereuses et attributs retirés', () => {
+  egal(nettoyer('<h2 style="x">Titre</h2><p onclick="y">a <b>b</b> <a href="javascript:z">lien</a></p>'),
+    '<h2>Titre</h2><p>a <b>b</b> lien</p>');
+  egal(nettoyer('<img src=x onerror="alert(1)"><script>alert(2)</script><p>ok</p><!-- c -->'), '<p>ok</p>');
+  egal(nettoyer('<blockquote>c</blockquote><hr><u>s</u>'), '<blockquote>c</blockquote><hr><u>s</u>');
+});
+
+test('fiche parente : ni elle-même ni ses descendantes', () => {
+  const f = [{ id: 'a' }, { id: 'b', parentId: 'a' }, { id: 'c', parentId: 'b' }, { id: 'd' }];
+  egal(parentesPossibles(f[0], f).map(x => x.id), ['d']);
+  egal(parentesPossibles(f[2], f).map(x => x.id), ['a', 'b', 'd']);
+});
+
+test('fiches d’exemple créées une fois, liens entre fiches résolus', async () => {
+  const s = await creerStockage(NOM);
+  await creerExempleSiBesoin(s);
+  await creerExempleSiBesoin(s);
+  const [u] = await s.tous('univers');
+  const fiches = await s.query('fiches', 'universId', u.id);
+  egal(fiches.length, 16);
+  const ids = new Set(fiches.map(f => f.id));
+  const types = await typesUnivers(s, u.id);
+  const casesFiche = types.flatMap(t => t.cases.filter(c => c.sorte === 'fiche').map(c => c.id));
+  const liens = fiches.flatMap(f => casesFiche.filter(c => f.valeurs[c]).map(c => f.valeurs[c]));
+  egal(liens.length > 15 && liens.every(l => ids.has(l)), true, 'liens valides :');
+  egal(ids.has(fiches.find(f => f.nom === 'La Lanterne Noire').parentId), true, 'parente :');
   s.fermer();
 });
 

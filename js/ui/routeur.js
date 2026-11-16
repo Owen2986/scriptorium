@@ -21,7 +21,7 @@ export function demarrer(conteneur, contexte) {
     }
     if (n !== tour) return; // une navigation plus récente a eu lieu pendant le chargement
     conteneur.replaceChildren(page);
-    document.querySelectorAll('nav a').forEach(a =>
+    document.querySelectorAll('.entete nav a').forEach(a =>
       a.getAttribute('href') === '#' + chemin ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
     if (e) conteneur.focus(); // lecteurs d'écran : annoncer la nouvelle page
   };

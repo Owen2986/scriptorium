@@ -1,6 +1,6 @@
 import { assurerTypes } from '../../modele/types.js';
 
-const ONGLETS = [['', 'Présentation'], ['/types', 'Types de fiches']];
+const ONGLETS = [['', 'Présentation'], ['/fiches', 'Fiches'], ['/types', 'Types de fiches']];
 
 // Charge l'univers et affiche le fil d'Ariane + les onglets. Renvoie null (page « introuvable ») s'il n'existe pas.
 export async function ouvrirUnivers(page, id, stockage, onglet) {
