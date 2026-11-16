@@ -24,7 +24,7 @@
 - **Objectif : l'application la plus complète possible.** À chaque étape, proposer aussi les fonctions supplémentaires utiles (l'utilisateur choisit). Ponytail s'applique à la façon d'écrire le code (pas de code inutile), pas au nombre de fonctions.
 - **Fonctions en plus de l'étape 2** : ne plus en proposer au fil des morceaux ; les garder et les proposer toutes ensemble **à la fin de l'étape 2** (consigne du 2026-11-16).
 - Les zones de texte se redimensionnent **en hauteur seulement**, jamais en largeur.
-- **Icônes : pas d'émojis.** Des logos simplifiés et épurés, en silhouette pleine d'une seule couleur (modèle : deux épées croisées, `rename.png`, consigne du 2026-11-16).
+- **Jamais d’émojis, nulle part dans l’appli** (icônes, boutons, textes). Toujours des icônes simplifiées et épurées en silhouette pleine (game-icons.net). Version actuelle des icônes validée par l’utilisateur (2026-11-16).
 - Aimer voir des **captures d'écran** avant de valider un choix visuel : les copier dans `~/Images/apercu-polices/` (ou un dossier d'aperçu) et les ouvrir avec `xdg-open` ; les chemins affichés dans le terminal ne sont pas cliquables pour lui.
 - Garder le **mode ponytail** actif (solution la plus simple qui marche entièrement, pas de code inutile).
 - Installer les outils utiles quand il l'autorise.
@@ -135,3 +135,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, téléphone (claude.ai/code) : étape 2, morceau 2 (types de fiches et cases) fait et vérifié ; consigne : fonctions en plus proposées seulement à la fin de l'étape 2.
 - 2026-11-16, ordinateur : dépôt Windows remis à jour (passage sur `develop`), nom git local « Owen » noté.
 - 2026-11-16, ordinateur : émojis des types remplacés par des icônes game-icons.net en silhouette (consigne : pas d'émojis) ; 9 tests OK, vérifié dans Chrome.
+- 2026-11-16, ordinateur : icônes validées ; consigne : ne jamais utiliser d'émojis.
