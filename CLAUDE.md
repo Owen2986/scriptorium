@@ -25,6 +25,7 @@
 - **Fonctions en plus de l'étape 2** : ne plus en proposer au fil des morceaux ; les garder et les proposer toutes ensemble **à la fin de l'étape 2** (consigne du 2026-11-16).
 - Les zones de texte se redimensionnent **en hauteur seulement**, jamais en largeur.
 - **Jamais d’émojis, nulle part dans l’appli** (icônes, boutons, textes). Toujours des icônes simplifiées et épurées en silhouette pleine (game-icons.net). Version actuelle des icônes validée par l’utilisateur (2026-11-16).
+- **Unslop sur chaque interface** (consigne du 2026-11-16) : à chaque écran créé ou modifié, passer le skill `/unslop` dessus, puis **présenter ses propositions à l’utilisateur** (avec captures) et attendre son choix avant de les appliquer.
 - Aimer voir des **captures d'écran** avant de valider un choix visuel : les copier dans `~/Images/apercu-polices/` (ou un dossier d'aperçu) et les ouvrir avec `xdg-open` ; les chemins affichés dans le terminal ne sont pas cliquables pour lui.
 - Garder le **mode ponytail** actif (solution la plus simple qui marche entièrement, pas de code inutile).
 - Installer les outils utiles quand il l'autorise.
@@ -138,3 +139,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : émojis des types remplacés par des icônes game-icons.net en silhouette (consigne : pas d'émojis) ; 9 tests OK, vérifié dans Chrome.
 - 2026-11-16, ordinateur : icônes validées ; consigne : ne jamais utiliser d'émojis.
 - 2026-11-16, ordinateur : skill unslop (heydamir) installé.
+- 2026-11-16, ordinateur : consigne, passer unslop sur chaque interface et proposer ses solutions avant de les appliquer.
