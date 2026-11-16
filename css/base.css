@@ -9,6 +9,7 @@ body {
   background: var(--fond);
   color: var(--texte);
   font: 1rem/1.6 var(--police-texte);
+  font-synthesis: none; /* pas de faux gras/italique quand une police n'a pas la graisse (ex. Special Elite) */
 }
 
 h1, h2, h3 { font-family: var(--police-titre); font-weight: 500; line-height: 1.25; }

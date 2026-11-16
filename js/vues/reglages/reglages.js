@@ -23,15 +23,9 @@ export function vueReglages(page) {
     <p class="vide">Icônes : <a href="https://game-icons.net" target="_blank" rel="noopener">game-icons.net</a>
       (Lorc, Delapouite et autres), licence <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a></p>`;
 
-  // Les vignettes suivent le mode clair/sombre affiché.
-  const vignettesAuMode = () => page.querySelectorAll('.vignette').forEach(v => {
-    v.dataset.mode = document.documentElement.dataset.mode;
-  });
-  vignettesAuMode();
+  page.querySelectorAll('.vignette').forEach(v => { v.dataset.mode = document.documentElement.dataset.mode; });
 
   const champs = page.querySelector('form').elements;
-  page.querySelector('form').addEventListener('change', () => {
-    choisirTheme({ nom: champs.nom.value, mode: champs.mode.value });
-    vignettesAuMode();
-  });
+  page.querySelector('form').addEventListener('change', () =>
+    choisirTheme({ nom: champs.nom.value, mode: champs.mode.value }));
 }

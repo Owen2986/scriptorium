@@ -142,3 +142,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : skill unslop (heydamir) installé.
 - 2026-11-16, ordinateur : consigne, passer unslop sur chaque interface et proposer ses solutions avant de les appliquer.
 - 2026-11-16, ordinateur : unslop passé sur les pages existantes, les 4 propositions retenues et appliquées ; 9 tests OK.
+- 2026-11-16, ordinateur : noms des thèmes sans parenthèses, vignettes qui suivent le mode de l'appareil, plus de faux gras (logo Archive).
