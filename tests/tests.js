@@ -1,6 +1,7 @@
 import { creerStockage } from '../js/stockage/adaptateur.js';
 import { MIGRATIONS } from '../js/stockage/migrations.js';
 import { attendre } from '../js/stockage/indexeddb.js';
+import { dupliquerUnivers, supprimerUnivers } from '../js/modele/univers.js';
 
 const NOM = 'scriptorium-test';
 const tests = [];
@@ -78,6 +79,31 @@ test('copie de secours avant une migration', async () => {
   egal(copies.length, 1);
   egal(copies[0].schema, 1);
   egal(copies[0].stores.univers[0].nom, 'Avant');
+});
+
+test('dupliquer puis supprimer un univers avec tout son contenu', async () => {
+  const s = await creerStockage(NOM);
+  await s.lot([
+    ['put', 'univers', { id: 'u1', nom: 'Elsméria', couvertureId: 'i1' }],
+    ['put', 'typesFiches', { id: 't1', universId: 'u1', nom: 'Lieu' }],
+    ['put', 'fiches', { id: 'f1', universId: 'u1', typeId: 't1', nom: 'Port-Brume' }],
+    ['put', 'images', { id: 'i1', universId: 'u1', fichier: new Blob(['img']) }],
+    ['put', 'fiches', { id: 'autre', universId: 'u2', typeId: 'tx', nom: 'Ailleurs' }],
+  ]);
+  const c = await dupliquerUnivers(s, 'u1');
+  egal(c.nom, 'Elsméria (copie)');
+  const [type] = await s.query('typesFiches', 'universId', c.id);
+  const [fiche] = await s.query('fiches', 'universId', c.id);
+  const [img] = await s.query('images', 'universId', c.id);
+  egal([fiche.nom, fiche.typeId === type.id, c.couvertureId === img.id, type.id !== 't1'], ['Port-Brume', true, true, true]);
+  egal(await img.fichier.text(), 'img');
+
+  await supprimerUnivers(s, 'u1');
+  egal(await s.get('univers', 'u1'), undefined);
+  egal((await s.query('fiches', 'universId', 'u1')).length, 0);
+  egal(await s.get('images', 'i1'), undefined);
+  egal((await s.tous('fiches')).length, 2, 'copie et autre univers intacts :');
+  s.fermer();
 });
 
 let echecs = 0;

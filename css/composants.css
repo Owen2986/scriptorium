@@ -11,3 +11,70 @@ legend { font-weight: 600; margin-bottom: var(--espace-2); }
 .choix input { accent-color: var(--accent); width: 1.1rem; height: 1.1rem; }
 
 .vide { color: var(--texte-doux); }
+
+/* Boutons */
+button, .bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--cible-tactile);
+  padding: 0 var(--espace-3);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--texte);
+  font: inherit;
+  cursor: pointer;
+}
+button:hover, .bouton:hover { border-color: var(--texte-doux); }
+button.principal { background: var(--accent); border-color: var(--accent); color: var(--sur-accent); }
+button.danger { color: var(--danger); border-color: var(--danger); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--espace-2); margin-top: var(--espace-3); }
+
+/* Formulaires */
+label { display: block; margin-bottom: var(--espace-3); }
+label.choix, label.bouton { margin-bottom: 0; }
+input:not([type]), input[type="text"], textarea {
+  display: block;
+  width: 100%;
+  margin-top: var(--espace-1);
+  padding: var(--espace-2);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--fond);
+  color: var(--texte);
+  font: inherit;
+}
+input[type="color"] { width: 3rem; height: 2rem; padding: 0; border: 1px solid var(--bordure); background: none; }
+
+.titre-page { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--espace-3); }
+
+/* Univers */
+.grille-univers {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--espace-3);
+}
+.carte-univers {
+  display: block;
+  height: 100%;
+  border-top: 4px solid var(--couleur-univers);
+  color: inherit;
+  text-decoration: none;
+}
+.carte-univers:hover { border-color: var(--couleur-univers); }
+.carte-univers h2 { margin: var(--espace-2) 0; font-size: 1.25rem; }
+.carte-univers p {
+  margin: 0;
+  color: var(--texte-doux);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.couverture:empty { display: none; }
+.couverture img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--rayon); }
+.presentation { border-top: 4px solid var(--couleur-univers); }
+.presentation .couverture { margin-bottom: var(--espace-3); }

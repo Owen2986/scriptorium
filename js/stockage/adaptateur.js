@@ -16,6 +16,12 @@ export async function creerStockage(nom = 'scriptorium', migrations) {
     query: (s, index, valeur) => attendre(lire(s).index(index).getAll(valeur)),
     put: (s, obj) => ecrire(s, st => st.put(obj)),
     delete: (s, id) => ecrire(s, st => st.delete(id)),
+    // Plusieurs écritures en une seule transaction (tout ou rien) : [['put', store, obj] | ['delete', store, id], ...]
+    lot: async ops => {
+      const tx = db.transaction([...new Set(ops.map(o => o[1]))], 'readwrite');
+      ops.forEach(([action, s, x]) => tx.objectStore(s)[action](x));
+      await fin(tx);
+    },
     exporter: () => lireTout(db),
     importer: donnees => importer(db, donnees),
     fermer: () => db.close(),

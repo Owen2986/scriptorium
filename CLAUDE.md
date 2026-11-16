@@ -65,7 +65,7 @@
 - Éditeur de manuscrit : contentEditable maison + petite barre d'outils ; un chapitre/scène chargé à la fois.
 - Préférence de thème : dans `localStorage` (propre à chaque appareil, pas dans les sauvegardes).
 - **Tests** : `tests/tests.html` (stockage, migrations, export/import, liens `[[ ]]`, calendrier) + vérifs dans Chrome via Chrome DevTools MCP + test de volume (500 fiches / 150 000 mots).
-- Lancer en local : WebStorm (clic droit `index.html` → Open In → Browser) ou `python -m http.server 8000`.
+- Lancer en local : WebStorm (clic droit `index.html` → Open In → Browser) ou `python -m http.server 8000` (sur le PC Linux le port 8000 est déjà pris par autre chose : utiliser `python3 -m http.server 8765`).
 
 ### Outils installés
 
@@ -100,7 +100,8 @@
 - **Plan de l'étape 2 validé (2026-11-16)**, 8 morceaux : 1 univers (liste, créer/renommer/supprimer/dupliquer, présentation, univers d'exemple) ; 2 types de fiches et cases ; 3 fiches (texte riche, secrets, images, étiquettes, favoris, parente, enregistrement automatique) ; 4 liens `[[ ]]` + surnoms ; 5 corbeille, versions, dupliquer, annuler/rétablir ; 6 recherche, statistiques, orphelines/liens cassés ; 7 export Markdown + PDF (impression) ; 8 tests + vérif Chrome + volume.
 - Réglages retenus (valeurs proposées, modifiables) : corbeille 30 jours, 20 versions par fiche, export Markdown en un seul fichier.
 - **À reproposer à la fin de l'étape 2** (mis de côté par l'utilisateur) : a. suggestions en tapant `[[` ; b. « Citée dans » ; c. affichage liste/cartes ; d. tri des fiches ; e. fiche modèle.
-- **Prochaine action** : morceau 1 (univers).
+- **Morceau 1 fait** : accueil en cartes, page de présentation (nom, description, couleur, couverture, enregistrement automatique), dupliquer/supprimer un univers avec tout son contenu (`js/modele/univers.js`, écriture « tout ou rien » via `stockage.lot`), univers d'exemple créé une seule fois (clé meta `exempleCree`). 6 tests OK, vérifié dans Chrome (dont largeur téléphone). Les fiches d'exemple viendront au morceau 3.
+- **Prochaine action** : morceau 2 (types de fiches et cases).
 
 ## Journal
 
@@ -116,3 +117,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, PC Linux : nouvelle consigne, viser l'application la plus complète possible.
 - 2026-11-16, PC Linux : fonctions en plus de l'étape 2 choisies (toutes).
 - 2026-11-16, PC Linux : plan de l'étape 2 validé (8 morceaux), fonctions en plus a–e reportées à la fin de l'étape.
+- 2026-11-16, PC Linux : étape 2, morceau 1 (univers) fait et vérifié.

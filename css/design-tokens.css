@@ -9,3 +9,5 @@
   --largeur-max: 72rem;
   --cible-tactile: 44px;
 }
+:root { --danger: #b42318; }
+[data-mode="sombre"] { --danger: #f97066; }
