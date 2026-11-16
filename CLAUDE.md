@@ -96,6 +96,7 @@
 - Projet sur GitHub (public) : on peut travailler depuis le téléphone via claude.ai/code sur ce dépôt.
 - **Reporté** : sprite d'icônes, polices copiées localement (polices système pour l'instant), sauvegarde `.scriptorium` en zip (avec JSZip).
 - **Étape 2, choix validés (2026-11-16)** : univers + fiches + liens `[[Nom de fiche]]` ; types de fiches de base modifiables (Personnage, Lieu, Objet, Groupe/Faction, Créature, Notion) ; une fiche = titre + champs propres au type + texte mis en forme + image facultative ; univers d'exemple fantasy ajouté dès cette étape.
+- **Étape 2, fonctions en plus (toutes retenues)** : étiquettes, favoris, fiches imbriquées, recherche dans tout le texte ; galerie d'images, surnoms reconnus par les liens, cases de plusieurs sortes (texte, nombre, liste, lien vers fiche), zone secrets/notes d'auteur ; corbeille, historique des versions, dupliquer, annuler/rétablir ; présentation de l'univers (description, couverture, couleur), statistiques, export Markdown/PDF, fiches orphelines et liens vers fiches inexistantes.
 - **Prochaine action** : faire valider le plan détaillé de l'étape 2, puis le réaliser.
 
 ## Journal
@@ -110,3 +111,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, PC Linux : `graphify-out/` ajouté au `.gitignore`, graphe du projet construit.
 - 2026-11-16, PC Linux : questions de l'étape 2 posées, choix enregistrés ci-dessus.
 - 2026-11-16, PC Linux : nouvelle consigne, viser l'application la plus complète possible.
+- 2026-11-16, PC Linux : fonctions en plus de l'étape 2 choisies (toutes).
