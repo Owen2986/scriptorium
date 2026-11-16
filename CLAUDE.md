@@ -22,6 +22,7 @@
   - Exception : commit et push se font sans demander.
 - Avant de faire une demande complexe, **reformuler ce qu'on a compris** pour vérification quand l'utilisateur le demande.
 - **Objectif : l'application la plus complète possible.** À chaque étape, proposer aussi les fonctions supplémentaires utiles (l'utilisateur choisit). Ponytail s'applique à la façon d'écrire le code (pas de code inutile), pas au nombre de fonctions.
+- Les zones de texte se redimensionnent **en hauteur seulement**, jamais en largeur.
 - Garder le **mode ponytail** actif (solution la plus simple qui marche entièrement, pas de code inutile).
 - Installer les outils utiles quand il l'autorise.
 - IDE : **WebStorm** (JetBrains). Pas besoin de VS Code.
@@ -118,3 +119,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, PC Linux : fonctions en plus de l'étape 2 choisies (toutes).
 - 2026-11-16, PC Linux : plan de l'étape 2 validé (8 morceaux), fonctions en plus a–e reportées à la fin de l'étape.
 - 2026-11-16, PC Linux : étape 2, morceau 1 (univers) fait et vérifié.
+- 2026-11-16, PC Linux : zones de texte redimensionnables en hauteur seulement (demande de l'utilisateur).
