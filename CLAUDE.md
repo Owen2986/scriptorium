@@ -94,7 +94,8 @@
 - Étape 1 terminée : 5 tests OK, appli vérifiée dans Chrome (navigation, thèmes, affichage 375 px).
 - Projet sur GitHub (public) : on peut travailler depuis le téléphone via claude.ai/code sur ce dépôt.
 - **Reporté** : sprite d'icônes, polices copiées localement (polices système pour l'instant), sauvegarde `.scriptorium` en zip (avec JSZip).
-- **Prochaine action** : proposer le contenu de l'étape 2 (Univers) et attendre validation.
+- **Étape 2, choix validés (2026-11-16)** : univers + fiches + liens `[[Nom de fiche]]` ; types de fiches de base modifiables (Personnage, Lieu, Objet, Groupe/Faction, Créature, Notion) ; une fiche = titre + champs propres au type + texte mis en forme + image facultative ; univers d'exemple fantasy ajouté dès cette étape.
+- **Prochaine action** : faire valider le plan détaillé de l'étape 2, puis le réaliser.
 
 ## Journal
 
@@ -106,3 +107,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : dépôt GitHub public créé (Owen2986/scriptorium) et premier envoi.
 - 2026-11-16, PC Linux : dépôt récupéré, connexion GitHub par clé SSH, installation de gh, Chrome de test, Chrome DevTools MCP et plugin frontend-design.
 - 2026-11-16, PC Linux : `graphify-out/` ajouté au `.gitignore`, graphe du projet construit.
+- 2026-11-16, PC Linux : questions de l'étape 2 posées, choix enregistrés ci-dessus.
