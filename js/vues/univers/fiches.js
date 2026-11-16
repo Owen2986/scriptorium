@@ -2,7 +2,9 @@ import { iconeSvg, typesUnivers } from '../../modele/types.js';
 import { nouvelleFiche, fichesUnivers, parentesPossibles } from '../../modele/fiches.js';
 import { nouvelId } from '../../modele/univers.js';
 import { urlImage } from '../../ui/images.js';
-import { editeur } from '../../ui/texte-riche.js';
+import { editeur, depuisTexteBrut } from '../../ui/texte-riche.js';
+import { cle, indexNoms, renommerLiens } from '../../modele/liens.js';
+import { decorerLiens, bulleLiens } from '../../ui/liens.js';
 import { ouvrirUnivers } from './commun.js';
 
 const ETOILE = '<svg class="icone" aria-hidden="true"><use href="icones/types.svg#round-star"></use></svg>';
@@ -15,10 +17,29 @@ function infoFiche(f, type, parId) {
   return [liste && f.valeurs[liste.id], parent && `dans ${parent.nom || 'Sans nom'}`].filter(Boolean).join(' · ');
 }
 
-async function creer(stockage, u, type) {
-  const f = nouvelleFiche(u.id, type.id);
+async function creer(stockage, u, type, nom) {
+  const f = nouvelleFiche(u.id, type.id, nom ? { nom } : {});
   await stockage.put('fiches', f);
   location.hash = lienFiche(u, f);
+}
+
+// Demande le type (sauf s'il n'y en a qu'un) puis appelle `faire(type)`.
+function avecType(page, types, faire) {
+  if (types.length === 1) return faire(types[0]);
+  if (!types.length) return alert('Créez d’abord un type de fiche (onglet « Types de fiches »).');
+  choisirType(page, types, faire);
+}
+
+// Petites pastilles retirables (étiquettes, autres noms) ; `attr` repère le bouton ×.
+function pastilles(ul, liste, attr, quoi) {
+  ul.replaceChildren(...liste.map((texte, i) => {
+    const li = document.createElement('li');
+    li.className = 'etiquette';
+    li.innerHTML = `<span></span><button type="button" ${attr}="${i}">×</button>`;
+    li.querySelector('span').textContent = texte;
+    li.querySelector('button').setAttribute('aria-label', `Retirer ${quoi} ${texte}`);
+    return li;
+  }));
 }
 
 // Liste des fiches d'un univers, groupées par type, avec un filtre.
@@ -91,10 +112,7 @@ export async function vueFiches(page, { id }, { stockage }) {
     }
     if (e.target.closest('[data-action="nouvelle"]')) {
       const type = types.find(t => t.id === filtre);
-      if (type) return creer(stockage, u, type);
-      if (types.length === 1) return creer(stockage, u, types[0]);
-      if (!types.length) return alert('Créez d’abord un type de fiche (onglet « Types de fiches »).');
-      choisirType(page, types, t => creer(stockage, u, t));
+      avecType(page, type ? [type] : types, t => creer(stockage, u, t));
     }
   });
 }
@@ -133,6 +151,11 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   fiche.valeurs ??= {};
   fiche.galerie ??= [];
   fiche.etiquettes ??= [];
+  fiche.autresNoms ??= [];
+  fiche.secrets = depuisTexteBrut(fiche.secrets);
+  const liste = fiches.map(f => (f.id === fiche.id ? fiche : f)); // la fiche ouverte, telle qu'on la modifie
+  let index = indexNoms(liste);
+  const trouver = nom => index.get(cle(nom));
 
   const article = document.createElement('article');
   article.className = 'fiche';
@@ -140,6 +163,8 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   article.innerHTML = `<div class="tete-fiche">
       <div class="titre-fiche">
         <input class="nom-fiche" name="nom" autocomplete="off" aria-label="Nom de la fiche">
+        <div class="autres-noms"><span>Autres noms :</span><ul class="etiquettes" aria-label="Autres noms"></ul>
+          <input name="autreNom" placeholder="Ajouter un nom" aria-label="Ajouter un autre nom" autocomplete="off" enterkeyhint="done"></div>
         <span class="type-fiche">${iconeSvg(type?.icone)} <span class="nom-type"></span> <span class="etat" aria-live="polite"></span></span>
       </div>
       <button type="button" class="etoile" data-action="favori" aria-pressed="${!!fiche.favori}" aria-label="Favori">${ETOILE}</button>
@@ -149,7 +174,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
         <div class="zone-texte"></div>
         <details class="carte secrets"${fiche.secrets ? ' open' : ''}>
           <summary><svg class="icone" aria-hidden="true"><use href="icones/types.svg#key"></use></svg> Secrets et notes d’auteur</summary>
-          <textarea name="secrets" rows="4" aria-label="Secrets et notes d’auteur"></textarea>
+          <div class="zone-secrets"></div>
         </details>
       </div>
       <aside class="carte cote-fiche">
@@ -175,7 +200,6 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   $('.nom-fiche').value = fiche.nom;
   $('.nom-type').textContent = type?.nom || 'Type supprimé';
   $('.titre-cases').textContent = type?.nom || 'Cases';
-  $('[name="secrets"]').value = fiche.secrets || '';
 
   // « Enregistré » s'affiche 2 secondes après chaque modification.
   const etat = $('.etat');
@@ -189,7 +213,56 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
     minuterie = setTimeout(() => { etat.textContent = ''; }, 2000);
   };
 
-  editeur($('.zone-texte'), fiche.texte, html => { fiche.texte = html; enregistrer(); });
+  // Texte et secrets, avec les liens [[Nom]] : un clic ouvre une bulle « Ouvrir » ou « Créer la fiche ».
+  const decorer = racine => decorerLiens(racine, trouver);
+  const afficherTextes = () => {
+    editeur($('.zone-texte'), fiche.texte, html => { fiche.texte = html; enregistrer(); }, { decorer });
+    editeur($('.zone-secrets'), fiche.secrets, html => { fiche.secrets = html; enregistrer(); },
+      { barre: false, nom: 'Secrets et notes d’auteur', decorer });
+  };
+  afficherTextes();
+  const decrire = nom => {
+    const f = trouver(nom);
+    if (!f) return { info: 'Aucune fiche à ce nom', bouton: 'Créer la fiche', action: () => avecType(page, types, t => creer(stockage, u, t, nom)) };
+    return { info: types.find(t => t.id === f.typeId)?.nom ?? '', titre: f.nom, bouton: 'Ouvrir', action: () => { location.hash = lienFiche(u, f); } };
+  };
+  bulleLiens($('.zone-texte'), decrire);
+  bulleLiens($('.zone-secrets'), decrire);
+  const redecorer = () => {
+    index = indexNoms(liste);
+    article.querySelectorAll('.lien').forEach(l => l.classList.toggle('absent', !trouver(l.dataset.nom)));
+  };
+
+  // Renommer la fiche met à jour tous les [[Ancien nom]] de l'univers (une fois le nom validé, pas à chaque lettre).
+  let nomEnregistre = fiche.nom;
+  $('.nom-fiche').addEventListener('change', async () => {
+    const ancien = nomEnregistre;
+    nomEnregistre = fiche.nom;
+    // Si une autre fiche porte aussi l'ancien nom, les liens étaient à elle : on n'y touche pas.
+    if (ancien && fiche.nom.trim() && !liste.some(f => f !== fiche && cle(f.nom) === cle(ancien))) {
+      const modifiees = await renommerLiens(stockage, liste, ancien, fiche.nom);
+      if (modifiees.includes(fiche)) afficherTextes();
+      const autres = modifiees.filter(f => f !== fiche).length;
+      if (autres) etat.textContent = `· Liens mis à jour dans ${autres} fiche${autres > 1 ? 's' : ''}`;
+    }
+    redecorer();
+  });
+
+  // Autres noms (surnoms), reconnus par les liens comme le nom.
+  const afficherAutresNoms = () => pastilles($('.autres-noms ul'), fiche.autresNoms, 'data-autre-nom', 'l’autre nom');
+  afficherAutresNoms();
+  const champAutreNom = $('[name="autreNom"]');
+  const ajouterAutreNom = () => {
+    const n = champAutreNom.value.trim();
+    champAutreNom.value = '';
+    if (!n || [fiche.nom, ...fiche.autresNoms].some(x => cle(x) === cle(n))) return;
+    fiche.autresNoms.push(n);
+    afficherAutresNoms();
+    redecorer();
+    enregistrer();
+  };
+  champAutreNom.addEventListener('change', ajouterAutreNom);
+  champAutreNom.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); ajouterAutreNom(); } });
 
   // Cases du type.
   const cases = $('.cases-fiche');
@@ -225,7 +298,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
 
   article.addEventListener('input', e => {
     const t = e.target;
-    if (t.name === 'nom' || t.name === 'secrets') fiche[t.name] = t.value;
+    if (t.name === 'nom') fiche.nom = t.value;
     else if (t.name === 'parentId') fiche.parentId = t.value || null;
     else if (t.dataset.case) {
       const c = type.cases.find(x => x.id === t.dataset.case);
@@ -282,14 +355,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   });
 
   // Étiquettes.
-  const afficherEtiquettes = () => $('.etiquettes').replaceChildren(...fiche.etiquettes.map((et, i) => {
-    const li = document.createElement('li');
-    li.className = 'etiquette';
-    li.innerHTML = `<span></span><button type="button" data-etiquette="${i}" aria-label="Retirer l’étiquette">×</button>`;
-    li.querySelector('span').textContent = et;
-    li.querySelector('button').setAttribute('aria-label', `Retirer l’étiquette ${et}`);
-    return li;
-  }));
+  const afficherEtiquettes = () => pastilles($('.cote-fiche .etiquettes'), fiche.etiquettes, 'data-etiquette', 'l’étiquette');
   afficherEtiquettes();
   $('.ajout-etiquette').addEventListener('submit', e => {
     e.preventDefault();
@@ -328,6 +394,13 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
     if (et) {
       fiche.etiquettes.splice(+et.dataset.etiquette, 1);
       afficherEtiquettes();
+      await enregistrer();
+    }
+    const autre = e.target.closest('[data-autre-nom]');
+    if (autre) {
+      fiche.autresNoms.splice(+autre.dataset.autreNom, 1);
+      afficherAutresNoms();
+      redecorer();
       await enregistrer();
     }
   });

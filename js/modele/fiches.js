@@ -2,7 +2,7 @@ import { nouvelId } from './univers.js';
 
 export const nouvelleFiche = (universId, typeId, donnees = {}) => ({
   id: nouvelId(), universId, typeId, nom: 'Nouvelle fiche', valeurs: {}, texte: '', secrets: '',
-  imageId: null, galerie: [], etiquettes: [], favori: false, parentId: null, creeLe: Date.now(),
+  imageId: null, galerie: [], etiquettes: [], autresNoms: [], favori: false, parentId: null, creeLe: Date.now(),
   ...donnees,
 });
 

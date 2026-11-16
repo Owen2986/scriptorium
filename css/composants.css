@@ -262,7 +262,29 @@ input.nom-fiche:hover { border-color: var(--bordure); }
 .texte-riche hr { border: 0; border-top: 1px solid var(--bordure); margin: var(--espace-4) 0; }
 .secrets { margin-top: var(--espace-4); border-style: dashed; }
 .secrets summary { display: flex; align-items: center; gap: var(--espace-2); min-height: var(--cible-tactile); cursor: pointer; font-weight: 500; }
-.secrets textarea { margin-top: var(--espace-2); }
+.zone-secrets .texte-riche { min-height: 6rem; margin-top: var(--espace-2); padding: var(--espace-2); border: 1px solid var(--bordure); background: var(--fond); }
+
+/* Liens [[Nom]] : texte normal, tirets gris = fiche existante, points couleur d'accent + italique = fiche absente */
+.zone-texte, .zone-secrets { position: relative; }
+.lien { text-decoration: underline dashed var(--texte-doux); text-decoration-thickness: 2px; text-underline-offset: 4px; cursor: pointer; }
+.lien.absent { text-decoration: underline dotted var(--accent); text-decoration-thickness: 2px; font-style: italic; }
+.lien .crochet { display: none; }
+.bulle {
+  position: absolute; z-index: 2; display: flex; align-items: center; gap: var(--espace-2); max-width: 100%;
+  padding: var(--espace-1) var(--espace-1) var(--espace-1) var(--espace-3); font: 400 .9375rem var(--police-texte);
+  background: var(--surface); color: var(--texte); border: 1px solid var(--bordure); border-radius: var(--rayon); box-shadow: 0 4px 14px rgb(0 0 0 / .12);
+}
+.bulle[hidden] { display: none; }
+.bulle small { color: var(--texte-doux); white-space: nowrap; }
+.bulle span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bulle span:empty { display: none; }
+.bulle button { flex-shrink: 0; min-height: 32px; padding: 0 var(--espace-3); }
+
+/* Autres noms, sous le nom de la fiche */
+.autres-noms { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espace-1); margin: var(--espace-1) 0; padding-left: var(--espace-1); color: var(--texte-doux); font-size: .9375rem; }
+.autres-noms .etiquettes { display: contents; }
+.autres-noms .etiquette { font-style: italic; }
+.autres-noms input { width: 9rem; margin: 0; min-height: 30px; padding: 0 var(--espace-2); font-size: .875rem; }
 .cote-fiche h3 { font-size: 1rem; margin: var(--espace-4) 0 var(--espace-2); }
 .cote-fiche label { color: var(--texte-doux); margin-bottom: var(--espace-2); }
 .cote-fiche label input, .cote-fiche label select { color: var(--texte); }

@@ -2,7 +2,9 @@ import { creerStockage } from '../js/stockage/adaptateur.js';
 import { MIGRATIONS } from '../js/stockage/migrations.js';
 import { attendre } from '../js/stockage/indexeddb.js';
 import { dupliquerUnivers, supprimerUnivers } from '../js/modele/univers.js';
-import { nettoyer } from '../js/ui/texte-riche.js';
+import { nettoyer, depuisTexteBrut } from '../js/ui/texte-riche.js';
+import { cle, indexNoms, renommerLiens } from '../js/modele/liens.js';
+import { decorerLiens } from '../js/ui/liens.js';
 import { parentesPossibles } from '../js/modele/fiches.js';
 import { creerExempleSiBesoin } from '../js/modele/exemple.js';
 import { assurerTypes, typesUnivers, supprimerType, nouveauType, ICONES } from '../js/modele/types.js';
@@ -185,6 +187,37 @@ test('fiches d’exemple créées une fois, liens entre fiches résolus', async 
   const liens = fiches.flatMap(f => casesFiche.filter(c => f.valeurs[c]).map(c => f.valeurs[c]));
   egal(liens.length > 15 && liens.every(l => ids.has(l)), true, 'liens valides :');
   egal(ids.has(fiches.find(f => f.nom === 'La Lanterne Noire').parentId), true, 'parente :');
+  s.fermer();
+});
+
+test('liens [[ ]] : noms et surnoms reconnus sans majuscules ni accents', () => {
+  const f = [{ id: 'a', nom: 'Maëlle Corbin', autresNoms: ['La Gouverneure'] }, { id: 'b', nom: 'La gouverneure' }];
+  const index = indexNoms(f);
+  egal(index.get(cle('  maelle   CORBIN ')).id, 'a');
+  egal(index.get(cle('la gouverneure')).id, 'b', 'un nom passe avant un surnom :');
+  egal(cle('L’Ordre'), cle("l'ordre"));
+});
+
+test('liens [[ ]] : affichés puis enregistrés tels quels', () => {
+  const div = document.createElement('div');
+  div.innerHTML = nettoyer('<p>Né à [[Port-Brume]], loin de [[Nulle part]].</p>');
+  decorerLiens(div, nom => cle(nom) === cle('port-brume'));
+  egal([...div.querySelectorAll('.lien')].map(l => [l.dataset.nom, l.classList.contains('absent')]),
+    [['Port-Brume', false], ['Nulle part', true]]);
+  egal(nettoyer(div.innerHTML), '<p>Né à [[Port-Brume]], loin de [[Nulle part]].</p>');
+});
+
+test('renommer une fiche met à jour les liens de tout l’univers', async () => {
+  const s = await creerStockage(NOM);
+  const fiches = [
+    { id: 'f1', universId: 'u1', nom: 'Aldric', texte: '<p>Vers [[port-brume]] et [[Ailleurs]]</p>', secrets: '<p>[[Port-Brume]]</p>' },
+    { id: 'f2', universId: 'u1', nom: 'Autre', texte: '<p>Rien</p>', secrets: '' },
+  ];
+  const modifiees = await renommerLiens(s, fiches, 'Port-Brume', 'Brume & Sel');
+  egal(modifiees.map(f => f.id), ['f1']);
+  const f1 = await s.get('fiches', 'f1');
+  egal([f1.texte, f1.secrets], ['<p>Vers [[Brume &amp; Sel]] et [[Ailleurs]]</p>', '<p>[[Brume &amp; Sel]]</p>']);
+  egal(depuisTexteBrut('a <b>\nc'), '<p>a &lt;b&gt;</p><p>c</p>');
   s.fermer();
 });
 

@@ -25,17 +25,39 @@ const BOUTONS = [
   ['Citation', 'Citation', 'formatBlock', 'blockquote'], ['Séparateur', 'Ligne de séparation', 'insertHorizontalRule'],
 ];
 
-// Transforme `zone` en éditeur avec sa barre d'outils ; `changement(html)` est appelé à chaque modification.
+// Ancien texte brut (secrets d'avant le texte mis en forme) : une ligne = un paragraphe.
+export function depuisTexteBrut(s) {
+  if (!s || s.trimStart().startsWith('<')) return s;
+  return s.split('\n').map(ligne => {
+    const p = document.createElement('p');
+    p.textContent = ligne;
+    return p.outerHTML;
+  }).join('');
+}
+
+// Transforme `zone` en éditeur ; `changement(html)` est appelé à chaque modification.
+// Options : `barre` (barre de mise en forme), `nom` (nom lu), `decorer(texte)` (appelé à l'affichage et à chaque frappe).
 // shortcut: s'appuie sur document.execCommand (ancien mais pris en charge partout) ; à remplacer s'il disparaît des navigateurs.
-export function editeur(zone, html, changement) {
-  zone.innerHTML = `<div class="barre-texte" role="toolbar" aria-label="Mise en forme">
-      ${BOUTONS.map(([l, nom, cmd, val], i) =>
-        `<button type="button" data-i="${i}" aria-label="${nom}" title="${nom}">${l}</button>`).join('')}
-    </div>
-    <div class="texte-riche" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Texte"></div>`;
+export function editeur(zone, html, changement, { barre = true, nom = 'Texte', decorer = () => {} } = {}) {
+  zone.innerHTML = `${barre ? `<div class="barre-texte" role="toolbar" aria-label="Mise en forme">
+      ${BOUTONS.map(([l, n], i) => `<button type="button" data-i="${i}" aria-label="${n}" title="${n}">${l}</button>`).join('')}
+    </div>` : ''}
+    <div class="texte-riche" contenteditable="true" role="textbox" aria-multiline="true"></div>`;
   const texte = zone.querySelector('.texte-riche');
+  texte.setAttribute('aria-label', nom);
   texte.innerHTML = nettoyer(html);
+  decorer(texte);
   const signaler = () => changement(nettoyer(texte.innerHTML));
+  texte.addEventListener('focus', () => document.execCommand('defaultParagraphSeparator', false, 'p'));
+  texte.addEventListener('input', () => { decorer(texte); signaler(); });
+  texte.addEventListener('paste', e => {
+    e.preventDefault();
+    const d = e.clipboardData;
+    const html = d.getData('text/html');
+    if (html) document.execCommand('insertHTML', false, nettoyer(html));
+    else document.execCommand('insertText', false, d.getData('text/plain'));
+  });
+  if (!barre) return;
 
   zone.querySelector('.barre-texte').addEventListener('mousedown', e => e.preventDefault()); // garde la sélection
   zone.querySelector('.barre-texte').addEventListener('click', e => {
@@ -48,14 +70,5 @@ export function editeur(zone, html, changement) {
     const actuel = document.queryCommandValue('formatBlock').toLowerCase();
     document.execCommand(cmd, false, cmd === 'formatBlock' && actuel === val ? 'p' : val);
     signaler();
-  });
-  texte.addEventListener('focus', () => document.execCommand('defaultParagraphSeparator', false, 'p'));
-  texte.addEventListener('input', signaler);
-  texte.addEventListener('paste', e => {
-    e.preventDefault();
-    const d = e.clipboardData;
-    const html = d.getData('text/html');
-    if (html) document.execCommand('insertHTML', false, nettoyer(html));
-    else document.execCommand('insertText', false, d.getData('text/plain'));
   });
 }

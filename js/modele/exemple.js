@@ -8,11 +8,11 @@ const NOM = 'Royaume d’Elsméria';
 const FICHES = [
   ['Personnage', 'Aldric Ventemer', { 'Âge': 47, 'Espèce': 'Humain', 'Rôle': 'Protagoniste', 'Statut': 'Vivant',
     'Lieu de naissance': 'Port-Brume', 'Groupe': 'L’Ordre du Chêne' },
-  '<h2>Histoire</h2><p>Fils d’un pêcheur de Port-Brume, Aldric quitte la côte à quinze ans pour servir l’Ordre du Chêne. Il y apprend l’épée, puis le silence.</p><blockquote>« Une lettre qu’on n’ouvre pas reste une promesse. »</blockquote><p>Vingt ans plus tard, il revient au port avec une lettre scellée qu’il n’a jamais ouverte.</p><hr><h2>Apparence</h2><p>Grand, les tempes grises, une cicatrice qui lui ferme à moitié l’œil gauche.</p>',
-  { favori: true, etiquettes: ['tome 1'], secrets: 'La lettre vient de sa mère, qu’il croit morte. À révéler au chapitre 12.' }],
+  '<h2>Histoire</h2><p>Fils d’un pêcheur de [[Port-Brume]], Aldric quitte la côte à quinze ans pour servir [[l’Ordre du Chêne]]. Il y apprend l’épée, puis le silence.</p><blockquote>« Une lettre qu’on n’ouvre pas reste une promesse. »</blockquote><p>Vingt ans plus tard, il revient au port avec [[la Lettre scellée]] qu’il n’a jamais ouverte. Sa sœur l’attend à la [[Tour d’ivoire]], où [[Maëlle Corbin]] le guette depuis l’hiver.</p><hr><h2>Apparence</h2><p>Grand, les tempes grises, une cicatrice qui lui ferme à moitié l’œil gauche.</p>',
+  { favori: true, etiquettes: ['tome 1'], autresNoms: ['Le Borgne'], secrets: '<p>La lettre vient de sa mère, qu’il croit morte. À révéler au chapitre 12.</p>' }],
   ['Personnage', 'Maëlle Corbin', { 'Âge': 39, 'Espèce': 'Humaine', 'Rôle': 'Antagoniste', 'Statut': 'Vivant',
     'Lieu de naissance': 'Port-Brume', 'Groupe': 'La Main Grise' },
-  '<p>Gouverneure de Port-Brume le jour, maîtresse de la Main Grise la nuit. Elle croit que la magie mourante doit revenir à ceux qui sauront la payer.</p>',
+  '<p>Gouverneure de [[Port-Brume]] le jour, maîtresse de [[la Main Grise]] la nuit. Elle croit que la magie mourante doit revenir à ceux qui sauront la payer.</p>',
   { favori: true, etiquettes: ['tome 1'], secrets: 'Elle a lu la lettre d’Aldric avant lui, et l’a recachetée.' }],
   ['Personnage', 'Frère Ansel', { 'Âge': 68, 'Espèce': 'Humain', 'Rôle': 'Secondaire', 'Statut': 'Vivant', 'Groupe': 'L’Ordre du Chêne' },
     '<p>Archiviste de la Citadelle et ancien maître d’armes d’Aldric. Il tient le registre des derniers sortilèges connus.</p>'],
@@ -51,7 +51,7 @@ export async function ajouterFichesExemple(stockage, u) {
   const types = new Map((await typesUnivers(stockage, u.id)).map(t => [t.nom, t]));
   const fiches = FICHES.filter(([t]) => types.has(t)).map(([t, nom, , texte, autres = {}]) =>
     nouvelleFiche(u.id, types.get(t).id, { nom, texte, secrets: autres.secrets ?? '', favori: !!autres.favori,
-      etiquettes: autres.etiquettes ?? [] }));
+      etiquettes: autres.etiquettes ?? [], autresNoms: autres.autresNoms ?? [] }));
   const idDe = new Map(fiches.map(f => [f.nom, f.id]));
   FICHES.filter(([t]) => types.has(t)).forEach(([t, , cases, , autres = {}], i) => {
     const f = fiches[i];
