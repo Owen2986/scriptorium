@@ -47,6 +47,7 @@
 ### Git
 
 - Dépôt local : `C:\Users\owen2\Desktop\Projet\scriptorium`.
+- Dépôt GitHub (**public**, choix de l'utilisateur) : https://github.com/Owen2986/scriptorium, branche `master`. Compte GitHub : Owen2986.
 - Identité **locale** du dépôt : `user.name "Ethan"`, `user.email ethan30augros@gmail.com`.
 - **Ne pas modifier la config git globale** (c'est un email universitaire).
 - Messages de commit en français.
@@ -67,7 +68,7 @@
 
 ### Outils installés
 
-- Git, Node, Python, gh CLI (connexion `gh auth login` à faire par l'utilisateur), Chrome DevTools MCP, plugin frontend-design.
+- Git, Node, Python, gh CLI (connecté au compte Owen2986 sur l'ordinateur), Chrome DevTools MCP, plugin frontend-design.
 
 ## Plan des étapes
 
@@ -89,7 +90,7 @@
 ## Où on en est
 
 - Étape 1 terminée : 5 tests OK, appli vérifiée dans Chrome (navigation, thèmes, affichage 375 px).
-- Mise sur GitHub en cours (attend la connexion `gh auth login` de l'utilisateur).
+- Projet sur GitHub (public) : on peut travailler depuis le téléphone via claude.ai/code sur ce dépôt.
 - **Reporté** : sprite d'icônes, polices copiées localement (polices système pour l'instant), sauvegarde `.scriptorium` en zip (avec JSZip).
 - **Prochaine action** : proposer le contenu de l'étape 2 (Univers) et attendre validation.
 
@@ -100,3 +101,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : étape 0, cadrage validé.
 - 2026-11-16, ordinateur : étape 1, fondations (stockage IndexedDB + migrations + copie de secours, routeur, 4 thèmes clair/sombre, page Réglages, tests).
 - 2026-11-16, ordinateur : création de ce fichier CLAUDE.md ; accord pour commit/push sans demander.
+- 2026-11-16, ordinateur : dépôt GitHub public créé (Owen2986/scriptorium) et premier envoi.
