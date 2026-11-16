@@ -26,6 +26,7 @@
 - Les zones de texte se redimensionnent **en hauteur seulement**, jamais en largeur.
 - **Jamais d’émojis, nulle part dans l’appli** (icônes, boutons, textes). Toujours des icônes simplifiées et épurées en silhouette pleine (game-icons.net). Version actuelle des icônes validée par l’utilisateur (2026-11-16).
 - **Unslop sur chaque interface** (consigne du 2026-11-16) : à chaque écran créé ou modifié, passer le skill `/unslop` dessus, puis **présenter ses propositions à l’utilisateur** (avec captures) et attendre son choix avant de les appliquer.
+- **Rien de visuel sans accord précis** (consigne du 2026-11-16) : avant de créer un nouvel élément d’interface (ex. les aperçus des thèmes), montrer d’abord à quoi il ressemblera (maquette ou capture) et attendre un « oui ». Une idée cochée dans une liste ne suffit pas pour décider de sa forme.
 - Aimer voir des **captures d'écran** avant de valider un choix visuel : les copier dans `~/Images/apercu-polices/` (ou un dossier d'aperçu) et les ouvrir avec `xdg-open` ; les chemins affichés dans le terminal ne sont pas cliquables pour lui.
 - Garder le **mode ponytail** actif (solution la plus simple qui marche entièrement, pas de code inutile).
 - Installer les outils utiles quand il l'autorise.
@@ -143,3 +144,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : consigne, passer unslop sur chaque interface et proposer ses solutions avant de les appliquer.
 - 2026-11-16, ordinateur : unslop passé sur les pages existantes, les 4 propositions retenues et appliquées ; 9 tests OK.
 - 2026-11-16, ordinateur : noms des thèmes sans parenthèses, vignettes qui suivent le mode de l'appareil, plus de faux gras (logo Archive).
+- 2026-11-16, ordinateur : consigne, toujours montrer et demander avant de créer un élément visuel.
