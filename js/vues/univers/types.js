@@ -1,4 +1,4 @@
-import { SORTES, ICONES, nouveauType, nouvelleCase, typesUnivers, supprimerType } from '../../modele/types.js';
+import { SORTES, ICONES, iconeSvg, nouveauType, nouvelleCase, typesUnivers, supprimerType } from '../../modele/types.js';
 import { ouvrirUnivers } from './commun.js';
 
 const lienType = (u, t) => `#/univers/${encodeURIComponent(u.id)}/types/${encodeURIComponent(t.id)}`;
@@ -23,7 +23,7 @@ export async function vueTypes(page, { id }, { stockage }) {
       const li = document.createElement('li');
       li.className = 'carte type';
       li.style.setProperty('--couleur-type', t.couleur);
-      li.innerHTML = `<a class="type-lien"><span class="icone-type" aria-hidden="true"></span>
+      li.innerHTML = `<a class="type-lien"><span class="icone-type">${iconeSvg(t.icone)}</span>
           <span><strong></strong><small></small></span></a>
         <span class="deplacer">
           <button type="button" data-action="monter" aria-label="Monter"${i ? '' : ' disabled'}>↑</button>
@@ -31,7 +31,6 @@ export async function vueTypes(page, { id }, { stockage }) {
         </span>`;
       li.dataset.index = i;
       li.querySelector('a').href = lienType(u, t);
-      li.querySelector('.icone-type').textContent = t.icone;
       li.querySelector('strong').textContent = t.nom || 'Sans nom';
       li.querySelector('small').textContent =
         `${pluriel(t.cases.length, 'case')} · ${pluriel(fiches.filter(f => f.typeId === t.id).length, 'fiche')}`;
@@ -76,7 +75,8 @@ export async function vueType(page, { id, typeId }, { stockage }) {
     <form class="carte type-edition">
       <label>Nom du type <input name="nom" autocomplete="off"></label>
       <fieldset><legend>Icône</legend><div class="grille-icones">
-        ${ICONES.map(i => `<label><input type="radio" name="icone" value="${i}"><span>${i}</span></label>`).join('')}
+        ${Object.entries(ICONES).map(([i, nom]) =>
+          `<label title="${nom}"><input type="radio" name="icone" value="${i}" aria-label="${nom}"><span>${iconeSvg(i)}</span></label>`).join('')}
       </div></fieldset>
       <label class="choix">Couleur <input type="color" name="couleur"></label>
     </form>
@@ -118,7 +118,7 @@ export async function vueType(page, { id, typeId }, { stockage }) {
         <button type="button" data-action="retirer" class="danger">Retirer la case</button>
       </div>`;
     const champ = n => li.querySelector(`[name="${n}"]`);
-    [type, ...autres].forEach(t => champ('typeCibleId').add(new Option(`${t.icone} ${t.nom || 'Sans nom'}`, t.id)));
+    [type, ...autres].forEach(t => champ('typeCibleId').add(new Option(`${t.nom || 'Sans nom'}`, t.id)));
     champ('nom').value = c.nom;
     champ('sorte').value = c.sorte;
     champ('choix').value = (c.choix || []).join('\n');
@@ -203,8 +203,8 @@ async function demanderSuppression(page, stockage, u, type, autres) {
     ul.append(li);
   }
   const selects = () => dialogue.querySelectorAll('select');
-  const ajouterOption = t => selects().forEach(s => s.add(new Option(`${t.icone} ${t.nom || 'Sans nom'}`, t.id)));
-  selects().forEach(s => s.add(new Option('🗑 Corbeille', '')));
+  const ajouterOption = t => selects().forEach(s => s.add(new Option(`${t.nom || 'Sans nom'}`, t.id)));
+  selects().forEach(s => s.add(new Option('Corbeille', '')));
   autres.forEach(ajouterOption);
 
   const nouveaux = [];

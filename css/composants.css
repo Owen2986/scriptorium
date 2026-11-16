@@ -113,7 +113,8 @@ input[type="color"] { width: 3rem; height: 2rem; padding: 0; border: 1px solid v
 .type-lien { flex: 1; display: flex; align-items: center; gap: var(--espace-3); min-height: var(--cible-tactile); color: inherit; text-decoration: none; }
 .type-lien strong, .type-lien small { display: block; }
 .type-lien small { color: var(--texte-doux); }
-.icone-type { font-size: 1.75rem; line-height: 1; }
+.icone { width: 1em; height: 1em; fill: currentColor; flex-shrink: 0; }
+.icone-type { font-size: 1.75rem; line-height: 1; display: flex; color: var(--couleur-type); }
 .deplacer { display: flex; gap: var(--espace-1); }
 button:disabled { opacity: .4; cursor: default; }
 

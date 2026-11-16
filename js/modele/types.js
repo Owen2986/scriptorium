@@ -2,34 +2,49 @@ import { nouvelId } from './univers.js';
 
 export const SORTES = { texte: 'Texte', nombre: 'Nombre', liste: 'Liste de choix', fiche: 'Lien vers une fiche' };
 
-export const ICONES = ['👤', '🧙', '🧝', '👑', '⚔️', '🛡️', '🏰', '🏯', '🏘️', '⛪', '🌲', '⛰️', '🌊', '🏝️', '🗺️', '🧭',
-  '🗝️', '💎', '📜', '📖', '🔮', '⚗️', '🗡️', '🏹', '🐉', '🐺', '🦅', '🐍', '🦄', '👹', '👻', '💀',
-  '🌙', '☀️', '⭐', '🔥', '💧', '🌿', '⚙️', '🚀', '🛸', '🤖', '🔬', '🧬', '🪐', '💡', '⚖️', '🎭'];
+// Dessins de icones/types.svg (game-icons.net, licence CC BY 3.0) → nom lu par les lecteurs d'écran.
+export const ICONES = {
+  'person': 'Personne', 'wizard-face': 'Magicien', 'woman-elf-face': 'Elfe', 'crown': 'Couronne',
+  'crossed-swords': 'Épées croisées', 'checked-shield': 'Bouclier', 'castle': 'Château', 'pagoda': 'Pagode',
+  'village': 'Village', 'church': 'Église', 'pine-tree': 'Sapin', 'peaks': 'Montagnes', 'big-wave': 'Vague',
+  'island': 'Île', 'treasure-map': 'Carte au trésor', 'compass': 'Boussole', 'key': 'Clé', 'cut-diamond': 'Diamant',
+  'scroll-unfurled': 'Parchemin', 'book-cover': 'Livre', 'crystal-ball': 'Boule de cristal', 'potion-ball': 'Potion',
+  'broadsword': 'Épée', 'bow-arrow': 'Arc', 'dragon-head': 'Dragon', 'wolf-head': 'Loup', 'eagle-head': 'Aigle',
+  'snake': 'Serpent', 'unicorn': 'Licorne', 'orc-head': 'Orc', 'ghost': 'Fantôme', 'death-skull': 'Crâne',
+  'moon': 'Lune', 'sun': 'Soleil', 'star-swirl': 'Étoile', 'fire': 'Feu', 'water-drop': 'Goutte d’eau',
+  'oak-leaf': 'Feuille', 'cog': 'Engrenage', 'rocket': 'Fusée', 'ufo': 'Soucoupe volante', 'robot-golem': 'Robot',
+  'microscope': 'Microscope', 'dna1': 'ADN', 'ringed-planet': 'Planète', 'light-bulb': 'Ampoule', 'scales': 'Balance',
+  'drama-masks': 'Masques de théâtre',
+};
+
+// Dessin d'une icône ; un nom inconnu (ancienne sauvegarde, donnée abîmée) donne le parchemin.
+export const iconeSvg = nom => `<svg class="icone" aria-hidden="true"><use href="icones/types.svg#${
+  Object.hasOwn(ICONES, nom) ? nom : 'scroll-unfurled'}"></use></svg>`;
 
 export const nouvelleCase = (donnees = {}) => ({ nom: 'Nouvelle case', sorte: 'texte', ...donnees, id: donnees.id ?? nouvelId() });
 
 export const nouveauType = (universId, donnees = {}) => ({
-  id: nouvelId(), universId, nom: 'Nouveau type', icone: '📜', couleur: '#5c5c5c', ordre: Date.now(), cases: [],
+  id: nouvelId(), universId, nom: 'Nouveau type', icone: 'scroll-unfurled', couleur: '#5c5c5c', ordre: Date.now(), cases: [],
   ...donnees,
 });
 
 // Types proposés au départ dans chaque univers ; « cible » désigne un autre type de base par son nom.
 const BASE = [
-  ['Personnage', '👤', '#2e5f8b', [
+  ['Personnage', 'person', '#2e5f8b', [
     ['Âge', 'nombre'], ['Espèce', 'texte'], ['Rôle', 'liste', ['Protagoniste', 'Antagoniste', 'Secondaire', 'Figurant']],
     ['Statut', 'liste', ['Vivant', 'Mort', 'Disparu', 'Inconnu']], ['Lieu de naissance', 'fiche', 'Lieu'],
     ['Groupe', 'fiche', 'Groupe/Faction']]],
-  ['Lieu', '🏰', '#4f7a28', [
+  ['Lieu', 'castle', '#4f7a28', [
     ['Sorte de lieu', 'liste', ['Royaume', 'Région', 'Ville', 'Village', 'Bâtiment', 'Forêt', 'Montagne', 'Autre']],
     ['Population', 'nombre'], ['Climat', 'texte'], ['Dirigé par', 'fiche', 'Personnage']]],
-  ['Objet', '🗝️', '#a0701a', [
+  ['Objet', 'key', '#a0701a', [
     ['Sorte d’objet', 'texte'], ['Propriétaire', 'fiche', 'Personnage'], ['Origine', 'fiche', 'Lieu'], ['Pouvoirs', 'texte']]],
-  ['Groupe/Faction', '🛡️', '#7a3b8b', [
+  ['Groupe/Faction', 'checked-shield', '#7a3b8b', [
     ['Sorte de groupe', 'liste', ['Royaume', 'Guilde', 'Ordre', 'Clan', 'Religion', 'Autre']],
     ['Chef', 'fiche', 'Personnage'], ['Siège', 'fiche', 'Lieu'], ['Devise', 'texte']]],
-  ['Créature', '🐉', '#a8322b', [
+  ['Créature', 'dragon-head', '#a8322b', [
     ['Habitat', 'fiche', 'Lieu'], ['Taille', 'texte'], ['Danger', 'liste', ['Inoffensive', 'Méfiante', 'Dangereuse', 'Mortelle']]]],
-  ['Notion', '💡', '#2f7f7a', [
+  ['Notion', 'light-bulb', '#2f7f7a', [
     ['Domaine', 'liste', ['Magie', 'Religion', 'Histoire', 'Science', 'Coutume', 'Autre']], ['Résumé', 'texte']]],
 ];
 

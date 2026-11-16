@@ -2,7 +2,7 @@ import { creerStockage } from '../js/stockage/adaptateur.js';
 import { MIGRATIONS } from '../js/stockage/migrations.js';
 import { attendre } from '../js/stockage/indexeddb.js';
 import { dupliquerUnivers, supprimerUnivers } from '../js/modele/univers.js';
-import { assurerTypes, typesUnivers, supprimerType, nouveauType } from '../js/modele/types.js';
+import { assurerTypes, typesUnivers, supprimerType, nouveauType, ICONES } from '../js/modele/types.js';
 
 const NOM = 'scriptorium-test';
 const tests = [];
@@ -80,6 +80,18 @@ test('copie de secours avant une migration', async () => {
   egal(copies.length, 1);
   egal(copies[0].schema, 1);
   egal(copies[0].stores.univers[0].nom, 'Avant');
+});
+
+test('migration 2 : icônes émojis remplacées par les dessins', async () => {
+  let s = await creerStockage(NOM, [MIGRATIONS[0]]);
+  await s.lot([['put', 'typesFiches', { id: 't1', universId: 'u1', icone: '🐉' }],
+    ['put', 'typesFiches', { id: 't2', universId: 'u1', icone: 'castle' }]]);
+  s.fermer();
+  s = await creerStockage(NOM);
+  egal((await s.tous('typesFiches')).map(t => t.icone), ['dragon-head', 'castle']);
+  s.fermer();
+  const svg = await (await fetch('../icones/types.svg')).text();
+  egal(Object.keys(ICONES).filter(n => !svg.includes(`id="${n}"`)), [], 'dessins manquants :');
 });
 
 test('dupliquer puis supprimer un univers avec tout son contenu', async () => {

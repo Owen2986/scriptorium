@@ -24,6 +24,7 @@
 - **Objectif : l'application la plus complète possible.** À chaque étape, proposer aussi les fonctions supplémentaires utiles (l'utilisateur choisit). Ponytail s'applique à la façon d'écrire le code (pas de code inutile), pas au nombre de fonctions.
 - **Fonctions en plus de l'étape 2** : ne plus en proposer au fil des morceaux ; les garder et les proposer toutes ensemble **à la fin de l'étape 2** (consigne du 2026-11-16).
 - Les zones de texte se redimensionnent **en hauteur seulement**, jamais en largeur.
+- **Icônes : pas d'émojis.** Des logos simplifiés et épurés, en silhouette pleine d'une seule couleur (modèle : deux épées croisées, `rename.png`, consigne du 2026-11-16).
 - Aimer voir des **captures d'écran** avant de valider un choix visuel : les copier dans `~/Images/apercu-polices/` (ou un dossier d'aperçu) et les ouvrir avec `xdg-open` ; les chemins affichés dans le terminal ne sont pas cliquables pour lui.
 - Garder le **mode ponytail** actif (solution la plus simple qui marche entièrement, pas de code inutile).
 - Installer les outils utiles quand il l'autorise.
@@ -52,7 +53,7 @@
 
 - Dépôt local : `C:\Users\owen2\Desktop\Projet\scriptorium` (Windows) ; `/home/depinfo/Documents/Scriptorium` (PC Linux, envoi par clé SSH, remote `git@github.com:Owen2986/scriptorium.git`).
 - Dépôt GitHub (**public**, choix de l'utilisateur) : https://github.com/Owen2986/scriptorium. Branche de travail : **`develop`** (tous les envois s'y font) ; `master` = version stable, mise à jour seulement quand l'utilisateur le demande. Compte GitHub : Owen2986.
-- Identité **locale** du dépôt : `user.name "Ethan"`, `user.email ethan30augros@gmail.com`.
+- Identité **locale** du dépôt : `user.name "Owen"` sur Windows, `user.email ethan30augros@gmail.com`.
 - **Ne pas modifier la config git globale** (c'est un email universitaire).
 - Messages de commit en français.
 
@@ -97,7 +98,8 @@
 
 - Étape 1 terminée : 5 tests OK, appli vérifiée dans Chrome (navigation, thèmes, affichage 375 px).
 - Projet sur GitHub (public) : on peut travailler depuis le téléphone via claude.ai/code sur ce dépôt.
-- **Reporté** : sprite d'icônes, sauvegarde `.scriptorium` en zip (avec JSZip), réduction automatique de la taille des images.
+- **Icônes (2026-11-16)** : plus d'émojis. 48 dessins de game-icons.net (CC BY 3.0, crédit dans Réglages) dans `icones/types.svg`, noms + libellés français dans `ICONES` (`js/modele/types.js`), affichage par `iconeSvg(nom)` (couleur du type). Migration 2 : convertit les anciens émojis. `rename.png` (image Shutterstock, modèle de style) n'est pas envoyé sur GitHub.
+- **Reporté** : sauvegarde `.scriptorium` en zip (avec JSZip), réduction automatique de la taille des images.
 - **Polices** (validées le 2026-11-16) : copiées dans `polices/` (woff2, latin, licences libres), déclarées dans `css/polices.css`. Grimoire = Cinzel + EB Garamond ; Station = Orbitron + Exo 2 ; Archive = Special Elite + Libre Baskerville ; Épure = Inter. Raison : les anciennes polices Windows n'existaient pas sur Linux/téléphone, plusieurs thèmes se ressemblaient.
 - Archive : fond clair légèrement jaunâtre (#f2efe3) et fond sombre gris anthracite chaud (#2a2925) au lieu du noir, à la demande de l'utilisateur.
 - **Étape 2, choix validés (2026-11-16)** : univers + fiches + liens `[[Nom de fiche]]` ; types de fiches de base modifiables (Personnage, Lieu, Objet, Groupe/Faction, Créature, Notion) ; une fiche = titre + champs propres au type + texte mis en forme + image facultative ; univers d'exemple fantasy ajouté dès cette étape.
@@ -107,7 +109,7 @@
 - **À reproposer à la fin de l'étape 2** (mis de côté par l'utilisateur) : a. suggestions en tapant `[[` ; b. « Citée dans » ; c. affichage liste/cartes ; d. tri des fiches ; e. fiche modèle.
 - **Morceau 1 fait** : accueil en cartes, page de présentation (nom, description, couleur, couverture, enregistrement automatique), dupliquer/supprimer un univers avec tout son contenu (`js/modele/univers.js`, écriture « tout ou rien » via `stockage.lot`), univers d'exemple créé une seule fois (clé meta `exempleCree`). 6 tests OK, vérifié dans Chrome (dont largeur téléphone). Les fiches d'exemple viendront au morceau 3.
 - Branche `develop` créée (2026-11-16) : c'est là que tout s'envoie désormais.
-- **Morceau 2 fait (2026-11-16)** : onglets dans l'univers (Présentation, Types de fiches) ; page « Types de fiches » (liste, nouveau type, monter/descendre) ; page d'un type (nom, icône parmi 48 émojis, couleur, cases : texte / nombre / liste de choix / lien vers une fiche avec type visé, monter/descendre/retirer, enregistrement automatique). Choix de l'utilisateur : a. types propres à chaque univers ; b. icône + couleur, avec icône déjà choisie pour les 6 types de base (👤 🏰 🗝️ 🛡️ 🐉 💡) ; c. suppression d'un type utilisé : avertissement, puis chaque fiche est déplacée vers un type existant ou un type créé sur le moment (qui reprend les mêmes cases), sinon elle va à la corbeille. Les types de base (avec des cases déjà prêtes) sont créés à la première ouverture de l'univers (`assurerTypes`, drapeau `typesCrees` sur l'univers). Code : `js/modele/types.js`, `js/vues/univers/types.js`, `js/vues/univers/commun.js`. 8 tests OK, vérifié dans le navigateur (ordinateur et largeur téléphone).
+- **Morceau 2 fait (2026-11-16)** : onglets dans l'univers (Présentation, Types de fiches) ; page « Types de fiches » (liste, nouveau type, monter/descendre) ; page d'un type (nom, icône parmi 48 dessins, couleur, cases : texte / nombre / liste de choix / lien vers une fiche avec type visé, monter/descendre/retirer, enregistrement automatique). Choix de l'utilisateur : a. types propres à chaque univers ; b. icône + couleur, avec icône déjà choisie pour les 6 types de base (personne, château, clé, bouclier, dragon, ampoule) ; c. suppression d'un type utilisé : avertissement, puis chaque fiche est déplacée vers un type existant ou un type créé sur le moment (qui reprend les mêmes cases), sinon elle va à la corbeille. Les types de base (avec des cases déjà prêtes) sont créés à la première ouverture de l'univers (`assurerTypes`, drapeau `typesCrees` sur l'univers). Code : `js/modele/types.js`, `js/vues/univers/types.js`, `js/vues/univers/commun.js`. 8 tests OK, vérifié dans le navigateur (ordinateur et largeur téléphone).
 - Notes pour la suite : une fiche a un champ `nom`, ses cases sont dans `valeurs` (clé = id de la case) ; une fiche à la corbeille porte `corbeille: <date>`. Au morceau 5, restaurer une fiche dont le type n'existe plus devra demander un type.
 - **Fonctions en plus mises de côté (à proposer à la fin de l'étape 2)** : cases obligatoires, valeur par défaut d'une case, dupliquer un type, copier un type vers un autre univers, autres sortes de cases (date du calendrier, case à cocher, plusieurs fiches liées).
 - **Prochaine action** : morceau 3 (fiches : texte riche, secrets, images, étiquettes, favoris, parente, enregistrement automatique, fiches d'exemple).
@@ -131,3 +133,5 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, PC Linux : polices des thèmes copiées dans le projet, couleurs d'Archive adoucies, bouton « Retirer l'image » caché quand il n'y a pas d'image.
 - 2026-11-16, téléphone (claude.ai/code) : branche `develop` créée ; consigne : toujours travailler et envoyer sur `develop`.
 - 2026-11-16, téléphone (claude.ai/code) : étape 2, morceau 2 (types de fiches et cases) fait et vérifié ; consigne : fonctions en plus proposées seulement à la fin de l'étape 2.
+- 2026-11-16, ordinateur : dépôt Windows remis à jour (passage sur `develop`), nom git local « Owen » noté.
+- 2026-11-16, ordinateur : émojis des types remplacés par des icônes game-icons.net en silhouette (consigne : pas d'émojis) ; 9 tests OK, vérifié dans Chrome.

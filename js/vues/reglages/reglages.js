@@ -9,7 +9,9 @@ export function vueReglages(page) {
     <form class="carte">
       <fieldset><legend>Thème</legend>${radios('nom', THEMES, pref.nom)}</fieldset>
       <fieldset><legend>Affichage</legend>${radios('mode', MODES, pref.mode)}</fieldset>
-    </form>`;
+    </form>
+    <p class="vide">Icônes : <a href="https://game-icons.net" target="_blank" rel="noopener">game-icons.net</a>
+      (Lorc, Delapouite et autres), licence <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a>.</p>`;
 
   const champs = page.querySelector('form').elements;
   page.querySelector('form').addEventListener('change', () =>
