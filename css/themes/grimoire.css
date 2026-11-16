@@ -1,0 +1,20 @@
+[data-theme="grimoire"] {
+  --police-titre: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --police-texte: Georgia, "Times New Roman", serif;
+  --fond: #f4ecd8;
+  --surface: #fbf6ea;
+  --texte: #2b2118;
+  --texte-doux: #6b5a45;
+  --accent: #8b2e1f;
+  --sur-accent: #ffffff;
+  --bordure: #d8c8a8;
+}
+[data-theme="grimoire"][data-mode="sombre"] {
+  --fond: #1c1611;
+  --surface: #262019;
+  --texte: #ece0c8;
+  --texte-doux: #b3a185;
+  --accent: #d9824f;
+  --sur-accent: #1c1611;
+  --bordure: #3e3326;
+}

@@ -1,0 +1,20 @@
+[data-theme="station"] {
+  --police-titre: Bahnschrift, "Segoe UI", system-ui, sans-serif;
+  --police-texte: "Segoe UI", system-ui, sans-serif;
+  --fond: #eef2f6;
+  --surface: #ffffff;
+  --texte: #10202e;
+  --texte-doux: #4f6475;
+  --accent: #0069a3;
+  --sur-accent: #ffffff;
+  --bordure: #c9d5df;
+}
+[data-theme="station"][data-mode="sombre"] {
+  --fond: #0b1118;
+  --surface: #121c26;
+  --texte: #d8e6f0;
+  --texte-doux: #8aa1b3;
+  --accent: #4cc9f0;
+  --sur-accent: #0b1118;
+  --bordure: #22313f;
+}

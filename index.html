@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scriptorium</title>
+  <script>
+    // Applique le thème avant l'affichage (évite un flash) ; même logique que js/ui/themes.js.
+    (function () {
+      var p = {};
+      try { p = JSON.parse(localStorage.getItem('scriptorium.theme')) || {}; } catch (e) {}
+      var nom = ['grimoire', 'station', 'archive', 'epure'].indexOf(p.nom) < 0 ? 'epure' : p.nom;
+      var mode = p.mode === 'clair' || p.mode === 'sombre' ? p.mode
+        : (matchMedia('(prefers-color-scheme: dark)').matches ? 'sombre' : 'clair');
+      document.documentElement.dataset.theme = nom;
+      document.documentElement.dataset.mode = mode;
+    })();
+  </script>
+  <link rel="stylesheet" href="css/design-tokens.css">
+  <link rel="stylesheet" href="css/themes/grimoire.css">
+  <link rel="stylesheet" href="css/themes/station.css">
+  <link rel="stylesheet" href="css/themes/archive.css">
+  <link rel="stylesheet" href="css/themes/epure.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/composants.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <header class="entete">
+    <a class="marque" href="#/">Scriptorium</a>
+    <nav aria-label="Navigation principale">
+      <a href="#/">Accueil</a>
+      <a href="#/reglages">Réglages</a>
+    </nav>
+  </header>
+  <main id="vue" tabindex="-1"></main>
+</body>
+</html>
