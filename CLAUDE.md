@@ -101,6 +101,7 @@
 - Étape 1 terminée : 5 tests OK, appli vérifiée dans Chrome (navigation, thèmes, affichage 375 px).
 - Projet sur GitHub (public) : on peut travailler depuis le téléphone via claude.ai/code sur ce dépôt.
 - **Icônes (2026-11-16)** : plus d'émojis. 48 dessins de game-icons.net (CC BY 3.0, crédit dans Réglages) dans `icones/types.svg`, noms + libellés français dans `ICONES` (`js/modele/types.js`), affichage par `iconeSvg(nom)` (couleur du type). Migration 2 : convertit les anciens émojis. `rename.png` (image Shutterstock, modèle de style) n'est pas envoyé sur GitHub.
+- **Unslop des pages existantes (2026-11-16)** : direction « bureau d'écrivain » (posé, lettré, artisanal). Appliqué : titres en 500, arrondis 8 px (boutons/champs) et 12 px (cartes, `--rayon-carte`), plus de point final sur les petites phrases, réalignement Couleur/Image de couverture ; carte d'univers en « page de garde » (couverture ou initiale sur fond teinté) ; **signet** à la couleur de l'univers (signature, remplace les bordures colorées) ; aperçus des thèmes en vignettes dans Réglages.
 - **Reporté** : sauvegarde `.scriptorium` en zip (avec JSZip), réduction automatique de la taille des images.
 - **Polices** (validées le 2026-11-16) : copiées dans `polices/` (woff2, latin, licences libres), déclarées dans `css/polices.css`. Grimoire = Cinzel + EB Garamond ; Station = Orbitron + Exo 2 ; Archive = Special Elite + Libre Baskerville ; Épure = Inter. Raison : les anciennes polices Windows n'existaient pas sur Linux/téléphone, plusieurs thèmes se ressemblaient.
 - Archive : fond clair légèrement jaunâtre (#f2efe3) et fond sombre gris anthracite chaud (#2a2925) au lieu du noir, à la demande de l'utilisateur.
@@ -140,3 +141,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : icônes validées ; consigne : ne jamais utiliser d'émojis.
 - 2026-11-16, ordinateur : skill unslop (heydamir) installé.
 - 2026-11-16, ordinateur : consigne, passer unslop sur chaque interface et proposer ses solutions avant de les appliquer.
+- 2026-11-16, ordinateur : unslop passé sur les pages existantes, les 4 propositions retenues et appliquées ; 9 tests OK.

@@ -1,12 +1,12 @@
 .carte {
   background: var(--surface);
   border: 1px solid var(--bordure);
-  border-radius: var(--rayon);
+  border-radius: var(--rayon-carte);
   padding: var(--espace-4);
 }
 
 fieldset { border: 0; padding: 0; margin: 0 0 var(--espace-4); }
-legend { font-weight: 600; margin-bottom: var(--espace-2); }
+legend { font-weight: 500; padding: 0; margin-bottom: var(--espace-2); }
 .choix { display: flex; align-items: center; gap: var(--espace-2); min-height: var(--cible-tactile); cursor: pointer; }
 .choix input { accent-color: var(--accent); width: 1.1rem; height: 1.1rem; }
 
@@ -55,18 +55,34 @@ input[type="color"] { width: 3rem; height: 2rem; padding: 0; border: 1px solid v
   list-style: none;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  gap: var(--espace-3);
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: var(--espace-4);
 }
+/* Carte d'univers = page de garde : couverture, ou initiale sur un fond teinté de la couleur de l'univers. */
 .carte-univers {
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  border-top: 4px solid var(--couleur-univers);
+  padding: 0;
+  overflow: hidden;
   color: inherit;
   text-decoration: none;
+  transition: border-color .15s ease-out;
 }
 .carte-univers:hover { border-color: var(--couleur-univers); }
-.carte-univers h2 { margin: var(--espace-2) 0; font-size: 1.25rem; }
+.garde {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 2;
+  background: color-mix(in srgb, var(--couleur-univers) 22%, var(--surface));
+  border-bottom: 1px solid var(--bordure);
+  color: var(--couleur-univers);
+  font: 500 4.5rem/1 var(--police-titre);
+}
+.garde img { width: 100%; height: 100%; object-fit: cover; }
+.carte-univers .corps { padding: var(--espace-3) var(--espace-4) var(--espace-4); }
+.carte-univers h2 { margin: 0 0 var(--espace-2); font-size: 1.25rem; }
 .carte-univers p {
   margin: 0;
   color: var(--texte-doux);
@@ -77,8 +93,22 @@ input[type="color"] { width: 3rem; height: 2rem; padding: 0; border: 1px solid v
 }
 .couverture:empty { display: none; }
 .couverture img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--rayon); }
-.presentation { border-top: 4px solid var(--couleur-univers); }
 .presentation .couverture { margin-bottom: var(--espace-3); }
+.presentation .choix { margin-bottom: var(--espace-4); }
+
+/* Signet : petit ruban à la couleur de l'univers, accroché en haut de sa carte et de sa présentation. */
+.carte-univers, .presentation { position: relative; }
+.carte-univers::before, .presentation::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: var(--espace-4);
+  width: 16px;
+  height: 32px;
+  background: var(--couleur-univers);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);
+  z-index: 1;
+}
 
 /* Fil d'Ariane et onglets d'un univers */
 .fil { color: var(--texte-doux); margin: 0 0 var(--espace-2); }
@@ -99,7 +129,7 @@ input[type="color"] { width: 3rem; height: 2rem; padding: 0; border: 1px solid v
   white-space: nowrap;
   border-bottom: 3px solid transparent;
 }
-.onglets a[aria-current="page"] { color: var(--texte); font-weight: 600; border-bottom-color: var(--couleur-univers); }
+.onglets a[aria-current="page"] { color: var(--texte); font-weight: 500; border-bottom-color: var(--couleur-univers); }
 
 /* Types de fiches */
 .liste-types, .cases, .fiches-a-deplacer { list-style: none; padding: 0; display: grid; gap: var(--espace-2); }
@@ -150,5 +180,30 @@ select {
   color: var(--texte);
   font: inherit;
 }
+/* Réglages : chaque thème montré en petit, avec ses propres couleurs et polices. */
+.apercus-themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: var(--espace-3); }
+.apercu-theme { position: relative; margin: 0; cursor: pointer; }
+.apercu-theme input { position: absolute; opacity: 0; }
+.vignette {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-1);
+  min-height: 7.5rem;
+  padding: var(--espace-3);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--fond);
+  color: var(--texte-doux);
+  font: .875rem/1.4 var(--police-texte);
+  transition: border-color .15s ease-out;
+}
+.vignette-titre { color: var(--texte); font: 1.125rem/1.2 var(--police-titre); }
+.vignette-accent { width: 2rem; height: 4px; margin-top: auto; border-radius: 2px; background: var(--accent); }
+.apercu-nom { display: block; margin-top: var(--espace-2); color: var(--texte-doux); }
+.apercu-theme:hover .vignette { border-color: var(--texte-doux); }
+.apercu-theme input:checked ~ .vignette { border: 2px solid var(--accent); padding: calc(var(--espace-3) - 1px); }
+.apercu-theme input:checked ~ .apercu-nom { color: var(--texte); }
+.apercu-theme input:focus-visible ~ .vignette { outline: 2px solid var(--accent); outline-offset: 2px; }
+
 dialog { width: min(36rem, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); color: var(--texte); }
 dialog::backdrop { background: rgb(0 0 0 / .5); }

@@ -36,7 +36,7 @@ export async function vueTypes(page, { id }, { stockage }) {
         `${pluriel(t.cases.length, 'case')} · ${pluriel(fiches.filter(f => f.typeId === t.id).length, 'fiche')}`;
       return li;
     }));
-    if (!types.length) liste.innerHTML = '<li class="vide">Aucun type de fiche.</li>';
+    if (!types.length) liste.innerHTML = '<li class="vide">Aucun type de fiche</li>';
   };
   afficher();
 
@@ -81,7 +81,7 @@ export async function vueType(page, { id, typeId }, { stockage }) {
       <label class="choix">Couleur <input type="color" name="couleur"></label>
     </form>
     <h2>Cases à remplir</h2>
-    <p class="vide">Les cases apparaissent sur chaque fiche de ce type.</p>
+    <p class="vide">Les cases apparaissent sur chaque fiche de ce type</p>
     <ol class="cases"></ol>
     <div class="actions">
       <button type="button" data-action="ajouter">Ajouter une case</button>
