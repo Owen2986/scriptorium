@@ -97,7 +97,10 @@
 - **Reporté** : sprite d'icônes, polices copiées localement (polices système pour l'instant), sauvegarde `.scriptorium` en zip (avec JSZip).
 - **Étape 2, choix validés (2026-11-16)** : univers + fiches + liens `[[Nom de fiche]]` ; types de fiches de base modifiables (Personnage, Lieu, Objet, Groupe/Faction, Créature, Notion) ; une fiche = titre + champs propres au type + texte mis en forme + image facultative ; univers d'exemple fantasy ajouté dès cette étape.
 - **Étape 2, fonctions en plus (toutes retenues)** : étiquettes, favoris, fiches imbriquées, recherche dans tout le texte ; galerie d'images, surnoms reconnus par les liens, cases de plusieurs sortes (texte, nombre, liste, lien vers fiche), zone secrets/notes d'auteur ; corbeille, historique des versions, dupliquer, annuler/rétablir ; présentation de l'univers (description, couverture, couleur), statistiques, export Markdown/PDF, fiches orphelines et liens vers fiches inexistantes.
-- **Prochaine action** : faire valider le plan détaillé de l'étape 2, puis le réaliser.
+- **Plan de l'étape 2 validé (2026-11-16)**, 8 morceaux : 1 univers (liste, créer/renommer/supprimer/dupliquer, présentation, univers d'exemple) ; 2 types de fiches et cases ; 3 fiches (texte riche, secrets, images, étiquettes, favoris, parente, enregistrement automatique) ; 4 liens `[[ ]]` + surnoms ; 5 corbeille, versions, dupliquer, annuler/rétablir ; 6 recherche, statistiques, orphelines/liens cassés ; 7 export Markdown + PDF (impression) ; 8 tests + vérif Chrome + volume.
+- Réglages retenus (valeurs proposées, modifiables) : corbeille 30 jours, 20 versions par fiche, export Markdown en un seul fichier.
+- **À reproposer à la fin de l'étape 2** (mis de côté par l'utilisateur) : a. suggestions en tapant `[[` ; b. « Citée dans » ; c. affichage liste/cartes ; d. tri des fiches ; e. fiche modèle.
+- **Prochaine action** : morceau 1 (univers).
 
 ## Journal
 
@@ -112,3 +115,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, PC Linux : questions de l'étape 2 posées, choix enregistrés ci-dessus.
 - 2026-11-16, PC Linux : nouvelle consigne, viser l'application la plus complète possible.
 - 2026-11-16, PC Linux : fonctions en plus de l'étape 2 choisies (toutes).
+- 2026-11-16, PC Linux : plan de l'étape 2 validé (8 morceaux), fonctions en plus a–e reportées à la fin de l'étape.
