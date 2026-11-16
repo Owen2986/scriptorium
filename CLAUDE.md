@@ -23,6 +23,7 @@
 - Avant de faire une demande complexe, **reformuler ce qu'on a compris** pour vérification quand l'utilisateur le demande.
 - **Objectif : l'application la plus complète possible.** À chaque étape, proposer aussi les fonctions supplémentaires utiles (l'utilisateur choisit). Ponytail s'applique à la façon d'écrire le code (pas de code inutile), pas au nombre de fonctions.
 - **Fonctions en plus de l'étape 2** : ne plus en proposer au fil des morceaux ; les garder et les proposer toutes ensemble **à la fin de l'étape 2** (consigne du 2026-11-16).
+- **Le site doit s'adapter à tous les formats d'écran** (petit téléphone, grand téléphone, tablette, ordinateur, grand écran) : vérifier chaque écran à plusieurs largeurs, pas seulement ordinateur + 375 px (consigne du 2026-11-16).
 - Les zones de texte se redimensionnent **en hauteur seulement**, jamais en largeur.
 - **Jamais d’émojis, nulle part dans l’appli** (icônes, boutons, textes). Toujours des icônes simplifiées et épurées en silhouette pleine (game-icons.net). Version actuelle des icônes validée par l’utilisateur (2026-11-16).
 - **Unslop sur chaque interface** (consigne du 2026-11-16) : à chaque écran créé ou modifié, passer le skill `/unslop` dessus, puis **présenter ses propositions à l’utilisateur** (avec captures) et attendre son choix avant de les appliquer.
@@ -157,3 +158,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : unslop des pages de fiches, 4 retouches validées et appliquées.
 - 2026-11-16, ordinateur : questions du morceau 4 (liens et surnoms) posées, choix notés.
 - 2026-11-16, ordinateur : maquettes des liens (3 styles), style B choisi ; maquettes téléphone envoyées.
+- 2026-11-16, ordinateur : consigne, le site doit s'adapter à tous les formats d'écran.
