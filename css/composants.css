@@ -213,7 +213,8 @@ dialog::backdrop { background: rgb(0 0 0 / .5); }
 .filtre button { color: var(--texte-doux); gap: var(--espace-1); }
 .filtre button[aria-pressed="true"] { color: var(--texte); border-color: var(--accent); }
 .section-type { margin-bottom: var(--espace-4); }
-.section-type h2 { display: flex; align-items: center; gap: var(--espace-2); margin: 0 0 var(--espace-2); font-size: 1.125rem; color: var(--couleur-type); }
+.section-type h2 { display: flex; align-items: center; gap: var(--espace-2); margin: 0 0 var(--espace-2); font-size: 1.125rem; }
+.section-type h2 .icone { color: var(--texte-doux); }
 .section-type h2 small { color: var(--texte-doux); font: .875rem var(--police-texte); }
 .rangs { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: var(--espace-2); }
 .rang { display: flex; align-items: center; gap: var(--espace-2); padding: var(--espace-2) var(--espace-2) var(--espace-2) var(--espace-3); }
@@ -242,7 +243,7 @@ input.nom-fiche:hover { border-color: var(--bordure); }
 .type-fiche { display: inline-flex; align-items: center; gap: var(--espace-2); padding-left: var(--espace-1); color: var(--texte-doux); }
 .type-fiche .icone { color: var(--couleur-type); }
 .etat { font-size: .875rem; }
-.corps-fiche { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; gap: var(--espace-4); align-items: start; }
+.corps-fiche { display: grid; grid-template-columns: minmax(0, 1fr) 21rem; gap: var(--espace-4); align-items: start; }
 @media (max-width: 48rem) {
   .corps-fiche { grid-template-columns: 1fr; }
   .cote-fiche { order: -1; } /* sur téléphone, l'image passe au-dessus du texte */
@@ -271,7 +272,19 @@ input.nom-fiche:hover { border-color: var(--bordure); }
   background: color-mix(in srgb, var(--couleur-type) 25%, var(--surface)); color: color-mix(in srgb, var(--couleur-type) 70%, var(--texte));
   font-size: 7rem;
 }
+.portrait { cursor: pointer; margin: 0; }
 .portrait img { width: 100%; height: 100%; object-fit: cover; }
+.portrait.vide {
+  flex-direction: column; gap: var(--espace-2); aspect-ratio: 4 / 3; font-size: 2.5rem;
+  border: 1px dashed var(--bordure); background: color-mix(in srgb, var(--couleur-type) 10%, var(--surface));
+  color: var(--texte-doux);
+}
+.portrait.vide span { font: 1rem var(--police-texte); }
+.portrait.vide:hover { border-color: var(--texte-doux); color: var(--texte); }
+input.cache { position: absolute; width: 1px; height: 1px; opacity: 0; }
+input.cache:focus-visible + .portrait, .cote-fiche:has(input.cache:focus-visible) .actions-image .bouton { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cases-fiche { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--espace-2); }
+.cases-fiche .large, .cases-fiche .vide { grid-column: 1 / -1; }
 .cote-fiche .actions { margin-top: var(--espace-2); }
 .galerie { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--espace-1); }
 .galerie li { position: relative; aspect-ratio: 1; }

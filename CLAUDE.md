@@ -119,7 +119,8 @@
 - **Morceau 3, choix de l'utilisateur (2026-11-16)** : liste des fiches groupée par type + filtre par type ; barre de mise en forme : gras, italique, souligné, titres/sous-titres, citation, séparateur (pas de listes) ; une quinzaine de fiches d'exemple reliées entre elles ; image principale **en portrait à droite** avec les cases dessous (choisie sur maquettes).
 - **Morceau 3 fait (2026-11-16)**, selon les maquettes validées : onglet Fiches (liste groupée par type, filtres Tous / par type / Favoris, étoile favori, petite info = 1re liste de choix + « dans <parente> ») ; « Nouvelle fiche » ouvre une petite fenêtre « Quel type ? » (sautée si un filtre de type est actif) ; page d'une fiche : nom modifiable, favori, texte mis en forme (`js/ui/texte-riche.js`, `nettoyer()` garde seulement p/b/i/u/h2/h3/blockquote/hr, sans attributs), secrets (zone repliable), portrait à droite (au-dessus sur téléphone), galerie (clic = image en grand dans un nouvel onglet, × pour retirer), cases du type, fiche parente (sans boucle), étiquettes ; tout s'enregistre à chaque modification (« Enregistré »). 16 fiches d'exemple reliées (`js/modele/exemple.js`, clé meta `fichesExemple`). Code : `js/modele/fiches.js`, `js/vues/univers/fiches.js`. Correction : l'onglet actif restait éteint sur les sous-pages (routeur). 12 tests OK, vérifié dans le navigateur (ordinateur + 375 px).
 - Pas fait volontairement : le bouton « Plus… » de la maquette (dupliquer, corbeille) viendra au morceau 5.
-- **Prochaine action** : passer unslop sur les pages des fiches et présenter ses propositions ; puis morceau 4 (liens `[[ ]]` + surnoms).
+- **Unslop des fiches (2026-11-16, validé)** : titres de section en couleur de texte (la couleur du type reste dans les vignettes) ; cases courtes (nombre, liste) par deux, colonne de droite 21rem ; cadre d'image vide discret « Ajouter une image » (cliquable) ; « Enregistré » affiché 2 s après chaque modification. Le choix d'image se fait aussi au clavier.
+- **Prochaine action** : morceau 4 (liens `[[ ]]` + surnoms) : poser les questions puis montrer des maquettes avant de construire.
 
 ## Journal
 
@@ -151,3 +152,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : questions du morceau 3 posées, choix notés ; maquettes de l'image demandées.
 - 2026-11-16, ordinateur : image principale d'une fiche en portrait à droite (choix sur 3 maquettes).
 - 2026-11-16, ordinateur : étape 2, morceau 3 (fiches) fait et vérifié.
+- 2026-11-16, ordinateur : unslop des pages de fiches, 4 retouches validées et appliquées.

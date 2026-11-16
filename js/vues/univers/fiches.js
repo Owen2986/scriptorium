@@ -140,7 +140,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   article.innerHTML = `<div class="tete-fiche">
       <div class="titre-fiche">
         <input class="nom-fiche" name="nom" autocomplete="off" aria-label="Nom de la fiche">
-        <span class="type-fiche">${iconeSvg(type?.icone)} <span class="nom-type"></span> · <span class="etat" aria-live="polite">Enregistré</span></span>
+        <span class="type-fiche">${iconeSvg(type?.icone)} <span class="nom-type"></span> <span class="etat" aria-live="polite"></span></span>
       </div>
       <button type="button" class="etoile" data-action="favori" aria-pressed="${!!fiche.favori}" aria-label="Favori">${ETOILE}</button>
     </div>
@@ -153,9 +153,10 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
         </details>
       </div>
       <aside class="carte cote-fiche">
-        <div class="portrait"></div>
-        <div class="actions">
-          <label class="bouton">Changer l’image<input type="file" name="image" accept="image/*" hidden></label>
+        <input type="file" id="image-fiche" name="image" accept="image/*" class="cache">
+        <label class="portrait" for="image-fiche"></label>
+        <div class="actions actions-image">
+          <label class="bouton" for="image-fiche">Changer l’image</label>
           <button type="button" data-action="retirer-image">Retirer</button>
         </div>
         <h3>Galerie</h3>
@@ -176,12 +177,16 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   $('.titre-cases').textContent = type?.nom || 'Cases';
   $('[name="secrets"]').value = fiche.secrets || '';
 
+  // « Enregistré » s'affiche 2 secondes après chaque modification.
   const etat = $('.etat');
+  let minuterie;
   const enregistrer = async () => {
-    etat.textContent = 'Enregistrement…';
+    clearTimeout(minuterie);
+    etat.textContent = '· Enregistrement…';
     fiche.modifieLe = Date.now();
     await stockage.put('fiches', fiche);
-    etat.textContent = 'Enregistré';
+    etat.textContent = '· Enregistré';
+    minuterie = setTimeout(() => { etat.textContent = ''; }, 2000);
   };
 
   editeur($('.zone-texte'), fiche.texte, html => { fiche.texte = html; enregistrer(); });
@@ -190,6 +195,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   const cases = $('.cases-fiche');
   for (const c of type?.cases ?? []) {
     const label = document.createElement('label');
+    if (c.sorte === 'texte' || c.sorte === 'fiche') label.className = 'large'; // les cases courtes vont par deux
     label.textContent = c.nom || 'Sans nom';
     const v = fiche.valeurs[c.id];
     let champ;
@@ -237,9 +243,11 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   };
   const afficherPortrait = async () => {
     const url = await urlImage(stockage, fiche.imageId);
-    $('.portrait').innerHTML = url ? `<img src="${url}">` : iconeSvg(type?.icone);
+    const cadre = $('.portrait');
+    cadre.classList.toggle('vide', !url);
+    cadre.innerHTML = url ? `<img src="${url}">` : `${iconeSvg(type?.icone)}<span>Ajouter une image</span>`;
     $('.portrait img')?.setAttribute('alt', `Image de ${fiche.nom || 'la fiche'}`);
-    $('[data-action="retirer-image"]').hidden = !url;
+    $('.actions-image').hidden = !url; // sans image, c'est le cadre lui-même qui sert à en ajouter une
   };
   const afficherGalerie = async () => {
     const ul = $('.galerie');
