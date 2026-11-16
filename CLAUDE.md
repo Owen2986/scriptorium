@@ -6,12 +6,12 @@
 ## ⚠️ Consignes pour Claude (à respecter à chaque session)
 
 1. **En début de session**, avant toute autre chose :
-   - `git pull` pour récupérer ce qui a été fait sur un autre appareil ;
+   - se placer sur la branche **`develop`** (`git fetch origin develop && git checkout develop && git pull`) pour récupérer ce qui a été fait sur un autre appareil ;
    - relire ce fichier en entier ;
    - `git log --oneline -15` et comparer avec le **Journal** plus bas : si des commits n'y figurent pas, regarder ce qu'ils ont changé (`git show`) et mettre ce fichier à jour.
 2. **Après chaque chose faite** (une étape, une correction, une décision, une nouvelle consigne de l'utilisateur) :
    - mettre à jour ce fichier : section « Où on en est », « Consignes de l'utilisateur » si nouvelle consigne, et une ligne dans le **Journal** ;
-   - puis `git add` + `git commit` + `git push`. **Pas besoin de demander l'autorisation pour commit/push** (accord donné le 2026-11-16).
+   - puis `git add` + `git commit` + `git push origin develop`. **Tout le travail se fait et s'envoie sur la branche `develop`**, jamais directement sur `master` (consigne du 2026-11-16). Même sur claude.ai/code, où une branche `claude/...` est proposée : travailler et pousser sur `develop`. **Pas besoin de demander l'autorisation pour commit/push** (accord donné le 2026-11-16).
 3. Toute nouvelle consigne ou information donnée par l'utilisateur est **ajoutée dans ce fichier**, même si elle paraît petite.
 4. Cette consigne de mise à jour fait elle-même partie du fichier : ne jamais la supprimer.
 
@@ -50,7 +50,7 @@
 ### Git
 
 - Dépôt local : `C:\Users\owen2\Desktop\Projet\scriptorium` (Windows) ; `/home/depinfo/Documents/Scriptorium` (PC Linux, envoi par clé SSH, remote `git@github.com:Owen2986/scriptorium.git`).
-- Dépôt GitHub (**public**, choix de l'utilisateur) : https://github.com/Owen2986/scriptorium, branche `master`. Compte GitHub : Owen2986.
+- Dépôt GitHub (**public**, choix de l'utilisateur) : https://github.com/Owen2986/scriptorium. Branche de travail : **`develop`** (tous les envois s'y font) ; `master` = version stable, mise à jour seulement quand l'utilisateur le demande. Compte GitHub : Owen2986.
 - Identité **locale** du dépôt : `user.name "Ethan"`, `user.email ethan30augros@gmail.com`.
 - **Ne pas modifier la config git globale** (c'est un email universitaire).
 - Messages de commit en français.
@@ -105,6 +105,7 @@
 - Réglages retenus (valeurs proposées, modifiables) : corbeille 30 jours, 20 versions par fiche, export Markdown en un seul fichier.
 - **À reproposer à la fin de l'étape 2** (mis de côté par l'utilisateur) : a. suggestions en tapant `[[` ; b. « Citée dans » ; c. affichage liste/cartes ; d. tri des fiches ; e. fiche modèle.
 - **Morceau 1 fait** : accueil en cartes, page de présentation (nom, description, couleur, couverture, enregistrement automatique), dupliquer/supprimer un univers avec tout son contenu (`js/modele/univers.js`, écriture « tout ou rien » via `stockage.lot`), univers d'exemple créé une seule fois (clé meta `exempleCree`). 6 tests OK, vérifié dans Chrome (dont largeur téléphone). Les fiches d'exemple viendront au morceau 3.
+- Branche `develop` créée (2026-11-16) : c'est là que tout s'envoie désormais.
 - **Prochaine action** : morceau 2 (types de fiches et cases).
 
 ## Journal
@@ -124,3 +125,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, PC Linux : étape 2, morceau 1 (univers) fait et vérifié.
 - 2026-11-16, PC Linux : zones de texte redimensionnables en hauteur seulement (demande de l'utilisateur).
 - 2026-11-16, PC Linux : polices des thèmes copiées dans le projet, couleurs d'Archive adoucies, bouton « Retirer l'image » caché quand il n'y a pas d'image.
+- 2026-11-16, téléphone (claude.ai/code) : branche `develop` créée ; consigne : toujours travailler et envoyer sur `develop`.
