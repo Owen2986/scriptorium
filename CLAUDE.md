@@ -69,7 +69,7 @@
 ### Outils installés
 
 - Git, Node, Python, gh CLI (connecté au compte Owen2986 sur l'ordinateur), Chrome DevTools MCP, plugin frontend-design.
-- PC Linux : mêmes outils (Python = `python3`, gh dans `~/.local/bin`, non connecté : l'envoi passe par SSH), WebStorm dans `/opt/WebStorm`, Chrome de test dans `~/.local/share/chrome-test` (Ubuntu bloque son bac à sable sans droits admin : à régler).
+- PC Linux : mêmes outils (Python = `python3`, gh dans `~/.local/bin`, non connecté : l'envoi passe par SSH), WebStorm dans `/opt/WebStorm`, Chrome de test dans `~/.local/share/chrome-test` (Ubuntu bloque son bac à sable sans droits admin : lancé avec `--no-sandbox`, choix de l'utilisateur, uniquement pour tester le site en local).
 
 ## Plan des étapes
 
