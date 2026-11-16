@@ -22,6 +22,7 @@
   - Exception : commit et push se font sans demander.
 - Avant de faire une demande complexe, **reformuler ce qu'on a compris** pour vérification quand l'utilisateur le demande.
 - **Objectif : l'application la plus complète possible.** À chaque étape, proposer aussi les fonctions supplémentaires utiles (l'utilisateur choisit). Ponytail s'applique à la façon d'écrire le code (pas de code inutile), pas au nombre de fonctions.
+- **Fonctions en plus de l'étape 2** : ne plus en proposer au fil des morceaux ; les garder et les proposer toutes ensemble **à la fin de l'étape 2** (consigne du 2026-11-16).
 - Les zones de texte se redimensionnent **en hauteur seulement**, jamais en largeur.
 - Aimer voir des **captures d'écran** avant de valider un choix visuel : les copier dans `~/Images/apercu-polices/` (ou un dossier d'aperçu) et les ouvrir avec `xdg-open` ; les chemins affichés dans le terminal ne sont pas cliquables pour lui.
 - Garder le **mode ponytail** actif (solution la plus simple qui marche entièrement, pas de code inutile).
@@ -106,7 +107,10 @@
 - **À reproposer à la fin de l'étape 2** (mis de côté par l'utilisateur) : a. suggestions en tapant `[[` ; b. « Citée dans » ; c. affichage liste/cartes ; d. tri des fiches ; e. fiche modèle.
 - **Morceau 1 fait** : accueil en cartes, page de présentation (nom, description, couleur, couverture, enregistrement automatique), dupliquer/supprimer un univers avec tout son contenu (`js/modele/univers.js`, écriture « tout ou rien » via `stockage.lot`), univers d'exemple créé une seule fois (clé meta `exempleCree`). 6 tests OK, vérifié dans Chrome (dont largeur téléphone). Les fiches d'exemple viendront au morceau 3.
 - Branche `develop` créée (2026-11-16) : c'est là que tout s'envoie désormais.
-- **Prochaine action** : morceau 2 (types de fiches et cases).
+- **Morceau 2 fait (2026-11-16)** : onglets dans l'univers (Présentation, Types de fiches) ; page « Types de fiches » (liste, nouveau type, monter/descendre) ; page d'un type (nom, icône parmi 48 émojis, couleur, cases : texte / nombre / liste de choix / lien vers une fiche avec type visé, monter/descendre/retirer, enregistrement automatique). Choix de l'utilisateur : a. types propres à chaque univers ; b. icône + couleur, avec icône déjà choisie pour les 6 types de base (👤 🏰 🗝️ 🛡️ 🐉 💡) ; c. suppression d'un type utilisé : avertissement, puis chaque fiche est déplacée vers un type existant ou un type créé sur le moment (qui reprend les mêmes cases), sinon elle va à la corbeille. Les types de base (avec des cases déjà prêtes) sont créés à la première ouverture de l'univers (`assurerTypes`, drapeau `typesCrees` sur l'univers). Code : `js/modele/types.js`, `js/vues/univers/types.js`, `js/vues/univers/commun.js`. 8 tests OK, vérifié dans le navigateur (ordinateur et largeur téléphone).
+- Notes pour la suite : une fiche a un champ `nom`, ses cases sont dans `valeurs` (clé = id de la case) ; une fiche à la corbeille porte `corbeille: <date>`. Au morceau 5, restaurer une fiche dont le type n'existe plus devra demander un type.
+- **Fonctions en plus mises de côté (à proposer à la fin de l'étape 2)** : cases obligatoires, valeur par défaut d'une case, dupliquer un type, copier un type vers un autre univers, autres sortes de cases (date du calendrier, case à cocher, plusieurs fiches liées).
+- **Prochaine action** : morceau 3 (fiches : texte riche, secrets, images, étiquettes, favoris, parente, enregistrement automatique, fiches d'exemple).
 
 ## Journal
 
@@ -126,3 +130,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, PC Linux : zones de texte redimensionnables en hauteur seulement (demande de l'utilisateur).
 - 2026-11-16, PC Linux : polices des thèmes copiées dans le projet, couleurs d'Archive adoucies, bouton « Retirer l'image » caché quand il n'y a pas d'image.
 - 2026-11-16, téléphone (claude.ai/code) : branche `develop` créée ; consigne : toujours travailler et envoyer sur `develop`.
+- 2026-11-16, téléphone (claude.ai/code) : étape 2, morceau 2 (types de fiches et cases) fait et vérifié ; consigne : fonctions en plus proposées seulement à la fin de l'étape 2.

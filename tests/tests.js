@@ -2,6 +2,7 @@ import { creerStockage } from '../js/stockage/adaptateur.js';
 import { MIGRATIONS } from '../js/stockage/migrations.js';
 import { attendre } from '../js/stockage/indexeddb.js';
 import { dupliquerUnivers, supprimerUnivers } from '../js/modele/univers.js';
+import { assurerTypes, typesUnivers, supprimerType, nouveauType } from '../js/modele/types.js';
 
 const NOM = 'scriptorium-test';
 const tests = [];
@@ -103,6 +104,43 @@ test('dupliquer puis supprimer un univers avec tout son contenu', async () => {
   egal((await s.query('fiches', 'universId', 'u1')).length, 0);
   egal(await s.get('images', 'i1'), undefined);
   egal((await s.tous('fiches')).length, 2, 'copie et autre univers intacts :');
+  s.fermer();
+});
+
+test('types de base créés une seule fois, liens entre types résolus', async () => {
+  const s = await creerStockage(NOM);
+  const u = { id: 'u1', nom: 'A' };
+  await s.put('univers', u);
+  await assurerTypes(s, u);
+  let types = await typesUnivers(s, 'u1');
+  egal(types.map(t => t.nom), ['Personnage', 'Lieu', 'Objet', 'Groupe/Faction', 'Créature', 'Notion']);
+  const naissance = types[0].cases.find(c => c.nom === 'Lieu de naissance');
+  egal(naissance.typeCibleId, types[1].id);
+  await s.delete('typesFiches', types[5].id); // l'utilisateur supprime « Notion » : il ne revient pas
+  await assurerTypes(s, await s.get('univers', 'u1'));
+  egal((await typesUnivers(s, 'u1')).length, 5);
+  s.fermer();
+});
+
+test('supprimer un type : fiches déplacées (valeurs gardées par nom de case) ou mises à la corbeille', async () => {
+  const s = await creerStockage(NOM);
+  const lieu = nouveauType('u1', { nom: 'Lieu', cases: [{ id: 'c1', nom: 'Climat', sorte: 'texte' }] });
+  const endroit = nouveauType('u1', { nom: 'Endroit', cases: [{ id: 'c2', nom: 'climat', sorte: 'texte' }] });
+  const perso = nouveauType('u1', { nom: 'Personnage', cases: [{ id: 'c3', nom: 'Né à', sorte: 'fiche', typeCibleId: lieu.id }] });
+  const nouveau = nouveauType('u1', { nom: 'Région', cases: [] });
+  await s.lot([lieu, endroit, perso].map(t => ['put', 'typesFiches', t]).concat([
+    ['put', 'fiches', { id: 'f1', universId: 'u1', typeId: lieu.id, nom: 'Port-Brume', valeurs: { c1: 'Humide' } }],
+    ['put', 'fiches', { id: 'f2', universId: 'u1', typeId: lieu.id, nom: 'Ruines' }],
+    ['put', 'fiches', { id: 'f3', universId: 'u1', typeId: lieu.id, nom: 'Plaine' }],
+  ]));
+  await supprimerType(s, lieu, new Map([['f1', endroit.id], ['f2', null], ['f3', nouveau.id]]), [nouveau]);
+  const [f1, f2, f3] = await Promise.all(['f1', 'f2', 'f3'].map(id => s.get('fiches', id)));
+  egal([f1.typeId === endroit.id, f1.valeurs], [true, { c2: 'Humide' }]);
+  egal([f2.typeId, typeof f2.corbeille], [lieu.id, 'number']);
+  egal(f3.typeId, nouveau.id);
+  egal(await s.get('typesFiches', lieu.id), undefined);
+  egal((await s.get('typesFiches', perso.id)).cases[0].typeCibleId, null);
+  egal((await s.get('typesFiches', nouveau.id)).nom, 'Région');
   s.fermer();
 });
 

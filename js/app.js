@@ -4,6 +4,7 @@ import { initialiserTheme } from './ui/themes.js';
 import { vueAccueil } from './vues/accueil/accueil.js';
 import { vueReglages } from './vues/reglages/reglages.js';
 import { vuePresentation } from './vues/univers/presentation.js';
+import { vueTypes, vueType } from './vues/univers/types.js';
 import { creerExempleSiBesoin } from './modele/exemple.js';
 
 initialiserTheme();
@@ -15,6 +16,8 @@ try {
   await creerExempleSiBesoin(stockage);
   route('/', vueAccueil);
   route('/univers/:id', vuePresentation);
+  route('/univers/:id/types', vueTypes);
+  route('/univers/:id/types/:typeId', vueType);
   route('/reglages', vueReglages);
   demarrer(vue, { stockage });
 } catch (e) {
