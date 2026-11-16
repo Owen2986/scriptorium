@@ -46,7 +46,7 @@
 
 ### Git
 
-- Dépôt local : `C:\Users\owen2\Desktop\Projet\scriptorium`.
+- Dépôt local : `C:\Users\owen2\Desktop\Projet\scriptorium` (Windows) ; `/home/depinfo/Documents/Scriptorium` (PC Linux, envoi par clé SSH, remote `git@github.com:Owen2986/scriptorium.git`).
 - Dépôt GitHub (**public**, choix de l'utilisateur) : https://github.com/Owen2986/scriptorium, branche `master`. Compte GitHub : Owen2986.
 - Identité **locale** du dépôt : `user.name "Ethan"`, `user.email ethan30augros@gmail.com`.
 - **Ne pas modifier la config git globale** (c'est un email universitaire).
@@ -69,6 +69,7 @@
 ### Outils installés
 
 - Git, Node, Python, gh CLI (connecté au compte Owen2986 sur l'ordinateur), Chrome DevTools MCP, plugin frontend-design.
+- PC Linux : mêmes outils (Python = `python3`, gh dans `~/.local/bin`, non connecté : l'envoi passe par SSH), WebStorm dans `/opt/WebStorm`, Chrome de test dans `~/.local/share/chrome-test` (Ubuntu bloque son bac à sable sans droits admin : à régler).
 
 ## Plan des étapes
 
@@ -102,3 +103,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : étape 1, fondations (stockage IndexedDB + migrations + copie de secours, routeur, 4 thèmes clair/sombre, page Réglages, tests).
 - 2026-11-16, ordinateur : création de ce fichier CLAUDE.md ; accord pour commit/push sans demander.
 - 2026-11-16, ordinateur : dépôt GitHub public créé (Owen2986/scriptorium) et premier envoi.
+- 2026-11-16, PC Linux : dépôt récupéré, connexion GitHub par clé SSH, installation de gh, Chrome de test, Chrome DevTools MCP et plugin frontend-design.
