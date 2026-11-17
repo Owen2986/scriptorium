@@ -471,7 +471,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
       await stockage.put('fiches', fiche);
       [depart, dateDepart] = [etatFiche(fiche), fiche.modifieLe];
       reafficher();
-      message(`Version du ${dateVersion(date).toLowerCase()} rétablie`, async () => {
+      message(`Version rétablie : ${dateVersion(date).toLowerCase()}`, async () => {
         const f = await stockage.get('fiches', fiche.id);
         await stockage.put('fiches', { ...f, ...actuel, modifieLe: Date.now() });
         reafficher();
@@ -518,7 +518,7 @@ async function ouvrirVersions(page, stockage, fiche, revenir) {
     </div>
     <footer class="actions"><button type="button" data-action="fermer">Annuler</button>
       <button type="button" class="principal" data-action="revenir">Revenir à cette version</button></footer>`;
-  dialogue.querySelector('h2').textContent = `Versions de « ${fiche.nom || 'Sans nom'} »`;
+  dialogue.querySelector('h2').textContent = `Versions de « ${fiche.nom || 'Sans nom'} »`; // espaces insécables
   const ul = dialogue.querySelector('ul');
   entrees.forEach((v, i) => {
     const li = document.createElement('li');

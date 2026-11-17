@@ -88,7 +88,7 @@
 |---|-------|------|
 | 0 | Cadrage | ✅ fait |
 | 1 | Fondations (stockage, migrations, routeur, thèmes, tests) | ✅ fait |
-| 2 | Univers | ⏳ en cours (morceaux 1-4 faits) |
+| 2 | Univers | ⏳ en cours (morceaux 1-5 faits) |
 | 3 | Manuscrit | |
 | 4 | Chronologie (calendrier inventé) | |
 | 5 | Cartes | |
@@ -133,7 +133,9 @@
 - **Lien = un seul bloc** : validé par l'utilisateur (2026-11-17). On l'efface d'un coup et on le retape, pas de correction lettre par lettre.
 - **Morceau 4 terminé.** Si Chrome DevTools perd le contact (« browser is already running »), fermer seulement les chrome.exe dont la ligne de commande contient `chrome-devtools-mcp\chrome-profile`.
 - **Morceau 5, choix de l'utilisateur (2026-11-17)** : corbeille pour fiches + types + univers (un univers y va avec tout son contenu) ; une version de fiche gardée quand on quitte la fiche, si elle a changé ; annuler/rétablir = Ctrl+Z / Ctrl+Y dans le texte (+ boutons sur téléphone) et message « … — Annuler » quelques secondes après une suppression ou un changement important ; dupliquer = tout copier, nom « (copie) », sans les autres noms.
-- **Prochaine action** : morceau 5, choisir où sont la corbeille et les boutons, puis maquettes à faire valider avant de coder.
+- **Morceau 5, formes validées (2026-11-17)** sur `apercu/maquette-corbeille.html` : une seule page Corbeille (lien en haut entre Accueil et Réglages), groupée par univers + « Univers supprimés » ; menu « Plus » (trois points) à côté de l'étoile : Dupliquer, Versions, Mettre à la corbeille ; fenêtre Versions (dates à gauche, aperçu à droite, bande de dates sur téléphone) ; message en bas 6 s avec « Annuler » ; flèches annuler/rétablir au bout de la barre de texte sur écran tactile (Ctrl+Z / Ctrl+Y sinon).
+- **Morceau 5 fait (2026-11-17)** : corbeille = champ `corbeille: <date>` sur univers, types et fiches (`js/modele/corbeille.js` : contenu, restaurer, supprimer définitivement avec images et versions, vider après N jours au démarrage) ; un univers à la corbeille est caché partout (accueil, `ouvrirUnivers`) ; `typesUnivers` ignore les types à la corbeille ; `supprimerType` met le type à la corbeille et renvoie de quoi tout annuler. Restaurer une fiche dont le type n'existe plus demande un type. Versions : migration 3 (store `versions`, index ficheId + universId), `js/modele/versions.js` ; en quittant une fiche (changement de page ou appli cachée), l'état qu'elle avait à l'ouverture est gardé s'il a changé ; revenir à une version garde d'abord l'état actuel ; les images ne sont pas suivies. Dupliquer : copie tout, images recopiées, sans les autres noms. Réglages : « Vider la corbeille après (jours) » et « Versions gardées par fiche » (meta `reglages`, `js/modele/reglages.js`, dans les sauvegardes). Icônes d'interface dans `icones/interface.svg` (`dessin(nom)`, `js/ui/icones.js`). Supprimer un univers ou un type ne demande plus de confirmation (corbeille + « Annuler ») ; supprimer définitivement et vider la corbeille demandent confirmation. 17 tests OK ; vérifié dans Chrome (ordinateur + 360 px) ; nom de fiche en 1,5rem sous 30rem de large pour laisser la place au menu.
+- **Prochaine action** : unslop du morceau 5 + captures, avis de l'utilisateur ; puis morceau 6 (recherche, statistiques, orphelines/liens cassés).
 - **Tester sur le téléphone (Wi-Fi de la maison)** : sur l'ordinateur `python -m http.server 8080 --bind 0.0.0.0` dans `scriptorium`, puis sur le téléphone (connecté au même Wi-Fi, pas en 4G) `http://192.168.1.235:8080`. Le lancement du serveur par Claude a été bloqué par la sécurité de Claude Code : l'utilisateur doit le lancer lui-même ou l'autoriser. Serveur intégré de WebStorm sur le port 63342 (adresse exacte du projet pas trouvée). Autre option proposée : GitHub Pages dès maintenant (pas encore décidé).
 
 ## Journal
@@ -175,3 +177,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-17, ordinateur : consigne, faire le point (fait / en cours / à faire) au début de chaque session.
 - 2026-11-17, ordinateur : morceau 4 testé (15 tests OK, vérifié dans Chrome à 360/768/1920 px), rien à corriger.
 - 2026-11-17, ordinateur : unslop du morceau 4, 2 retouches validées et appliquées ; lien en un seul bloc validé ; morceau 4 terminé.
+- 2026-11-17, ordinateur : morceau 5, choix et maquettes validés ; corbeille, versions, dupliquer, annuler/rétablir faits ; 17 tests OK, vérifié dans Chrome.
