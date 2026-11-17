@@ -2,7 +2,7 @@ import { nouvelUnivers } from '../../modele/univers.js';
 import { urlImage } from '../../ui/images.js';
 
 export async function vueAccueil(page, params, { stockage }) {
-  const univers = (await stockage.tous('univers')).sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+  const univers = (await stockage.tous('univers')).filter(u => !u.corbeille).sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
   page.innerHTML = `<div class="titre-page">
       <h1>Mes univers</h1>
       <button type="button" class="principal">Nouvel univers</button>

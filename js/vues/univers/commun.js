@@ -5,7 +5,7 @@ const ONGLETS = [['', 'Présentation'], ['/fiches', 'Fiches'], ['/types', 'Types
 // Charge l'univers et affiche le fil d'Ariane + les onglets. Renvoie null (page « introuvable ») s'il n'existe pas.
 export async function ouvrirUnivers(page, id, stockage, onglet) {
   const u = await stockage.get('univers', id);
-  if (!u) {
+  if (!u || u.corbeille) {
     page.innerHTML = '<h1>Univers introuvable</h1><p><a href="#/">Retour à l’accueil</a></p>';
     return null;
   }

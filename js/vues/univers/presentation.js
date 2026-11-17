@@ -1,4 +1,6 @@
-import { nouvelId, supprimerUnivers, dupliquerUnivers } from '../../modele/univers.js';
+import { nouvelId, dupliquerUnivers } from '../../modele/univers.js';
+import { mettreALaCorbeille } from '../../modele/corbeille.js';
+import { message } from '../../ui/message.js';
 import { urlImage } from '../../ui/images.js';
 import { ouvrirUnivers } from './commun.js';
 
@@ -62,10 +64,13 @@ export async function vuePresentation(page, { id }, { stockage }) {
     const action = e.target.closest('[data-action]')?.dataset.action;
     if (action === 'retirer') await changerCouverture(null);
     if (action === 'dupliquer') location.hash = `#/univers/${(await dupliquerUnivers(stockage, u.id)).id}`;
-    if (action === 'supprimer'
-      && confirm(`Supprimer « ${u.nom || 'Sans nom'} » et tout son contenu ? Cette action est définitive.`)) {
-      await supprimerUnivers(stockage, u.id);
+    if (action === 'supprimer') {
+      await mettreALaCorbeille(stockage, 'univers', u);
       location.hash = '#/';
+      message(`« ${u.nom || 'Sans nom'} » mis à la corbeille`, async () => {
+        await stockage.put('univers', u);
+        location.hash = `#/univers/${encodeURIComponent(u.id)}`;
+      });
     }
   });
 

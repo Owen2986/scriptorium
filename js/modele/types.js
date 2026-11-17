@@ -69,24 +69,28 @@ export async function assurerTypes(stockage, u) {
 }
 
 export const typesUnivers = async (stockage, universId) =>
-  (await stockage.query('typesFiches', 'universId', universId)).sort((a, b) => a.ordre - b.ordre);
+  (await stockage.query('typesFiches', 'universId', universId)).filter(t => !t.corbeille).sort((a, b) => a.ordre - b.ordre);
 
-// Supprime un type. destinations : Map ficheId → id du type d'arrivée, ou null pour la corbeille.
+// Met un type à la corbeille. destinations : Map ficheId → id du type d'arrivée, ou null pour la corbeille.
 // nouveaux : types créés pendant la suppression, enregistrés dans la même opération (tout ou rien).
+// Renvoie de quoi tout remettre comme avant (pour le bouton « Annuler ») : à passer à stockage.lot.
 export async function supprimerType(stockage, type, destinations = new Map(), nouveaux = []) {
   const autres = [...(await typesUnivers(stockage, type.universId)).filter(t => t.id !== type.id), ...nouveaux];
   const parId = new Map(autres.map(t => [t.id, t]));
-  const ops = [['delete', 'typesFiches', type.id], ...nouveaux.map(t => ['put', 'typesFiches', t])];
+  const ops = [['put', 'typesFiches', { ...type, corbeille: Date.now() }], ...nouveaux.map(t => ['put', 'typesFiches', t])];
+  const avant = [['put', 'typesFiches', structuredClone(type)], ...nouveaux.map(t => ['delete', 'typesFiches', t.id])];
 
   // Les cases « lien vers une fiche » qui visaient ce type acceptent désormais tous les types.
   for (const t of autres) {
     if (!t.cases.some(c => c.typeCibleId === type.id)) continue;
+    if (!nouveaux.includes(t)) avant.push(['put', 'typesFiches', structuredClone(t)]);
     t.cases = t.cases.map(c => c.typeCibleId === type.id ? { ...c, typeCibleId: null } : c);
     if (!nouveaux.includes(t)) ops.push(['put', 'typesFiches', t]);
   }
 
   for (const f of await stockage.query('fiches', 'typeId', type.id)) {
     if (f.corbeille) continue; // déjà à la corbeille : gardée telle quelle
+    avant.push(['put', 'fiches', f]);
     const arrivee = parId.get(destinations.get(f.id));
     if (!arrivee) {
       ops.push(['put', 'fiches', { ...f, corbeille: Date.now() }]);
@@ -101,4 +105,5 @@ export async function supprimerType(stockage, type, destinations = new Map(), no
     ops.push(['put', 'fiches', { ...f, typeId: arrivee.id, valeurs }]);
   }
   await stockage.lot(ops);
+  return avant;
 }

@@ -1,8 +1,13 @@
 import { iconeSvg, typesUnivers } from '../../modele/types.js';
-import { nouvelleFiche, fichesUnivers, parentesPossibles } from '../../modele/fiches.js';
+import { nouvelleFiche, fichesUnivers, parentesPossibles, dupliquerFiche } from '../../modele/fiches.js';
 import { nouvelId } from '../../modele/univers.js';
+import { mettreALaCorbeille } from '../../modele/corbeille.js';
+import { lireReglages } from '../../modele/reglages.js';
+import { etatFiche, memeEtat, differences, versionsFiche, garderVersion } from '../../modele/versions.js';
 import { urlImage } from '../../ui/images.js';
-import { editeur, depuisTexteBrut } from '../../ui/texte-riche.js';
+import { dessin } from '../../ui/icones.js';
+import { message } from '../../ui/message.js';
+import { editeur, depuisTexteBrut, nettoyer } from '../../ui/texte-riche.js';
 import { cle, indexNoms, renommerLiens } from '../../modele/liens.js';
 import { decorerLiens, bulleLiens } from '../../ui/liens.js';
 import { ouvrirUnivers } from './commun.js';
@@ -118,13 +123,15 @@ export async function vueFiches(page, { id }, { stockage }) {
 }
 
 // Petite fenêtre « Quel type ? » avec un bouton par type.
-function choisirType(page, types, choisi) {
+export function choisirType(page, types, choisi, { titre = 'Nouvelle fiche', question = 'Quel type ?' } = {}) {
   const dialogue = document.createElement('dialog');
   dialogue.className = 'carte';
-  dialogue.innerHTML = `<h2>Nouvelle fiche</h2><p>Quel type ?</p>
+  dialogue.innerHTML = `<h2></h2><p></p>
     <div class="choix-types">${types.map((t, i) =>
       `<button type="button" data-i="${i}" style="--couleur-type:${t.couleur}">${iconeSvg(t.icone)} <span></span></button>`).join('')}</div>
     <div class="actions"><button type="button" data-action="annuler">Annuler</button></div>`;
+  dialogue.querySelector('h2').textContent = titre;
+  dialogue.querySelector('p').textContent = question;
   types.forEach((t, i) => { dialogue.querySelector(`[data-i="${i}"] span`).textContent = t.nom || 'Sans nom'; });
   dialogue.addEventListener('click', e => {
     const b = e.target.closest('[data-i]');
@@ -168,6 +175,15 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
         <span class="type-fiche">${iconeSvg(type?.icone)} <span class="nom-type"></span> <span class="etat" aria-live="polite"></span></span>
       </div>
       <button type="button" class="etoile" data-action="favori" aria-pressed="${!!fiche.favori}" aria-label="Favori">${ETOILE}</button>
+      <div class="ancre-menu">
+        <button type="button" class="bouton-plus" data-action="menu" aria-expanded="false" aria-haspopup="true" aria-label="Plus d’actions">${dessin('points')}</button>
+        <ul class="menu" hidden>
+          <li><button type="button" data-action="dupliquer">${dessin('copier')}Dupliquer</button></li>
+          <li><button type="button" data-action="versions">${dessin('horloge')}Versions</button></li>
+          <li><hr></li>
+          <li><button type="button" class="danger" data-action="corbeille">${dessin('poubelle')}Mettre à la corbeille</button></li>
+        </ul>
+      </div>
     </div>
     <div class="corps-fiche">
       <div class="colonne-texte">
@@ -406,6 +422,133 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
     }
   });
 
+  // Versions : en quittant la fiche (ou l'appli), l'état qu'elle avait à l'ouverture est gardé si elle a changé.
+  const { versionsMax } = await lireReglages(stockage);
+  let depart = etatFiche(fiche);
+  let dateDepart = fiche.modifieLe ?? fiche.creeLe ?? Date.now();
+  const garderSiChange = async () => {
+    if (memeEtat(depart, etatFiche(fiche))) return;
+    const [etatGarde, dateGardee] = [depart, dateDepart];
+    [depart, dateDepart] = [etatFiche(fiche), fiche.modifieLe];
+    await garderVersion(stockage, fiche, etatGarde, dateGardee, versionsMax);
+  };
+  const siCachee = () => { if (document.visibilityState === 'hidden') garderSiChange(); };
+  const quitter = () => {
+    garderSiChange();
+    removeEventListener('hashchange', quitter);
+    document.removeEventListener('visibilitychange', siCachee);
+  };
+  addEventListener('hashchange', quitter);
+  document.addEventListener('visibilitychange', siCachee);
+  const reafficher = () => dispatchEvent(new HashChangeEvent('hashchange'));
+
+  // Menu « Plus ».
+  const boutonMenu = $('[data-action="menu"]');
+  const menu = $('.menu');
+  const ouvrirMenu = ouvert => {
+    menu.hidden = !ouvert;
+    boutonMenu.setAttribute('aria-expanded', ouvert);
+    if (ouvert) menu.querySelector('button').focus();
+  };
+  boutonMenu.addEventListener('click', () => ouvrirMenu(menu.hidden));
+  $('.ancre-menu').addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { ouvrirMenu(false); boutonMenu.focus(); } });
+  $('.ancre-menu').addEventListener('focusout', e => { if (!$('.ancre-menu').contains(e.relatedTarget)) ouvrirMenu(false); });
+  menu.addEventListener('click', async e => {
+    const action = e.target.closest('[data-action]')?.dataset.action;
+    if (!action) return;
+    ouvrirMenu(false);
+    const nom = fiche.nom || 'Sans nom';
+    if (action === 'dupliquer') {
+      const copie = await dupliquerFiche(stockage, fiche);
+      location.hash = lienFiche(u, copie);
+      message(`Copie de « ${nom} » créée`);
+    }
+    if (action === 'versions') ouvrirVersions(page, stockage, fiche, async (etat, date) => {
+      // Revenir à une version : l'état actuel est d'abord gardé, rien n'est perdu.
+      const actuel = etatFiche(fiche);
+      await garderVersion(stockage, fiche, actuel, fiche.modifieLe ?? Date.now(), versionsMax);
+      Object.assign(fiche, structuredClone(etat), { modifieLe: Date.now() });
+      await stockage.put('fiches', fiche);
+      [depart, dateDepart] = [etatFiche(fiche), fiche.modifieLe];
+      reafficher();
+      message(`Version du ${dateVersion(date).toLowerCase()} rétablie`, async () => {
+        const f = await stockage.get('fiches', fiche.id);
+        await stockage.put('fiches', { ...f, ...actuel, modifieLe: Date.now() });
+        reafficher();
+      });
+    });
+    if (action === 'corbeille') {
+      await mettreALaCorbeille(stockage, 'fiche', fiche);
+      location.hash = `#/univers/${encodeURIComponent(u.id)}/fiches`;
+      message(`« ${nom} » mise à la corbeille`, async () => {
+        await stockage.put('fiches', fiche);
+        location.hash = lienFiche(u, fiche);
+      });
+    }
+  });
+
   // Nouvelle fiche : le nom est sélectionné pour être remplacé tout de suite.
   if (fiche.nom === 'Nouvelle fiche') setTimeout(() => $('.nom-fiche').select());
+}
+
+// « Aujourd'hui, 21 h 40 », « Hier, 21 h 40 » ou « 15 nov., 18 h 05 ».
+function dateVersion(date) {
+  const d = new Date(date);
+  const heure = `${d.getHours()} h ${String(d.getMinutes()).padStart(2, '0')}`;
+  const jours = Math.round((new Date().setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 864e5);
+  const jour = jours === 0 ? 'Aujourd’hui' : jours === 1 ? 'Hier'
+    : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', ...(d.getFullYear() !== new Date().getFullYear() && { year: 'numeric' }) });
+  return `${jour}, ${heure}`;
+}
+
+// Fenêtre « Versions » : dates à gauche, aperçu à droite ; `revenir(etat, date)` rétablit la version choisie.
+async function ouvrirVersions(page, stockage, fiche, revenir) {
+  const versions = await versionsFiche(stockage, fiche.id);
+  const actuel = etatFiche(fiche);
+  // Chaque entrée dit ce qui a changé par rapport à la version précédente (plus ancienne).
+  const entrees = [{ etat: actuel, date: null }, ...versions].map((v, i, tout) => ({
+    ...v, changes: tout[i + 1] ? differences(tout[i + 1].etat, v.etat) || 'rien' : 'première version',
+  }));
+  const dialogue = document.createElement('dialog');
+  dialogue.className = 'carte versions';
+  dialogue.innerHTML = `<header><h2></h2><button type="button" data-action="fermer">Fermer</button></header>
+    <div class="corps-versions">
+      <ul class="liste-versions"></ul>
+      <div class="apercu-version"><p class="vide"></p><h3 class="nom-version"></h3><div class="texte-version"></div></div>
+    </div>
+    <footer class="actions"><button type="button" data-action="fermer">Annuler</button>
+      <button type="button" class="principal" data-action="revenir">Revenir à cette version</button></footer>`;
+  dialogue.querySelector('h2').textContent = `Versions de « ${fiche.nom || 'Sans nom'} »`;
+  const ul = dialogue.querySelector('ul');
+  entrees.forEach((v, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<button type="button" data-i="${i}"><span></span><small></small></button>`;
+    li.querySelector('span').textContent = v.date ? dateVersion(v.date) : 'Version actuelle';
+    li.querySelector('small').textContent = v.date ? v.changes : 'en cours';
+    ul.append(li);
+  });
+  if (!versions.length) dialogue.querySelector('.apercu-version .vide').textContent
+    = 'Aucune ancienne version pour l’instant : une version est gardée chaque fois que vous quittez la fiche après l’avoir modifiée.';
+
+  let choisie;
+  const montrer = i => {
+    choisie = entrees[i];
+    ul.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.i === String(i)));
+    dialogue.querySelector('.nom-version').textContent = choisie.etat.nom || 'Sans nom';
+    // Aperçu en lecture seule : les liens [[Nom]] sont montrés comme du texte.
+    dialogue.querySelector('.texte-version').innerHTML = nettoyer(choisie.etat.texte).replace(/\[\[(.*?)\]\]/g, '$1');
+    dialogue.querySelector('[data-action="revenir"]').disabled = !choisie.date;
+  };
+  montrer(versions.length ? 1 : 0);
+
+  dialogue.addEventListener('click', e => {
+    const b = e.target.closest('[data-i]');
+    if (b) montrer(+b.dataset.i);
+    const action = e.target.closest('[data-action]')?.dataset.action;
+    if (action === 'fermer') dialogue.close();
+    if (action === 'revenir' && choisie.date) { dialogue.close(); revenir(choisie.etat, choisie.date); }
+  });
+  dialogue.addEventListener('close', () => dialogue.remove());
+  page.append(dialogue);
+  dialogue.showModal();
 }

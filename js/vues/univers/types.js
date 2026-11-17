@@ -1,3 +1,4 @@
+import { message } from '../../ui/message.js';
 import { SORTES, ICONES, iconeSvg, nouveauType, nouvelleCase, typesUnivers, supprimerType } from '../../modele/types.js';
 import { ouvrirUnivers } from './commun.js';
 
@@ -171,11 +172,15 @@ async function demanderSuppression(page, stockage, u, type, autres) {
   const nom = type.nom || 'Sans nom';
   const fiches = (await stockage.query('fiches', 'typeId', type.id)).filter(f => !f.corbeille);
   const retour = async (destinations, nouveaux) => {
-    await supprimerType(stockage, type, destinations, nouveaux);
+    const avant = await supprimerType(stockage, type, destinations, nouveaux);
     location.hash = `#/univers/${encodeURIComponent(u.id)}/types`;
+    message(`Type « ${nom} » mis à la corbeille`, async () => {
+      await stockage.lot(avant);
+      location.hash = `#/univers/${encodeURIComponent(u.id)}/types/${encodeURIComponent(type.id)}`;
+    });
   };
   if (!fiches.length) {
-    if (confirm(`Supprimer le type « ${nom} » ? Aucune fiche ne l’utilise.`)) await retour();
+    await retour(); // rien à décider : il va à la corbeille, et « Annuler » reste possible
     return;
   }
   if (!confirm(`Attention : ${pluriel(fiches.length, 'fiche')} utilise${fiches.length > 1 ? 'nt' : ''} le type « ${nom} ».\n`

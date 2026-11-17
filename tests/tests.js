@@ -5,7 +5,9 @@ import { dupliquerUnivers, supprimerUnivers } from '../js/modele/univers.js';
 import { nettoyer, depuisTexteBrut } from '../js/ui/texte-riche.js';
 import { cle, indexNoms, renommerLiens } from '../js/modele/liens.js';
 import { decorerLiens } from '../js/ui/liens.js';
-import { parentesPossibles } from '../js/modele/fiches.js';
+import { parentesPossibles, dupliquerFiche } from '../js/modele/fiches.js';
+import { contenuCorbeille, mettreALaCorbeille, restaurer, supprimerDefinitivement, viderCorbeille } from '../js/modele/corbeille.js';
+import { etatFiche, differences, versionsFiche, garderVersion } from '../js/modele/versions.js';
 import { creerExempleSiBesoin } from '../js/modele/exemple.js';
 import { assurerTypes, typesUnivers, supprimerType, nouveauType, ICONES } from '../js/modele/types.js';
 
@@ -24,7 +26,7 @@ test('crée tous les stores du schéma', async () => {
   s.fermer();
   egal(schema, MIGRATIONS.length);
   egal(Object.keys(stores).sort(), ['calendriers', 'cartes', 'epingles', 'evenements', 'fiches', 'images', 'meta',
-    'noeudsManuscrit', 'relations', 'statsJour', 'textes', 'tomes', 'typesFiches', 'univers']);
+    'noeudsManuscrit', 'relations', 'statsJour', 'textes', 'tomes', 'typesFiches', 'univers', 'versions']);
 });
 
 test('put, get, query par index, delete', async () => {
@@ -150,14 +152,21 @@ test('supprimer un type : fiches déplacées (valeurs gardées par nom de case) 
     ['put', 'fiches', { id: 'f2', universId: 'u1', typeId: lieu.id, nom: 'Ruines' }],
     ['put', 'fiches', { id: 'f3', universId: 'u1', typeId: lieu.id, nom: 'Plaine' }],
   ]));
-  await supprimerType(s, lieu, new Map([['f1', endroit.id], ['f2', null], ['f3', nouveau.id]]), [nouveau]);
+  const avant = await supprimerType(s, lieu, new Map([['f1', endroit.id], ['f2', null], ['f3', nouveau.id]]), [nouveau]);
   const [f1, f2, f3] = await Promise.all(['f1', 'f2', 'f3'].map(id => s.get('fiches', id)));
   egal([f1.typeId === endroit.id, f1.valeurs], [true, { c2: 'Humide' }]);
   egal([f2.typeId, typeof f2.corbeille], [lieu.id, 'number']);
   egal(f3.typeId, nouveau.id);
-  egal(await s.get('typesFiches', lieu.id), undefined);
+  egal(typeof (await s.get('typesFiches', lieu.id)).corbeille, 'number', 'type à la corbeille :');
+  egal((await typesUnivers(s, 'u1')).some(t => t.id === lieu.id), false);
   egal((await s.get('typesFiches', perso.id)).cases[0].typeCibleId, null);
   egal((await s.get('typesFiches', nouveau.id)).nom, 'Région');
+  // « Annuler » remet tout comme avant.
+  await s.lot(avant);
+  const apres = await Promise.all(['f1', 'f2', 'f3'].map(id => s.get('fiches', id)));
+  egal(apres.map(f => [f.typeId === lieu.id, f.corbeille]), [[true, undefined], [true, undefined], [true, undefined]]);
+  egal([(await s.get('typesFiches', lieu.id)).corbeille, await s.get('typesFiches', nouveau.id)], [undefined, undefined]);
+  egal((await s.get('typesFiches', perso.id)).cases[0].typeCibleId, lieu.id);
   s.fermer();
 });
 
@@ -218,6 +227,50 @@ test('renommer une fiche met à jour les liens de tout l’univers', async () =>
   const f1 = await s.get('fiches', 'f1');
   egal([f1.texte, f1.secrets], ['<p>Vers [[Brume &amp; Sel]] et [[Ailleurs]]</p>', '<p>[[Brume &amp; Sel]]</p>']);
   egal(depuisTexteBrut('a <b>\nc'), '<p>a &lt;b&gt;</p><p>c</p>');
+  s.fermer();
+});
+
+test('corbeille : restaurer, supprimer définitivement (avec images et versions), vider après N jours', async () => {
+  const s = await creerStockage(NOM);
+  await s.lot([
+    ['put', 'univers', { id: 'u1', nom: 'A' }], ['put', 'univers', { id: 'u2', nom: 'B' }],
+    ['put', 'fiches', { id: 'f1', universId: 'u1', nom: 'Un', imageId: 'i1', galerie: ['i2'] }],
+    ['put', 'fiches', { id: 'f2', universId: 'u1', nom: 'Deux' }],
+    ['put', 'fiches', { id: 'f3', universId: 'u2', nom: 'Trois' }],
+    ['put', 'images', { id: 'i1', universId: 'u1' }], ['put', 'images', { id: 'i2', universId: 'u1' }],
+    ['put', 'versions', { id: 'v1', ficheId: 'f1', universId: 'u1', date: 1, etat: {} }],
+  ]);
+  await mettreALaCorbeille(s, 'fiche', await s.get('fiches', 'f1'));
+  await mettreALaCorbeille(s, 'fiche', await s.get('fiches', 'f2'));
+  await mettreALaCorbeille(s, 'fiche', await s.get('fiches', 'f3'));
+  await mettreALaCorbeille(s, 'univers', await s.get('univers', 'u2'));
+  // Le contenu d'un univers à la corbeille n'apparaît pas à part.
+  egal((await contenuCorbeille(s)).map(e => e.objet.id).sort(), ['f1', 'f2', 'u2']);
+  await restaurer(s, 'fiche', await s.get('fiches', 'f2'), { typeId: 't9' });
+  const f2 = await s.get('fiches', 'f2');
+  egal([f2.corbeille, f2.typeId], [undefined, 't9']);
+  await supprimerDefinitivement(s, 'fiche', await s.get('fiches', 'f1'));
+  egal([await s.get('fiches', 'f1'), (await s.tous('images')).length, (await s.tous('versions')).length], [undefined, 0, 0]);
+  await viderCorbeille(s, 30); // l'univers vient d'y aller : il reste
+  egal((await contenuCorbeille(s)).map(e => e.objet.id), ['u2']);
+  await viderCorbeille(s);
+  egal([(await s.tous('univers')).map(u => u.id), await s.get('fiches', 'f3')], [['u1'], undefined]);
+  s.fermer();
+});
+
+test('versions : différences en mots, au plus N gardées ; dupliquer une fiche copie ses images', async () => {
+  const a = etatFiche({ nom: 'Aldric', texte: '<p>a</p>', valeurs: { c: 1 } });
+  egal(differences(a, { ...a, texte: '<p>b</p>', valeurs: { c: 2 } }), 'texte, cases');
+  const s = await creerStockage(NOM);
+  const fiche = { id: 'f1', universId: 'u1', nom: 'Aldric', autresNoms: ['Le Borgne'], imageId: 'i1', galerie: ['i2'] };
+  for (let i = 1; i <= 4; i++) await garderVersion(s, fiche, { ...a, texte: `v${i}` }, i, 3);
+  egal((await versionsFiche(s, 'f1')).map(v => v.etat.texte), ['v4', 'v3', 'v2']);
+
+  await s.lot([['put', 'fiches', fiche], ['put', 'images', { id: 'i1', universId: 'u1' }], ['put', 'images', { id: 'i2', universId: 'u1' }]]);
+  const copie = await dupliquerFiche(s, fiche);
+  egal([copie.nom, copie.autresNoms, copie.imageId === 'i1', copie.galerie.length], ['Aldric (copie)', [], false, 1]);
+  egal((await s.tous('images')).length, 4);
+  egal((await s.get('fiches', copie.id)).nom, 'Aldric (copie)');
   s.fermer();
 });
 

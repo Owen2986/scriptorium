@@ -31,4 +31,10 @@ export const MIGRATIONS = [
       c.continue();
     };
   },
+  // 3 : historique des versions des fiches.
+  (db) => {
+    const s = db.createObjectStore('versions', { keyPath: 'id' });
+    s.createIndex('ficheId', 'ficheId');
+    s.createIndex('universId', 'universId');
+  },
 ];

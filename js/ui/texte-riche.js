@@ -1,3 +1,5 @@
+import { dessin } from './icones.js';
+
 // Texte mis en forme des fiches : seules ces balises sont gardées, sans aucun attribut.
 const PERMIS = new Set(['P', 'BR', 'B', 'STRONG', 'I', 'EM', 'U', 'H2', 'H3', 'BLOCKQUOTE', 'HR', 'DIV']);
 const A_JETER = new Set(['SCRIPT', 'STYLE', 'TEMPLATE', 'IFRAME', 'OBJECT', 'EMBED', 'SVG', 'MATH', 'NOSCRIPT', 'TITLE', 'HEAD']);
@@ -41,6 +43,10 @@ export function depuisTexteBrut(s) {
 export function editeur(zone, html, changement, { barre = true, nom = 'Texte', decorer = () => {} } = {}) {
   zone.innerHTML = `${barre ? `<div class="barre-texte" role="toolbar" aria-label="Mise en forme">
       ${BOUTONS.map(([l, n], i) => `<button type="button" data-i="${i}" aria-label="${n}" title="${n}">${l}</button>`).join('')}
+      <span class="annuler-retablir">
+        <button type="button" data-histoire="undo" aria-label="Annuler" title="Annuler (Ctrl+Z)">${dessin('annuler')}</button>
+        <button type="button" data-histoire="redo" aria-label="Rétablir" title="Rétablir (Ctrl+Y)">${dessin('retablir')}</button>
+      </span>
     </div>` : ''}
     <div class="texte-riche" contenteditable="true" role="textbox" aria-multiline="true"></div>`;
   const texte = zone.querySelector('.texte-riche');
@@ -61,6 +67,12 @@ export function editeur(zone, html, changement, { barre = true, nom = 'Texte', d
 
   zone.querySelector('.barre-texte').addEventListener('mousedown', e => e.preventDefault()); // garde la sélection
   zone.querySelector('.barre-texte').addEventListener('click', e => {
+    const h = e.target.closest('[data-histoire]');
+    if (h) {
+      texte.focus();
+      document.execCommand(h.dataset.histoire); // déclenche « input », donc l'enregistrement
+      return;
+    }
     const b = e.target.closest('[data-i]');
     if (!b) return;
     const [, , cmd, val] = BOUTONS[b.dataset.i];
