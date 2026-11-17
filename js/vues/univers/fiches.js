@@ -514,10 +514,9 @@ async function ouvrirVersions(page, stockage, fiche, revenir) {
   dialogue.innerHTML = `<header><h2></h2><button type="button" data-action="fermer">Fermer</button></header>
     <div class="corps-versions">
       <ul class="liste-versions"></ul>
-      <div class="apercu-version"><p class="vide"></p><h3 class="nom-version"></h3><div class="texte-version"></div></div>
+      <div class="apercu-version"><p class="vide"></p><p class="note-version"></p><h3 class="nom-version"></h3><div class="texte-version"></div></div>
     </div>
-    <footer class="actions"><button type="button" data-action="fermer">Annuler</button>
-      <button type="button" class="principal" data-action="revenir">Revenir à cette version</button></footer>`;
+    <footer class="actions"><button type="button" class="principal" data-action="revenir">Revenir à cette version</button></footer>`;
   dialogue.querySelector('h2').textContent = `Versions de « ${fiche.nom || 'Sans nom'} »`; // espaces insécables
   const ul = dialogue.querySelector('ul');
   entrees.forEach((v, i) => {
@@ -527,6 +526,7 @@ async function ouvrirVersions(page, stockage, fiche, revenir) {
     li.querySelector('small').textContent = v.date ? v.changes : 'en cours';
     ul.append(li);
   });
+  dialogue.querySelector('footer').hidden = !versions.length;
   if (!versions.length) dialogue.querySelector('.apercu-version .vide').textContent
     = 'Aucune ancienne version pour l’instant : une version est gardée chaque fois que vous quittez la fiche après l’avoir modifiée.';
 
@@ -534,6 +534,8 @@ async function ouvrirVersions(page, stockage, fiche, revenir) {
   const montrer = i => {
     choisie = entrees[i];
     ul.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.i === String(i)));
+    dialogue.querySelector('.note-version').textContent = choisie.date
+      ? `Aperçu en lecture seule · ${dateVersion(choisie.date)}` : 'Version actuelle, telle qu’elle est en ce moment';
     dialogue.querySelector('.nom-version').textContent = choisie.etat.nom || 'Sans nom';
     // Aperçu en lecture seule : les liens [[Nom]] sont montrés comme du texte.
     dialogue.querySelector('.texte-version').innerHTML = nettoyer(choisie.etat.texte).replace(/\[\[(.*?)\]\]/g, '$1');

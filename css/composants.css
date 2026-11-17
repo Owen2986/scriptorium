@@ -366,6 +366,11 @@ dialog.versions[open] { display: flex; flex-direction: column; }
 .apercu-version { padding: var(--espace-3) var(--espace-4); overflow-y: auto; }
 .apercu-version .vide:empty { display: none; }
 .nom-version { font-size: 1.125rem; margin: 0 0 var(--espace-2); }
+.note-version { color: var(--texte-doux); font-size: .875rem; margin: 0 0 var(--espace-3); }
+/* Aperçu plus petit que la fiche elle-même, pour qu'on ne les confonde pas */
+.texte-version h2 { font-size: 1.25rem; }
+.texte-version h3 { font-size: 1.0625rem; }
+.texte-version hr { border: 0; border-top: 1px solid var(--bordure); margin: var(--espace-4) 0; }
 .versions footer { justify-content: flex-end; margin: 0; padding: var(--espace-3) var(--espace-4); border-top: 1px solid var(--bordure); }
 @media (max-width: 40rem) {
   .corps-versions { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
