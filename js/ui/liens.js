@@ -45,7 +45,7 @@ function lienAuCurseur() {
   return voisins.find(v => v?.classList?.contains('lien')) ?? null;
 }
 
-// Petite bulle sous le lien cliqué (ou atteint au clavier). `decrire(nom)` → { info, titre, bouton, action }.
+// Petite bulle sous le lien cliqué (ou atteint au clavier). `decrire(nom)` → { info, icone?, titre, bouton, action }.
 // `zone` doit être en position relative ; la bulle y est ajoutée à la fin, donc atteignable par Tab.
 export function bulleLiens(zone, decrire) {
   const bulle = document.createElement('div');
@@ -57,7 +57,11 @@ export function bulleLiens(zone, decrire) {
   const fermer = () => { bulle.hidden = true; };
   const montrer = lien => {
     const d = decrire(lien.dataset.nom);
-    [bulle.children[0].textContent, bulle.children[1].textContent, bulle.children[2].textContent] = [d.info, d.titre ?? '', d.bouton];
+    [bulle.children[1].textContent, bulle.children[2].textContent] = [d.titre ?? '', d.bouton];
+    // Icône du type quand il y en a une (le nom du type reste lu par les lecteurs d'écran), sinon le texte.
+    const info = bulle.children[0];
+    if (d.icone) { info.innerHTML = d.icone; info.setAttribute('role', 'img'); info.setAttribute('aria-label', d.info); info.title = d.info; }
+    else { info.textContent = d.info; ['role', 'aria-label', 'title'].forEach(a => info.removeAttribute(a)); }
     action = d.action;
     bulle.hidden = false;
     const z = zone.getBoundingClientRect();

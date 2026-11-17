@@ -164,7 +164,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
       <div class="titre-fiche">
         <input class="nom-fiche" name="nom" autocomplete="off" aria-label="Nom de la fiche">
         <div class="autres-noms"><span>Autres noms :</span><ul class="etiquettes" aria-label="Autres noms"></ul>
-          <input name="autreNom" placeholder="Ajouter un nom" aria-label="Ajouter un autre nom" autocomplete="off" enterkeyhint="done"></div>
+          <input name="autreNom" placeholder="+ ajouter" aria-label="Ajouter un autre nom" autocomplete="off" enterkeyhint="done"></div>
         <span class="type-fiche">${iconeSvg(type?.icone)} <span class="nom-type"></span> <span class="etat" aria-live="polite"></span></span>
       </div>
       <button type="button" class="etoile" data-action="favori" aria-pressed="${!!fiche.favori}" aria-label="Favori">${ETOILE}</button>
@@ -224,7 +224,8 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   const decrire = nom => {
     const f = trouver(nom);
     if (!f) return { info: 'Aucune fiche à ce nom', bouton: 'Créer la fiche', action: () => avecType(page, types, t => creer(stockage, u, t, nom)) };
-    return { info: types.find(t => t.id === f.typeId)?.nom ?? '', titre: f.nom, bouton: 'Ouvrir', action: () => { location.hash = lienFiche(u, f); } };
+    const t = types.find(t => t.id === f.typeId);
+    return { info: t?.nom ?? '', icone: t && `<span style="--couleur-type: ${t.couleur}">${iconeSvg(t.icone)}</span>`, titre: f.nom, bouton: 'Ouvrir', action: () => { location.hash = lienFiche(u, f); } };
   };
   bulleLiens($('.zone-texte'), decrire);
   bulleLiens($('.zone-secrets'), decrire);

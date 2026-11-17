@@ -88,7 +88,7 @@
 |---|-------|------|
 | 0 | Cadrage | ✅ fait |
 | 1 | Fondations (stockage, migrations, routeur, thèmes, tests) | ✅ fait |
-| 2 | Univers | ⏳ en cours (morceaux 1-3 faits) |
+| 2 | Univers | ⏳ en cours (morceaux 1-4 faits) |
 | 3 | Manuscrit | |
 | 4 | Chronologie (calendrier inventé) | |
 | 5 | Cartes | |
@@ -129,7 +129,10 @@
 - Choix à faire valider : un lien est un bloc (on ne corrige pas une lettre dedans, on l'efface d'un coup et on le retape).
 - **Morceau 4 testé (2026-11-17)** : 15 tests OK ; vérifié dans Chrome : liens affichés (existants / absents), majuscules ignorées, bulle « Ouvrir » et « Créer la fiche » (choix du type, la fiche s'ouvre, le lien redevient normal), renommage d'une fiche → liens mis à jour ; pas de défilement de côté à 360, 768, 1920 px ; aucune erreur console. La bulle recouvre la ligne sous le lien (comme une infobulle, voulu). Fiche « Tour d'ivoire » (Lieu) créée pendant le test dans l'univers d'exemple de l'ordinateur.
 - Le serveur local peut être lancé par Claude via l'outil PowerShell en arrière-plan quand l'utilisateur le demande (l'outil Bash a été bloqué).
-- **Prochaine action** : unslop sur le morceau 4 + captures, puis demander l'avis de l'utilisateur (dont le choix « un lien = un bloc »).
+- **Unslop du morceau 4 (2026-11-17, validé et appliqué)** : champ « Autres noms » discret (« + ajouter » sans cadre, cadre au survol, s'élargit quand on tape), surnoms sans italique (l'italique est réservé aux liens vers des fiches absentes) ; bulle d'un lien = icône du type dans sa couleur au lieu du nom du type (nom gardé pour les lecteurs d'écran). Captures dans `apercu/unslop-m4/` (non envoyées).
+- **Lien = un seul bloc** : validé par l'utilisateur (2026-11-17). On l'efface d'un coup et on le retape, pas de correction lettre par lettre.
+- **Morceau 4 terminé.** Si Chrome DevTools perd le contact (« browser is already running »), fermer seulement les chrome.exe dont la ligne de commande contient `chrome-devtools-mcp\chrome-profile`.
+- **Prochaine action** : morceau 5 (corbeille, historique des versions, dupliquer, annuler/rétablir) : poser les questions à l'utilisateur avant de coder.
 - **Tester sur le téléphone (Wi-Fi de la maison)** : sur l'ordinateur `python -m http.server 8080 --bind 0.0.0.0` dans `scriptorium`, puis sur le téléphone (connecté au même Wi-Fi, pas en 4G) `http://192.168.1.235:8080`. Le lancement du serveur par Claude a été bloqué par la sécurité de Claude Code : l'utilisateur doit le lancer lui-même ou l'autoriser. Serveur intégré de WebStorm sur le port 63342 (adresse exacte du projet pas trouvée). Autre option proposée : GitHub Pages dès maintenant (pas encore décidé).
 
 ## Journal
@@ -170,3 +173,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-17, ordinateur : maquettes du morceau 4 validées ; morceau 4 (liens `[[ ]]`, bulle, autres noms, renommage) écrit, pas encore testé ; accès depuis le téléphone expliqué (Wi-Fi local).
 - 2026-11-17, ordinateur : consigne, faire le point (fait / en cours / à faire) au début de chaque session.
 - 2026-11-17, ordinateur : morceau 4 testé (15 tests OK, vérifié dans Chrome à 360/768/1920 px), rien à corriger.
+- 2026-11-17, ordinateur : unslop du morceau 4, 2 retouches validées et appliquées ; lien en un seul bloc validé ; morceau 4 terminé.
