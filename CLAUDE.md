@@ -8,7 +8,8 @@
 1. **En début de session**, avant toute autre chose :
    - se placer sur la branche **`develop`** (`git fetch origin develop && git checkout develop && git pull`) pour récupérer ce qui a été fait sur un autre appareil ;
    - relire ce fichier en entier ;
-   - `git log --oneline -15` et comparer avec le **Journal** plus bas : si des commits n'y figurent pas, regarder ce qu'ils ont changé (`git show`) et mettre ce fichier à jour.
+   - `git log --oneline -15` et comparer avec le **Journal** plus bas : si des commits n'y figurent pas, regarder ce qu'ils ont changé (`git show`) et mettre ce fichier à jour ;
+   - **faire le point à l'utilisateur**, en quelques lignes simples, en trois parties : **ce qui est fait**, **ce qu'on est en train de faire**, **ce qu'il reste à faire** (consigne du 2026-11-17).
 2. **Après chaque chose faite** (une étape, une correction, une décision, une nouvelle consigne de l'utilisateur) :
    - mettre à jour ce fichier : section « Où on en est », « Consignes de l'utilisateur » si nouvelle consigne, et une ligne dans le **Journal** ;
    - puis `git add` + `git commit` + `git push origin develop`. **Tout le travail se fait et s'envoie sur la branche `develop`**, jamais directement sur `master` (consigne du 2026-11-16). Même sur claude.ai/code, où une branche `claude/...` est proposée : travailler et pousser sur `develop`. **Pas besoin de demander l'autorisation pour commit/push** (accord donné le 2026-11-16).
@@ -165,3 +166,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-16, ordinateur : consigne, le site doit s'adapter à tous les formats d'écran.
 - 2026-11-16, ordinateur : marques des liens inversées (tirets gris = fiche existante, points rouges = fiche absente).
 - 2026-11-17, ordinateur : maquettes du morceau 4 validées ; morceau 4 (liens `[[ ]]`, bulle, autres noms, renommage) écrit, pas encore testé ; accès depuis le téléphone expliqué (Wi-Fi local).
+- 2026-11-17, ordinateur : consigne, faire le point (fait / en cours / à faire) au début de chaque session.
