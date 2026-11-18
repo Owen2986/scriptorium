@@ -147,7 +147,8 @@
 - **Unslop du morceau 6 (2026-11-18, validé et appliqué)** : résultats de recherche en lignes séparées par un trait fin (plus de cadres gris) ; petits textes plus courts (« Dans les secrets », « Dans la case Climat », « Aussi dans … ») ; dans les Statistiques, noms de fiches en couleur du texte (soulignés au survol) au lieu du bleu souligné. Captures dans `apercu/unslop-m6/` (non envoyées). 19 tests OK.
 - **Morceau 6 terminé.**
 - **Correction des liens (2026-11-18)** : on ne pouvait ni effacer un lien ni écrire après quand il était en fin (ou début) de ligne : le curseur ne peut pas se placer à côté d'un bloc non modifiable. Corrigé dans `js/ui/liens.js` : un caractère invisible (`\u200B`) est gardé de chaque côté de chaque lien (retiré par `nettoyer` à l'enregistrement) ; Retour arrière / Suppr contre un lien l'efface d'un coup (aussi sur téléphone), Ctrl+Z le remet. 19 tests OK, vérifié dans Chrome.
-- **Prochaine action** : morceau 7 (export Markdown + PDF) : poser les questions avant de coder.
+- **Morceau 7, choix de l'utilisateur (2026-11-18)** : exporter tout l'univers (bouton « Exporter » sur la page Présentation, petite fenêtre : Markdown ou PDF + case « Inclure les secrets », décochée par défaut) ou une seule fiche (menu « Plus » de la fiche) ; Markdown sans images, liens gardés en `[[Nom]]` (compatible Obsidian) ; PDF par l'impression du navigateur, avec page de garde (nom, couverture, description), sommaire groupé par type, une fiche par page, portrait de la fiche à côté du texte, galerie en petit sous le texte ; chaque fiche avec ses cases remplies, autres noms, étiquettes, fiche parente.
+- **Prochaine action** : maquettes du morceau 7 (fenêtre d'export, pages du PDF) à faire valider avant de coder.
 - **Tester sur le téléphone (Wi-Fi de la maison)** : sur l'ordinateur `python -m http.server 8080 --bind 0.0.0.0` dans `scriptorium`, puis sur le téléphone (connecté au même Wi-Fi, pas en 4G) `http://192.168.1.235:8080`. Le lancement du serveur par Claude a été bloqué par la sécurité de Claude Code : l'utilisateur doit le lancer lui-même ou l'autoriser. Serveur intégré de WebStorm sur le port 63342 (adresse exacte du projet pas trouvée). Autre option proposée : GitHub Pages dès maintenant (pas encore décidé).
 
 ## Journal
@@ -201,3 +202,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-18, PC Linux : correction, un lien en fin de ligne ne pouvait ni être effacé ni suivi de texte.
 - 2026-11-18, PC Linux : page téléphone republiée (recherche, statistiques, correction des liens).
 - 2026-11-18, PC Linux : correction des liens confirmée par l'utilisateur sur téléphone ; début du morceau 7 (export).
+- 2026-11-18, PC Linux : choix du morceau 7 (export Markdown + PDF) enregistrés.
