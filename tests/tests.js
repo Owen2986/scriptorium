@@ -211,11 +211,13 @@ test('liens [[ ]] : noms et surnoms reconnus sans majuscules ni accents', () => 
 
 test('liens [[ ]] : affichés puis enregistrés tels quels', () => {
   const div = document.createElement('div');
-  div.innerHTML = nettoyer('<p>Né à [[Port-Brume]], loin de [[Nulle part]].</p>');
+  div.innerHTML = nettoyer('<p>Né à [[Port-Brume]], loin de [[Nulle part]].</p><p>[[Port-Brume]]</p>');
   decorerLiens(div, nom => cle(nom) === cle('port-brume'));
   egal([...div.querySelectorAll('.lien')].map(l => [l.dataset.nom, l.classList.contains('absent')]),
-    [['Port-Brume', false], ['Nulle part', true]]);
-  egal(nettoyer(div.innerHTML), '<p>Né à [[Port-Brume]], loin de [[Nulle part]].</p>');
+    [['Port-Brume', false], ['Nulle part', true], ['Port-Brume', false]]);
+  const seul = div.lastChild.childNodes; // lien seul sur sa ligne : texte invisible de chaque côté pour y mettre le curseur
+  egal([seul.length, seul[0].data, seul[2].data], [3, '\u200B', '\u200B']);
+  egal(nettoyer(div.innerHTML), '<p>Né à [[Port-Brume]], loin de [[Nulle part]].</p><p>[[Port-Brume]]</p>');
 });
 
 test('renommer une fiche met à jour les liens de tout l’univers', async () => {

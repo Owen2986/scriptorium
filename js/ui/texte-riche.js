@@ -9,7 +9,7 @@ export function nettoyer(html) {
   const doc = new DOMParser().parseFromString(`<body>${html ?? ''}</body>`, 'text/html');
   const propre = parent => {
     for (const n of [...parent.childNodes]) {
-      if (n.nodeType === Node.TEXT_NODE) continue;
+      if (n.nodeType === Node.TEXT_NODE) { n.data = n.data.replaceAll('\u200B', ''); continue; } // caractères invisibles autour des liens
       if (n.nodeType !== Node.ELEMENT_NODE || A_JETER.has(n.tagName)) { n.remove(); continue; }
       propre(n);
       if (PERMIS.has(n.tagName)) [...n.attributes].forEach(a => n.removeAttribute(a.name));
