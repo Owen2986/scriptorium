@@ -152,7 +152,7 @@
 - **Morceau 7 fait (2026-11-18)** : `js/modele/export.js` (`versMarkdown` : gras/italique/titres/citations/séparateurs, titres du texte placés sous celui de la fiche ; `parType`, `proprietes`, `ficheMarkdown`, `universMarkdown`) ; `js/vues/univers/export.js` (fenêtre « Exporter » : PDF ou fichier texte + « Inclure les secrets » ; Markdown téléchargé en `<nom>.md` ; PDF = zone `.impression` ajoutée au document, seule imprimée grâce à `@media print`, puis `print()` : papier blanc, polices du thème, page de garde, sommaire cliquable, une fiche par page avec portrait + cases à droite, secrets, étiquettes, galerie). Bouton « Exporter » sur la Présentation, « Exporter » dans le menu Plus d'une fiche (icône `exporter`). 20 tests OK ; vérifié dans Chrome sans fenêtre (fenêtre à 1280 et 375 px, PDF de 18 pages pour l'univers d'exemple, PDF d'une fiche avec images en Grimoire sombre, fichier .md).
 - **Unslop du morceau 7 (2026-11-18, validé et appliqué)** : ronds PDF / fichier texte à la couleur du thème (même taille que les cases à cocher) ; « Exporter » en bouton simple sur la Présentation (plus de bouton plein). Captures dans `~/Images/apercu-unslop-m7/`.
 - **Morceau 7 terminé.**
-- **Prochaine action** : morceau 8 (tests, vérification dans Chrome, test de volume 500 fiches), puis proposer les fonctions mises de côté de l'étape 2. Page téléphone pas encore republiée avec l'export.
+- **Prochaine action** : morceau 8 (tests, vérification dans Chrome, test de volume 500 fiches), puis proposer les fonctions mises de côté de l'étape 2. Page téléphone republiée avec l'export (2026-11-18) : vérifier sur téléphone que le téléchargement et l'impression marchent dans la page claude.ai.
 - **Tester sur le téléphone (Wi-Fi de la maison)** : sur l'ordinateur `python -m http.server 8080 --bind 0.0.0.0` dans `scriptorium`, puis sur le téléphone (connecté au même Wi-Fi, pas en 4G) `http://192.168.1.235:8080`. Le lancement du serveur par Claude a été bloqué par la sécurité de Claude Code : l'utilisateur doit le lancer lui-même ou l'autoriser. Serveur intégré de WebStorm sur le port 63342 (adresse exacte du projet pas trouvée). Autre option proposée : GitHub Pages dès maintenant (pas encore décidé).
 
 ## Journal
@@ -209,3 +209,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-18, PC Linux : choix du morceau 7 (export Markdown + PDF) enregistrés.
 - 2026-11-18, PC Linux : maquette du morceau 7 validée ; morceau 7 (export Markdown + PDF) fait, 20 tests OK.
 - 2026-11-18, PC Linux : unslop du morceau 7, 2 retouches validées et appliquées ; morceau 7 terminé.
+- 2026-11-18, PC Linux : page téléphone republiée avec l'export (Markdown + PDF).
