@@ -213,3 +213,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-18, PC Linux : unslop du morceau 7, 2 retouches validées et appliquées ; morceau 7 terminé.
 - 2026-11-18, PC Linux : page téléphone republiée avec l'export (Markdown + PDF).
 - 2026-11-18, PC Linux : morceau 8 (tests, volume 500 fiches, vérification à 4 largeurs) fait ; recherche accélérée (1,6 s → 0,18 s par lettre sur téléphone).
+- 2026-11-18, téléphone (claude.ai/code) : page téléphone republiée avec la recherche plus rapide (morceau 8).
