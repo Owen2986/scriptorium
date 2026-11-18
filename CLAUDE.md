@@ -140,7 +140,8 @@
 - **Morceau 5 terminé.**
 - **Correction (2026-11-18)** : sur téléphone (iPhone surtout), le bouton « Ouvrir » / « Créer la fiche » de la bulle d'un lien ne faisait rien : toucher le bouton faisait quitter le texte, la bulle se fermait avant de recevoir le toucher. Corrigé dans `js/ui/liens.js` (la bulle n'enlève plus la main au texte). Vérifié en simulant un iPhone ; page téléphone republiée.
 - **Bulle des liens (2026-11-18)** : affiche le nom du type de la fiche (ex. « Lieu ») et non plus son icône, à la demande de l'utilisateur.
-- **Prochaine action** : morceau 6 (recherche dans tout le texte, statistiques, fiches orphelines et liens vers des fiches absentes) : poser les questions avant de coder.
+- **Morceau 6, choix de l'utilisateur (2026-11-18)** : recherche dans l'univers ouvert seulement, case au bout de la barre d'onglets (visible sur tous les onglets) ; elle cherche dans le nom + autres noms, le texte, les secrets, les cases et les étiquettes ; résultats = nom + type + extrait avec le mot surligné. Nouvel onglet « Statistiques » : nombre de fiches (total + par type), nombre de mots (total + par type), fiches les plus citées, fiches que rien ne cite (= aucun lien `[[ ]]` ni case « lien vers une fiche » ne pointe vers elle), liens vers des fiches absentes (boutons : créer la fiche manquante, ouvrir la fiche qui contient le lien).
+- **Prochaine action** : maquettes du morceau 6 (case de recherche, résultats, onglet Statistiques) à faire valider avant de coder.
 - **Tester sur le téléphone (Wi-Fi de la maison)** : sur l'ordinateur `python -m http.server 8080 --bind 0.0.0.0` dans `scriptorium`, puis sur le téléphone (connecté au même Wi-Fi, pas en 4G) `http://192.168.1.235:8080`. Le lancement du serveur par Claude a été bloqué par la sécurité de Claude Code : l'utilisateur doit le lancer lui-même ou l'autoriser. Serveur intégré de WebStorm sur le port 63342 (adresse exacte du projet pas trouvée). Autre option proposée : GitHub Pages dès maintenant (pas encore décidé).
 
 ## Journal
@@ -188,3 +189,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-18, PC Linux : passage sur la branche `develop` (mise à jour avec le travail fait sur l'ordinateur), serveur local lancé sur le port 8765.
 - 2026-11-18, téléphone (claude.ai/code) : correction, la bulle des liens n'ouvrait pas la fiche sur téléphone ; page téléphone republiée.
 - 2026-11-18, téléphone (claude.ai/code) : bulle des liens, nom du type à la place de l'icône (demande de l'utilisateur) ; page téléphone republiée.
+- 2026-11-18, PC Linux : morceau 6, choix de l'utilisateur enregistrés (recherche, statistiques, vérifications).
