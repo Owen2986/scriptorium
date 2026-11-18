@@ -13,7 +13,7 @@ import { decorerLiens, bulleLiens } from '../../ui/liens.js';
 import { ouvrirUnivers } from './commun.js';
 
 const ETOILE = '<svg class="icone" aria-hidden="true"><use href="icones/types.svg#round-star"></use></svg>';
-const lienFiche = (u, f) => `#/univers/${encodeURIComponent(u.id)}/fiches/${encodeURIComponent(f.id)}`;
+export const lienFiche = (u, f) => `#/univers/${encodeURIComponent(u.id)}/fiches/${encodeURIComponent(f.id)}`;
 
 // Petite info sous le nom : la première liste de choix du type, et la fiche parente.
 function infoFiche(f, type, parId) {
@@ -22,14 +22,14 @@ function infoFiche(f, type, parId) {
   return [liste && f.valeurs[liste.id], parent && `dans ${parent.nom || 'Sans nom'}`].filter(Boolean).join(' · ');
 }
 
-async function creer(stockage, u, type, nom) {
+export async function creer(stockage, u, type, nom) {
   const f = nouvelleFiche(u.id, type.id, nom ? { nom } : {});
   await stockage.put('fiches', f);
   location.hash = lienFiche(u, f);
 }
 
 // Demande le type (sauf s'il n'y en a qu'un) puis appelle `faire(type)`.
-function avecType(page, types, faire) {
+export function avecType(page, types, faire) {
   if (types.length === 1) return faire(types[0]);
   if (!types.length) return alert('Créez d’abord un type de fiche (onglet « Types de fiches »).');
   choisirType(page, types, faire);

@@ -6,4 +6,5 @@
   <symbol id="poubelle" viewBox="0 0 24 24"><path d="M9 2h6l1 2h5v2H3V4h5zM5 8h14l-1 13a2 2 0 0 1-2 1H8a2 2 0 0 1-2-1z"/></symbol>
   <symbol id="annuler" viewBox="0 0 24 24"><path d="M10 4 3 10l7 6v-4h4a5 5 0 0 1 0 10h-2v2h2a7 7 0 0 0 0-14h-4z"/></symbol>
   <symbol id="retablir" viewBox="0 0 24 24"><path d="m14 4 7 6-7 6v-4h-4a5 5 0 0 0 0 10h2v2h-2a7 7 0 0 1 0-14h4z"/></symbol>
+  <symbol id="loupe" viewBox="0 0 24 24"><path d="M10 2a8 8 0 0 1 6.32 12.9l5.4 5.4-1.42 1.42-5.4-5.4A8 8 0 1 1 10 2zm0 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/></symbol>
 </svg>

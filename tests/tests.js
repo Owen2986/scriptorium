@@ -9,6 +9,8 @@ import { parentesPossibles, dupliquerFiche } from '../js/modele/fiches.js';
 import { contenuCorbeille, mettreALaCorbeille, restaurer, supprimerDefinitivement, viderCorbeille } from '../js/modele/corbeille.js';
 import { etatFiche, differences, versionsFiche, garderVersion } from '../js/modele/versions.js';
 import { creerExempleSiBesoin } from '../js/modele/exemple.js';
+import { chercher, texteBrut, extrait } from '../js/modele/recherche.js';
+import { statistiques, compterMots } from '../js/modele/statistiques.js';
 import { assurerTypes, typesUnivers, supprimerType, nouveauType, ICONES } from '../js/modele/types.js';
 
 const NOM = 'scriptorium-test';
@@ -272,6 +274,38 @@ test('versions : différences en mots, au plus N gardées ; dupliquer une fiche 
   egal((await s.tous('images')).length, 4);
   egal((await s.get('fiches', copie.id)).nom, 'Aldric (copie)');
   s.fermer();
+});
+
+test('recherche : sans majuscules ni accents, dans le nom, le texte, les secrets, les cases et les étiquettes', () => {
+  const types = [{ id: 't', nom: 'Personnage', cases: [{ id: 'c1', nom: 'Lieu', sorte: 'fiche' }, { id: 'c2', nom: 'Rôle', sorte: 'texte' }] }];
+  const fiches = [
+    { id: 'a', typeId: 't', nom: 'Port-Brume', texte: '<p>Une <b>ville</b> de pêcheurs.</p>' },
+    { id: 'b', typeId: 't', nom: 'Aldric', texte: '<p>Né à [[Port-Brume]].</p><p>Pêcheur.</p>', secrets: '<p>Il ment.</p>', valeurs: { c1: 'a' } },
+    { id: 'c', typeId: 't', nom: 'Ysolde', secrets: '<p>Elle vit dans la brume.</p>', etiquettes: ['tome 1'] },
+    { id: 'd', typeId: 't', nom: 'Garrec', valeurs: { c2: 'Pêcheur' } },
+  ];
+  egal(texteBrut('<p>Né à [[Port-Brume]].</p><p>A &amp; B</p>'), 'Né à Port-Brume. A & B');
+  egal(chercher(fiches, types, 'BRUME').map(r => [r.fiche.id, r.nom, r.zone, r.aussi]),
+    [['a', true, null, []], ['b', false, 'texte', ['case « Lieu »']], ['c', false, 'secrets', []]]);
+  egal(chercher(fiches, types, 'pecheur').map(r => r.fiche.id), ['b', 'd', 'a']);
+  egal(chercher(fiches, types, 'TOME').map(r => r.aussi), [['étiquettes']]);
+  egal(chercher(fiches, types, '  '), []);
+  egal(extrait('un deux trois quatre cinq six', 'quatre', 6, 6), '… trois quatre cinq…');
+});
+
+test('statistiques : mots, citations, fiches que rien ne cite, liens vers des fiches absentes', () => {
+  const types = [{ id: 't', nom: 'Personnage', cases: [{ id: 'c1', sorte: 'fiche' }] }, { id: 'v', nom: 'Vide', cases: [] }];
+  const fiches = [
+    { id: 'a', typeId: 't', nom: 'Aldric', autresNoms: ['Le Borgne'], texte: '<p>Un deux trois.</p>' },
+    { id: 'b', typeId: 't', nom: 'Bran', texte: '<p>Voir [[aldric]] et [[le borgne]], [[Tour]].</p>', secrets: '<p>[[Bran]] [[tour]]</p>', valeurs: { c1: 'a' } },
+    { id: 'c', typeId: 't', nom: 'Cael', texte: '<p>[[Tour]] [[Bran]]</p>' },
+  ];
+  egal(compterMots('<p>Un <b>deux</b></p><p>trois</p>'), 3);
+  const s = statistiques(fiches, types);
+  egal([s.fiches, s.parType.map(l => [l.fiches, l.mots])], [3, [[3, 3 + 6 + 2 + 2], [0, 0]]]);
+  egal(s.plusCitees.map(c => [c.fiche.id, c.n]), [['a', 3], ['b', 1]]);
+  egal(s.orphelines.map(f => f.id), ['c']);
+  egal(s.absents.map(a => [a.nom, a.sources.map(f => f.id)]), [['Tour', ['b', 'c']]]);
 });
 
 let echecs = 0;

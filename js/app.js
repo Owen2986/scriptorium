@@ -6,6 +6,8 @@ import { vueReglages } from './vues/reglages/reglages.js';
 import { vuePresentation } from './vues/univers/presentation.js';
 import { vueTypes, vueType } from './vues/univers/types.js';
 import { vueFiches, vueFiche } from './vues/univers/fiches.js';
+import { vueRecherche } from './vues/univers/recherche.js';
+import { vueStatistiques } from './vues/univers/statistiques.js';
 import { vueCorbeille } from './vues/corbeille/corbeille.js';
 import { creerExempleSiBesoin } from './modele/exemple.js';
 import { viderCorbeille } from './modele/corbeille.js';
@@ -25,6 +27,9 @@ try {
   route('/univers/:id/fiches/:ficheId', vueFiche);
   route('/univers/:id/types', vueTypes);
   route('/univers/:id/types/:typeId', vueType);
+  route('/univers/:id/recherche', vueRecherche);
+  route('/univers/:id/recherche/:q', vueRecherche);
+  route('/univers/:id/statistiques', vueStatistiques);
   route('/corbeille', vueCorbeille);
   route('/reglages', vueReglages);
   demarrer(vue, { stockage });
