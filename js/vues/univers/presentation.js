@@ -23,7 +23,7 @@ export async function vuePresentation(page, { id }, { stockage }) {
       </fieldset>
     </form>
     <div class="actions">
-      <button type="button" class="principal" data-action="exporter">Exporter</button>
+      <button type="button" data-action="exporter">Exporter</button>
       <button type="button" data-action="dupliquer">Dupliquer l’univers</button>
       <button type="button" data-action="supprimer" class="danger">Supprimer l’univers</button>
     </div>`);
