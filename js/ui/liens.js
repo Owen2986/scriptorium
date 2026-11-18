@@ -69,6 +69,8 @@ export function bulleLiens(zone, decrire) {
     bulle.style.top = `${r.bottom - z.top + 6}px`;
     bulle.style.left = `${Math.max(0, Math.min(r.left - z.left, z.width - bulle.offsetWidth))}px`;
   };
+  // Toucher la bulle ne doit pas faire quitter le texte : sinon (iPhone) la bulle se ferme avant que le bouton reçoive le toucher.
+  bulle.addEventListener('mousedown', e => e.preventDefault());
   bulle.querySelector('button').addEventListener('click', () => { fermer(); action(); });
   zone.addEventListener('click', e => {
     const lien = e.target.closest('.lien');
