@@ -286,9 +286,9 @@ test('recherche : sans majuscules ni accents, dans le nom, le texte, les secrets
   ];
   egal(texteBrut('<p>Né à [[Port-Brume]].</p><p>A &amp; B</p>'), 'Né à Port-Brume. A & B');
   egal(chercher(fiches, types, 'BRUME').map(r => [r.fiche.id, r.nom, r.zone, r.aussi]),
-    [['a', true, null, []], ['b', false, 'texte', ['case « Lieu »']], ['c', false, 'secrets', []]]);
+    [['a', true, null, []], ['b', false, 'texte', ['la case Lieu']], ['c', false, 'secrets', []]]);
   egal(chercher(fiches, types, 'pecheur').map(r => r.fiche.id), ['b', 'd', 'a']);
-  egal(chercher(fiches, types, 'TOME').map(r => r.aussi), [['étiquettes']]);
+  egal(chercher(fiches, types, 'TOME').map(r => r.aussi), [['les étiquettes']]);
   egal(chercher(fiches, types, '  '), []);
   egal(extrait('un deux trois quatre cinq six', 'quatre', 6, 6), '… trois quatre cinq…');
 });

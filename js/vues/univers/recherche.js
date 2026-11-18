@@ -37,7 +37,7 @@ export async function vueRecherche(page, { id, q = '' }, { stockage }) {
       : `${resultats.length} fiche${resultats.length > 1 ? 's contiennent' : ' contient'} « ${mot} »`;
     liste.replaceChildren(...resultats.map(r => {
       const li = document.createElement('li');
-      li.className = 'carte resultat';
+      li.className = 'resultat';
       li.style.setProperty('--couleur-type', r.type?.couleur ?? 'var(--texte-doux)');
       li.innerHTML = `<span class="vignette-fiche">${iconeSvg(r.type?.icone ?? 'scroll-unfurled')}</span>
         <div><a></a> <small></small></div>`;
@@ -52,9 +52,9 @@ export async function vueRecherche(page, { id, q = '' }, { stockage }) {
         p.append(contenu);
         div.append(p);
       };
-      if (r.zone === 'secrets') ligne('ou', 'Trouvé dans les secrets :');
+      if (r.zone === 'secrets') ligne('ou', 'Dans les secrets');
       if (r.extrait) ligne('extrait', surligne(r.extrait, r.zone ? mot : ''));
-      if (r.aussi.length) ligne('ou', `${r.zone || r.nom ? 'Aussi dans' : 'Trouvé dans'} : ${r.aussi.join(', ')}`);
+      if (r.aussi.length) ligne('ou', `${r.zone || r.nom ? 'Aussi dans' : 'Dans'} ${r.aussi.join(', ')}`);
       return li;
     }));
   };

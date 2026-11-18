@@ -43,11 +43,11 @@ export function chercher(fiches, types, q) {
     const texte = texteBrut(f.texte), secrets = texteBrut(f.secrets);
     const zones = [['texte', texte], ['secrets', secrets]].filter(([, s]) => contient(s));
     const aussi = [
-      (f.autresNoms ?? []).some(contient) && 'autres noms',
+      (f.autresNoms ?? []).some(contient) && 'les autres noms',
       ...(type?.cases ?? []).filter(c => contient(c.sorte === 'fiche' ? nomDe.get(f.valeurs?.[c.id]) : f.valeurs?.[c.id]))
-        .map(c => `case « ${c.nom} »`),
-      (f.etiquettes ?? []).some(contient) && 'étiquettes',
-      zones.length > 1 && 'secrets',
+        .map(c => `la case ${c.nom}`),
+      (f.etiquettes ?? []).some(contient) && 'les étiquettes',
+      zones.length > 1 && 'les secrets',
     ].filter(Boolean);
     const nom = contient(f.nom);
     if (!nom && !zones.length && !aussi.length) continue;
