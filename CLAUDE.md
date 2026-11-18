@@ -183,3 +183,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-17, ordinateur : morceau 5, choix et maquettes validés ; corbeille, versions, dupliquer, annuler/rétablir faits ; 17 tests OK, vérifié dans Chrome.
 - 2026-11-17, ordinateur : unslop du morceau 5, retouche de la fenêtre Versions appliquée (corbeille laissée telle quelle) ; morceau 5 terminé.
 - 2026-11-18, téléphone (claude.ai/code) : appli mise en ligne en page privée claude.ai pour l'essayer sur téléphone.
+- 2026-11-18, PC Linux : passage sur la branche `develop` (mise à jour avec le travail fait sur l'ordinateur), serveur local lancé sur le port 8765.
