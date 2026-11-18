@@ -241,7 +241,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
     const f = trouver(nom);
     if (!f) return { info: 'Aucune fiche à ce nom', bouton: 'Créer la fiche', action: () => avecType(page, types, t => creer(stockage, u, t, nom)) };
     const t = types.find(t => t.id === f.typeId);
-    return { info: t?.nom ?? '', icone: t && `<span style="--couleur-type: ${t.couleur}">${iconeSvg(t.icone)}</span>`, titre: f.nom, bouton: 'Ouvrir', action: () => { location.hash = lienFiche(u, f); } };
+    return { info: t?.nom ?? '', titre: f.nom, bouton: 'Ouvrir', action: () => { location.hash = lienFiche(u, f); } };
   };
   bulleLiens($('.zone-texte'), decrire);
   bulleLiens($('.zone-secrets'), decrire);

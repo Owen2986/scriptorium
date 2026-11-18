@@ -280,7 +280,6 @@ input.nom-fiche:hover { border-color: var(--bordure); }
 }
 .bulle[hidden] { display: none; }
 .bulle small { color: var(--texte-doux); white-space: nowrap; display: flex; }
-.bulle small .icone { color: var(--couleur-type); font-size: 1.125rem; }
 .bulle span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bulle span:empty { display: none; }
 .bulle button { flex-shrink: 0; min-height: 32px; padding: 0 var(--espace-3); }
