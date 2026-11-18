@@ -200,3 +200,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-18, PC Linux : unslop du morceau 6, 3 retouches validées et appliquées (recherche en lignes, textes plus courts, noms sans bleu) ; morceau 6 terminé.
 - 2026-11-18, PC Linux : correction, un lien en fin de ligne ne pouvait ni être effacé ni suivi de texte.
 - 2026-11-18, PC Linux : page téléphone republiée (recherche, statistiques, correction des liens).
+- 2026-11-18, PC Linux : correction des liens confirmée par l'utilisateur sur téléphone ; début du morceau 7 (export).
