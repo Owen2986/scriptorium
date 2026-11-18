@@ -1,15 +1,15 @@
-import { nouvelId, supprimerUnivers, dupliquerUnivers } from '../../modele/univers.js';
+import { nouvelId, dupliquerUnivers } from '../../modele/univers.js';
+import { mettreALaCorbeille } from '../../modele/corbeille.js';
+import { message } from '../../ui/message.js';
 import { urlImage } from '../../ui/images.js';
+import { ouvrirUnivers } from './commun.js';
+import { exporter } from './export.js';
 
 export async function vuePresentation(page, { id }, { stockage }) {
-  const u = await stockage.get('univers', id);
-  if (!u) {
-    page.innerHTML = '<h1>Univers introuvable</h1><p><a href="#/">Retour à l’accueil</a></p>';
-    return;
-  }
+  const u = await ouvrirUnivers(page, id, stockage, '');
+  if (!u) return;
 
-  page.innerHTML = `<p><a href="#/">← Mes univers</a></p>
-    <form class="carte presentation" style="--couleur-univers:${u.couleur}">
+  page.insertAdjacentHTML('beforeend', `<form class="carte presentation">
       <div class="couverture"></div>
       <label>Nom <input name="nom" autocomplete="off"></label>
       <label>Description <textarea name="description" rows="6"></textarea></label>
@@ -23,9 +23,10 @@ export async function vuePresentation(page, { id }, { stockage }) {
       </fieldset>
     </form>
     <div class="actions">
+      <button type="button" data-action="exporter">Exporter</button>
       <button type="button" data-action="dupliquer">Dupliquer l’univers</button>
       <button type="button" data-action="supprimer" class="danger">Supprimer l’univers</button>
-    </div>`;
+    </div>`);
 
   const form = page.querySelector('form');
   const champs = form.elements;
@@ -44,7 +45,8 @@ export async function vuePresentation(page, { id }, { stockage }) {
   form.addEventListener('input', e => {
     if (!['nom', 'description', 'couleur'].includes(e.target.name)) return;
     u[e.target.name] = e.target.value;
-    form.style.setProperty('--couleur-univers', u.couleur);
+    if (e.target.name === 'nom') page.querySelector('.fil span').textContent = u.nom || 'Sans nom';
+    page.style.setProperty('--couleur-univers', u.couleur);
     stockage.put('univers', u);
   });
 
@@ -63,11 +65,15 @@ export async function vuePresentation(page, { id }, { stockage }) {
   page.addEventListener('click', async e => {
     const action = e.target.closest('[data-action]')?.dataset.action;
     if (action === 'retirer') await changerCouverture(null);
+    if (action === 'exporter') exporter(page, stockage, u);
     if (action === 'dupliquer') location.hash = `#/univers/${(await dupliquerUnivers(stockage, u.id)).id}`;
-    if (action === 'supprimer'
-      && confirm(`Supprimer « ${u.nom || 'Sans nom'} » et tout son contenu ? Cette action est définitive.`)) {
-      await supprimerUnivers(stockage, u.id);
+    if (action === 'supprimer') {
+      await mettreALaCorbeille(stockage, 'univers', u);
       location.hash = '#/';
+      message(`« ${u.nom || 'Sans nom'} » mis à la corbeille`, async () => {
+        await stockage.put('univers', u);
+        location.hash = `#/univers/${encodeURIComponent(u.id)}`;
+      });
     }
   });
 

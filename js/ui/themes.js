@@ -1,8 +1,8 @@
 export const THEMES = {
-  grimoire: 'Grimoire (fantasy)',
-  station: 'Station (science-fiction)',
-  archive: 'Archive (polar, historique)',
-  epure: 'Épure (neutre)',
+  grimoire: 'Grimoire',
+  station: 'Station',
+  archive: 'Archive',
+  epure: 'Épure',
 };
 export const MODES = { auto: "Comme l'appareil", clair: 'Clair', sombre: 'Sombre' };
 
@@ -24,6 +24,8 @@ function appliquer() {
   const racine = document.documentElement;
   racine.dataset.theme = actuel.nom;
   racine.dataset.mode = actuel.mode === 'auto' ? (sombreSysteme.matches ? 'sombre' : 'clair') : actuel.mode;
+  // Les aperçus des thèmes (Réglages) suivent le mode affiché, y compris quand l'appareil change.
+  document.querySelectorAll('.vignette').forEach(v => { v.dataset.mode = racine.dataset.mode; });
 }
 
 export const preferenceTheme = () => ({ ...actuel });

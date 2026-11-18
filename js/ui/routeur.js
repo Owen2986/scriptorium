@@ -21,9 +21,13 @@ export function demarrer(conteneur, contexte) {
     }
     if (n !== tour) return; // une navigation plus récente a eu lieu pendant le chargement
     conteneur.replaceChildren(page);
-    document.querySelectorAll('nav a').forEach(a =>
+    // Petit écran : fait glisser les onglets pour que l'onglet ouvert soit entièrement visible.
+    const actif = page.querySelector('.onglets [aria-current]');
+    const depasse = actif && actif.getBoundingClientRect().right - actif.parentElement.getBoundingClientRect().right;
+    if (depasse > 0) actif.parentElement.scrollLeft += depasse;
+    document.querySelectorAll('.entete nav a').forEach(a =>
       a.getAttribute('href') === '#' + chemin ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
-    if (e) conteneur.focus(); // lecteurs d'écran : annoncer la nouvelle page
+    if (e) (page.querySelector('[autofocus]') ?? conteneur).focus(); // lecteurs d'écran : annoncer la nouvelle page
   };
   addEventListener('hashchange', afficher);
   afficher();

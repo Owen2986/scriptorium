@@ -5,7 +5,8 @@
   --espace-3: 1rem;
   --espace-4: 1.5rem;
   --espace-5: 2.5rem;
-  --rayon: 6px;
+  --rayon: 8px;          /* boutons, champs */
+  --rayon-carte: 12px;   /* cartes, fenêtres */
   --largeur-max: 72rem;
   --cible-tactile: 44px;
 }

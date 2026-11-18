@@ -2,7 +2,7 @@ export const nouvelId = () => crypto.randomUUID();
 
 // Stores dont chaque ligne porte un universId.
 // shortcut: epingles, noeudsManuscrit et textes (rattachés via carte/tome/nœud) ne sont pas encore suivis ; à ajouter aux étapes 3 et 5.
-const STORES = ['typesFiches', 'fiches', 'relations', 'calendriers', 'evenements', 'cartes', 'images', 'tomes'];
+const STORES = ['typesFiches', 'fiches', 'relations', 'calendriers', 'evenements', 'cartes', 'images', 'tomes', 'versions'];
 
 export const nouvelUnivers = (donnees = {}) => ({
   id: nouvelId(), nom: 'Nouvel univers', description: '', couleur: '#8b2e1f', couvertureId: null,
