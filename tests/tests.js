@@ -11,6 +11,7 @@ import { etatFiche, differences, versionsFiche, garderVersion } from '../js/mode
 import { creerExempleSiBesoin } from '../js/modele/exemple.js';
 import { chercher, texteBrut, extrait } from '../js/modele/recherche.js';
 import { statistiques, compterMots } from '../js/modele/statistiques.js';
+import { versMarkdown, universMarkdown } from '../js/modele/export.js';
 import { assurerTypes, typesUnivers, supprimerType, nouveauType, ICONES } from '../js/modele/types.js';
 
 const NOM = 'scriptorium-test';
@@ -293,6 +294,21 @@ test('recherche : sans majuscules ni accents, dans le nom, le texte, les secrets
   egal(chercher(fiches, types, 'TOME').map(r => r.aussi), [['les étiquettes']]);
   egal(chercher(fiches, types, '  '), []);
   egal(extrait('un deux trois quatre cinq six', 'quatre', 6, 6), '… trois quatre cinq…');
+});
+
+test('export Markdown : mise en forme, cases, liens, secrets au choix', () => {
+  egal(versMarkdown('<p>Un <b>mot </b>et <i>deux</i>.</p><h2>Titre</h2><blockquote><p>A</p><p>B</p></blockquote><hr>Texte nu<br>suite', 3),
+    'Un **mot** et *deux*.\n\n#### Titre\n\n> A\n> \n> B\n\n---\n\nTexte nu  \nsuite');
+  const types = [{ id: 't', nom: 'Personnage', cases: [{ id: 'c1', nom: 'Âge', sorte: 'nombre' }, { id: 'c2', nom: 'Allié', sorte: 'fiche' }, { id: 'c3', nom: 'Vide', sorte: 'texte' }] }];
+  const fiches = [
+    { id: 'a', typeId: 't', nom: 'Aldric', autresNoms: ['Le Borgne'], parentId: 'b', valeurs: { c1: 27, c2: 'b' }, etiquettes: ['tome 1'],
+      texte: '<p>Vers [[Port-Brume]].</p>', secrets: '<p>Chut</p>' },
+    { id: 'b', typeId: 'x', nom: 'Port-Brume', texte: '' },
+  ];
+  const u = { nom: 'Elsméria', description: 'Un royaume.' };
+  const attendu = '# Elsméria\n\nUn royaume.\n\n## Personnage\n\n### Aldric\n\n- Autres noms : Le Borgne\n- Dans : [[Port-Brume]]\n- Âge : 27\n- Allié : [[Port-Brume]]\n- Étiquettes : tome 1\n\nVers [[Port-Brume]].';
+  egal(universMarkdown(u, types, fiches), `${attendu}\n\n## Sans type\n\n### Port-Brume\n`);
+  egal(universMarkdown(u, types, fiches, true), `${attendu}\n\n#### Secrets\n\n> Chut\n\n## Sans type\n\n### Port-Brume\n`);
 });
 
 test('statistiques : mots, citations, fiches que rien ne cite, liens vers des fiches absentes', () => {

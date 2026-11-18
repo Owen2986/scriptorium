@@ -3,6 +3,7 @@ import { mettreALaCorbeille } from '../../modele/corbeille.js';
 import { message } from '../../ui/message.js';
 import { urlImage } from '../../ui/images.js';
 import { ouvrirUnivers } from './commun.js';
+import { exporter } from './export.js';
 
 export async function vuePresentation(page, { id }, { stockage }) {
   const u = await ouvrirUnivers(page, id, stockage, '');
@@ -22,6 +23,7 @@ export async function vuePresentation(page, { id }, { stockage }) {
       </fieldset>
     </form>
     <div class="actions">
+      <button type="button" class="principal" data-action="exporter">Exporter</button>
       <button type="button" data-action="dupliquer">Dupliquer l’univers</button>
       <button type="button" data-action="supprimer" class="danger">Supprimer l’univers</button>
     </div>`);
@@ -63,6 +65,7 @@ export async function vuePresentation(page, { id }, { stockage }) {
   page.addEventListener('click', async e => {
     const action = e.target.closest('[data-action]')?.dataset.action;
     if (action === 'retirer') await changerCouverture(null);
+    if (action === 'exporter') exporter(page, stockage, u);
     if (action === 'dupliquer') location.hash = `#/univers/${(await dupliquerUnivers(stockage, u.id)).id}`;
     if (action === 'supprimer') {
       await mettreALaCorbeille(stockage, 'univers', u);

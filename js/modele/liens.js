@@ -13,7 +13,7 @@ export function indexNoms(fiches) {
   return index;
 }
 
-const echapper = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+export const echapper = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 // Remplace chaque [[ancien]] par [[nouveau]] dans un texte mis en forme (HTML).
 export const renommerDans = (html, ancien, nouveau) =>

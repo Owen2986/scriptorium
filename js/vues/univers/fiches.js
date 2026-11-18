@@ -11,6 +11,7 @@ import { editeur, depuisTexteBrut, nettoyer } from '../../ui/texte-riche.js';
 import { cle, indexNoms, renommerLiens } from '../../modele/liens.js';
 import { decorerLiens, bulleLiens } from '../../ui/liens.js';
 import { ouvrirUnivers } from './commun.js';
+import { exporter } from './export.js';
 
 const ETOILE = '<svg class="icone" aria-hidden="true"><use href="icones/types.svg#round-star"></use></svg>';
 export const lienFiche = (u, f) => `#/univers/${encodeURIComponent(u.id)}/fiches/${encodeURIComponent(f.id)}`;
@@ -180,6 +181,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
         <ul class="menu" hidden>
           <li><button type="button" data-action="dupliquer">${dessin('copier')}Dupliquer</button></li>
           <li><button type="button" data-action="versions">${dessin('horloge')}Versions</button></li>
+          <li><button type="button" data-action="exporter">${dessin('exporter')}Exporter</button></li>
           <li><hr></li>
           <li><button type="button" class="danger" data-action="corbeille">${dessin('poubelle')}Mettre à la corbeille</button></li>
         </ul>
@@ -477,6 +479,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
         reafficher();
       });
     });
+    if (action === 'exporter') exporter(page, stockage, u, fiche);
     if (action === 'corbeille') {
       await mettreALaCorbeille(stockage, 'fiche', fiche);
       location.hash = `#/univers/${encodeURIComponent(u.id)}/fiches`;

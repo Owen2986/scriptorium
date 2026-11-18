@@ -424,3 +424,51 @@ mark { font: inherit; color: var(--texte); background: color-mix(in srgb, var(--
 .liste-stats .nb { color: var(--texte-doux); font-variant-numeric: tabular-nums; }
 .deux-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--espace-5); }
 @media (max-width: 48rem) { .deux-col { grid-template-columns: 1fr; } .chiffres { gap: var(--espace-4); } }
+
+/* Fenêtre « Exporter » */
+.fenetre-export { width: min(30rem, calc(100vw - 2rem)); }
+.fenetre-export h2 { margin: 0 0 var(--espace-3); font-size: 1.25rem; }
+.fenetre-export fieldset { border: 0; padding: 0; margin: 0 0 var(--espace-3); display: grid; gap: var(--espace-2); }
+.fenetre-export legend { color: var(--texte-doux); margin-bottom: var(--espace-2); }
+.format { display: flex; gap: var(--espace-3); align-items: flex-start; padding: var(--espace-3); margin: 0; border: 1px solid var(--bordure); border-radius: var(--rayon); cursor: pointer; }
+.format:has(:checked) { border-color: var(--accent); }
+.format input { margin-top: .3rem; }
+.format small { display: block; color: var(--texte-doux); }
+.fenetre-export .actions { justify-content: flex-end; margin-top: var(--espace-4); }
+
+/* Export PDF : à l'impression, seule la zone .impression est imprimée, sur papier blanc */
+.impression { display: none; }
+@media print {
+  @page { margin: 16mm; }
+  html, body { background: #fff !important; }
+  body > :not(.impression) { display: none !important; }
+  .impression { display: block; color: #222; font: 11pt/1.5 var(--police-texte); }
+  .impression h1, .impression h2, .impression h3 { font-family: var(--police-titre); font-weight: 500; color: #222; }
+  .impression > * { break-after: page; }
+  .impression > :last-child { break-after: auto; }
+  .imp-garde { height: 250mm; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+  .imp-couverture { max-width: 100%; max-height: 130mm; object-fit: contain; margin: 0 auto 10mm; }
+  .imp-initiale { print-color-adjust: exact; -webkit-print-color-adjust: exact; height: 110mm; margin-bottom: 10mm; display: grid; place-items: center; border-radius: 4px; font: 500 64pt var(--police-titre);
+    color: var(--couleur-univers, #555); background: color-mix(in srgb, var(--couleur-univers, #888) 18%, #fff); }
+  .imp-garde h1 { font-size: 26pt; margin: 0 0 4mm; }
+  .imp-garde p { margin: 0 auto; max-width: 85%; color: #555; white-space: pre-line; }
+  .imp-sommaire h1 { font-size: 18pt; }
+  .imp-sommaire h2 { font-size: 12pt; margin: 6mm 0 2mm; }
+  .imp-sommaire ul { list-style: none; margin: 0; padding: 0; }
+  .imp-sommaire li { padding: 1mm 0; border-bottom: 1px solid #e5e5e5; break-inside: avoid; }
+  .imp-sommaire a { color: inherit; text-decoration: none; }
+  .imp-fiche h1 { font-size: 20pt; margin: 0; }
+  .imp-sous { color: #666; margin: 1mm 0 5mm; }
+  .imp-corps { display: grid; grid-template-columns: 1fr 50mm; gap: 7mm; align-items: start; }
+  .imp-corps > :only-child { grid-column: 1 / -1; }
+  .imp-corps h2 { font-size: 14pt; } .imp-corps h3 { font-size: 12pt; }
+  .imp-corps blockquote { margin: 0 0 0 5mm; font-style: italic; }
+  .imp-corps aside img { width: 100%; border-radius: 3px; }
+  .imp-corps dl { margin: 3mm 0 0; }
+  .imp-corps dt { color: #777; font-size: 9pt; }
+  .imp-corps dd { margin: 0 0 2mm; }
+  .lien-imp { border-bottom: 1px dashed #999; }
+  .imp-secrets { border-left: 2px solid #ccc; padding-left: 4mm; color: #444; }
+  .imp-galerie { display: flex; flex-wrap: wrap; gap: 3mm; margin-top: 5mm; break-inside: avoid; }
+  .imp-galerie img { width: 30mm; height: 30mm; object-fit: cover; border-radius: 3px; }
+}
