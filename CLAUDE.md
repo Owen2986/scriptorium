@@ -80,6 +80,7 @@
 - Git, Node, Python, gh CLI (connecté au compte Owen2986 sur l'ordinateur), Chrome DevTools MCP, plugin frontend-design.
 - Skill **unslop** (heydamir/unslop, plugin Claude Code, installé sur l’ordinateur Windows le 2026-11-16) : enlève l’aspect « fait par une IA » d’une interface (`/unslop`). Sur un autre appareil : `claude plugin marketplace add heydamir/unslop` puis `claude plugin install unslop@heydamir`.
 - **Graphify** : graphe du projet dans `graphify-out/` (ignoré par git, à reconstruire sur chaque appareil). Il ne se met pas à jour tout seul : lancer `/graphify . --update` au début d'une étape importante.
+- PC Linux, captures et tests sans fenêtre : si un ancien Chrome sans fenêtre reste ouvert sur le port 9333, les scripts s'y connectent et lisent d'anciens fichiers ; le fermer avec `pkill -f "remote-debugging-port=933[3]"`.
 - PC Linux : unslop n'est pas chargé comme plugin, mais ses fichiers sont dans `~/.claude/plugins/marketplaces/heydamir/skills/unslop/` (lire `SKILL.md` directement). Les captures de Chrome DevTools MCP y bloquent (délai dépassé) : captures prises avec le Chrome de test sans fenêtre (`--headless=new`, profil neuf = univers d'exemple).
 - PC Linux : mêmes outils (Python = `python3`, gh dans `~/.local/bin`, non connecté : l'envoi passe par SSH), WebStorm dans `/opt/WebStorm`, Chrome de test dans `~/.local/share/chrome-test` (Ubuntu bloque son bac à sable sans droits admin : lancé avec `--no-sandbox`, choix de l'utilisateur, uniquement pour tester le site en local).
 
@@ -89,7 +90,7 @@
 |---|-------|------|
 | 0 | Cadrage | ✅ fait |
 | 1 | Fondations (stockage, migrations, routeur, thèmes, tests) | ✅ fait |
-| 2 | Univers | ⏳ en cours (morceaux 1-5 faits) |
+| 2 | Univers | ⏳ en cours (morceaux 1-8 faits, reste : fonctions mises de côté) |
 | 3 | Manuscrit | |
 | 4 | Chronologie (calendrier inventé) | |
 | 5 | Cartes | |
@@ -152,7 +153,8 @@
 - **Morceau 7 fait (2026-11-18)** : `js/modele/export.js` (`versMarkdown` : gras/italique/titres/citations/séparateurs, titres du texte placés sous celui de la fiche ; `parType`, `proprietes`, `ficheMarkdown`, `universMarkdown`) ; `js/vues/univers/export.js` (fenêtre « Exporter » : PDF ou fichier texte + « Inclure les secrets » ; Markdown téléchargé en `<nom>.md` ; PDF = zone `.impression` ajoutée au document, seule imprimée grâce à `@media print`, puis `print()` : papier blanc, polices du thème, page de garde, sommaire cliquable, une fiche par page avec portrait + cases à droite, secrets, étiquettes, galerie). Bouton « Exporter » sur la Présentation, « Exporter » dans le menu Plus d'une fiche (icône `exporter`). 20 tests OK ; vérifié dans Chrome sans fenêtre (fenêtre à 1280 et 375 px, PDF de 18 pages pour l'univers d'exemple, PDF d'une fiche avec images en Grimoire sombre, fichier .md).
 - **Unslop du morceau 7 (2026-11-18, validé et appliqué)** : ronds PDF / fichier texte à la couleur du thème (même taille que les cases à cocher) ; « Exporter » en bouton simple sur la Présentation (plus de bouton plein). Captures dans `~/Images/apercu-unslop-m7/`.
 - **Morceau 7 terminé.**
-- **Prochaine action** : morceau 8 (tests, vérification dans Chrome, test de volume 500 fiches), puis proposer les fonctions mises de côté de l'étape 2. Page téléphone republiée avec l'export (2026-11-18) : vérifier sur téléphone que le téléchargement et l'impression marchent dans la page claude.ai.
+- **Morceau 8 fait (2026-11-18)** : 20 tests OK. Test de volume (500 fiches, 153 000 mots, 3 liens par fiche), processeur ralenti 4 fois pour imiter un téléphone : liste des 500 fiches 0,6 s, ouvrir une fiche 0,3 s, frappe 6 ms, renommer (liens de 500 fiches mis à jour) 0,07 s, statistiques 0,4 s, export texte 0,4 s, préparation du PDF (502 pages) 0,6 s ; aucune erreur. Corrigé : la recherche prenait 1,6 s par lettre (accents enlevés plusieurs fois par fiche à chaque lettre) → 0,18 s (`plier` ne regarde que les majuscules et caractères non ASCII, avec mémoire ; textes pliés gardés par fiche dans `chercher`). 10 pages vérifiées à 360, 768, 1280 et 1920 px : aucun débordement de côté, aucune erreur console. Captures dans `~/Images/apercu-m8/`.
+- **Étape 2 : morceaux 1 à 8 faits.** **Prochaine action** : proposer toutes ensemble les fonctions mises de côté de l'étape 2 (liste a–e + cases obligatoires, valeur par défaut, dupliquer/copier un type, autres sortes de cases), l'utilisateur choisit ; puis clore l'étape 2.
 - **Tester sur le téléphone (Wi-Fi de la maison)** : sur l'ordinateur `python -m http.server 8080 --bind 0.0.0.0` dans `scriptorium`, puis sur le téléphone (connecté au même Wi-Fi, pas en 4G) `http://192.168.1.235:8080`. Le lancement du serveur par Claude a été bloqué par la sécurité de Claude Code : l'utilisateur doit le lancer lui-même ou l'autoriser. Serveur intégré de WebStorm sur le port 63342 (adresse exacte du projet pas trouvée). Autre option proposée : GitHub Pages dès maintenant (pas encore décidé).
 
 ## Journal
@@ -210,3 +212,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-18, PC Linux : maquette du morceau 7 validée ; morceau 7 (export Markdown + PDF) fait, 20 tests OK.
 - 2026-11-18, PC Linux : unslop du morceau 7, 2 retouches validées et appliquées ; morceau 7 terminé.
 - 2026-11-18, PC Linux : page téléphone republiée avec l'export (Markdown + PDF).
+- 2026-11-18, PC Linux : morceau 8 (tests, volume 500 fiches, vérification à 4 largeurs) fait ; recherche accélérée (1,6 s → 0,18 s par lettre sur téléphone).

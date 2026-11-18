@@ -7,22 +7,30 @@ export const texteBrut = html => (html ?? '')
   .replace(/\[\[([^[\]]+)\]\]/g, '$1').replace(/\s+/g, ' ').trim();
 
 // Même longueur que le texte d'origine (caractère par caractère), pour retrouver la place d'un mot dans l'original.
-export const plier = s => (s ?? '').replace(/./gsu, c => {
-  const p = c.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[’‘]/g, "'");
-  return p.length === c.length ? p : c;
-});
+// Seuls les majuscules et les caractères non ASCII sont regardés, et chacun n'est calculé qu'une fois.
+const plies = new Map();
+const plierCar = c => {
+  let p = plies.get(c);
+  if (p === undefined) {
+    p = c.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[’‘]/g, "'");
+    if (p.length !== c.length) p = c;
+    plies.set(c, p);
+  }
+  return p;
+};
+export const plier = s => (s ?? '').replace(/[A-Z\u0080-\uffff]/g, plierCar);
 
 // Places [début, fin] de chaque `q` dans `texte`.
-export function trouver(texte, q) {
-  const t = plier(texte), m = plier(q.trim()), places = [];
+export function trouver(texte, q, t = plier(texte)) {
+  const m = plier(q.trim()), places = [];
   if (!m) return places;
   for (let i = t.indexOf(m); i >= 0; i = t.indexOf(m, i + m.length)) places.push([i, i + m.length]);
   return places;
 }
 
 // Bout de texte autour de la première place trouvée (ou le début du texte), coupé entre deux mots.
-export function extrait(texte, q, avant = 60, apres = 120) {
-  const [p] = trouver(texte, q);
+export function extrait(texte, q, avant = 60, apres = 120, plie) {
+  const [p] = trouver(texte, q, plie);
   let debut = p ? Math.max(0, p[0] - avant) : 0;
   let fin = Math.min(texte.length, (p ? p[1] : 0) + apres);
   if (debut > 0 && texte[debut - 1] !== ' ') debut = texte.indexOf(' ', debut) + 1 || debut;
@@ -32,6 +40,17 @@ export function extrait(texte, q, avant = 60, apres = 120) {
 
 // Résultats : fiches dont le nom, les autres noms, le texte, les secrets, les cases ou les étiquettes contiennent `q`.
 // Chaque résultat : { fiche, type, nom (trouvé dans le nom ?), zone ('texte' | 'secrets'), extrait, aussi: [où d'autre] }.
+// Textes simples et pliés de chaque fiche, calculés une fois par fiche (pas à chaque lettre tapée).
+const prets = new WeakMap();
+function textes(f) {
+  let r = prets.get(f);
+  if (!r) {
+    const texte = texteBrut(f.texte), secrets = texteBrut(f.secrets);
+    prets.set(f, r = { texte, secrets, texteP: plier(texte), secretsP: plier(secrets) });
+  }
+  return r;
+}
+
 export function chercher(fiches, types, q) {
   if (!q.trim()) return [];
   const typeDe = new Map(types.map(t => [t.id, t]));
@@ -40,8 +59,8 @@ export function chercher(fiches, types, q) {
   const resultats = [];
   for (const f of fiches) {
     const type = typeDe.get(f.typeId);
-    const texte = texteBrut(f.texte), secrets = texteBrut(f.secrets);
-    const zones = [['texte', texte], ['secrets', secrets]].filter(([, s]) => contient(s));
+    const { texte, secrets, texteP, secretsP } = textes(f);
+    const zones = [['texte', texte, texteP], ['secrets', secrets, secretsP]].filter(([, s, p]) => trouver(s, q, p).length);
     const aussi = [
       (f.autresNoms ?? []).some(contient) && 'les autres noms',
       ...(type?.cases ?? []).filter(c => contient(c.sorte === 'fiche' ? nomDe.get(f.valeurs?.[c.id]) : f.valeurs?.[c.id]))
@@ -51,8 +70,8 @@ export function chercher(fiches, types, q) {
     ].filter(Boolean);
     const nom = contient(f.nom);
     if (!nom && !zones.length && !aussi.length) continue;
-    const [zone, source] = zones[0] ?? ['texte', texte];
-    resultats.push({ fiche: f, type, nom, zone: zones.length ? zone : null, extrait: source && extrait(source, zones.length ? q : ''), aussi });
+    const [zone, source, plie] = zones[0] ?? ['texte', texte, texteP];
+    resultats.push({ fiche: f, type, nom, zone: zones.length ? zone : null, extrait: source && extrait(source, zones.length ? q : '', 60, 120, plie), aussi });
   }
   return resultats.sort((a, b) => b.nom - a.nom || (a.fiche.nom || '').localeCompare(b.fiche.nom || '', 'fr'));
 }
