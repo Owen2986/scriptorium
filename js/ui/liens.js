@@ -114,3 +114,86 @@ export function bulleLiens(zone, decrire) {
   zone.addEventListener('input', fermer);
   zone.addEventListener('focusout', e => { if (!zone.contains(e.relatedTarget)) fermer(); });
 }
+
+// Liste de suggestions quand on tape [[ dans `zone` (en position relative).
+// `proposer(q)` → [{ nom, place: [début, fin], info, icone (svg), couleur }] ; `creer(nom)` crée la fiche absente.
+// Choisir pose [[nom]] (que `decorerLiens` transforme en lien) ; Échap ferme la liste.
+export function suggestionsLiens(zone, proposer, creer) {
+  const liste = document.createElement('ul');
+  liste.className = 'suggestions';
+  liste.setAttribute('role', 'listbox');
+  liste.setAttribute('aria-label', 'Fiches proposées');
+  liste.hidden = true;
+  zone.append(liste);
+  let choix = [], actif = 0, tape = null; // tape = [nœud texte, début de « [[ », fin]
+
+  const fermer = () => { liste.hidden = true; tape = null; };
+  const surligner = () => [...liste.children].forEach((li, i) => li.setAttribute('aria-selected', i === actif));
+  const choisir = i => {
+    const c = choix[i];
+    const [n, debut, fin] = tape;
+    fermer();
+    const r = document.createRange();
+    r.setStart(n, debut);
+    r.setEnd(n, fin);
+    getSelection().removeAllRanges();
+    getSelection().addRange(r);
+    document.execCommand('insertText', false, `[[${c.nom}]]`); // passe par « input » : lien affiché, texte enregistré, Ctrl+Z possible
+    if (c.creer) creer(c.nom);
+  };
+
+  const ouvrir = () => {
+    const s = getSelection();
+    const n = s.anchorNode;
+    const avant = s.isCollapsed && n?.nodeType === Node.TEXT_NODE && zone.contains(n) ? n.data.slice(0, s.anchorOffset) : '';
+    const m = avant.match(/\[\[([^[\]]*)$/);
+    if (!m) return fermer();
+    const q = m[1];
+    choix = proposer(q);
+    if (!choix.length && q.trim()) choix = [{ nom: q.trim(), creer: true }];
+    if (!choix.length) return fermer();
+    tape = [n, m.index, s.anchorOffset];
+    actif = 0;
+    liste.replaceChildren(...choix.map((c, i) => {
+      const li = document.createElement('li');
+      li.setAttribute('role', 'option');
+      li.dataset.i = i;
+      if (c.creer) {
+        li.className = 'creer';
+        li.innerHTML = 'Créer la fiche <em></em>';
+        li.querySelector('em').textContent = `« ${c.nom} »`;
+        return li;
+      }
+      li.style.setProperty('--couleur-type', c.couleur);
+      li.innerHTML = `${c.icone}<span class="nom"></span><small></small>`;
+      const [d, f] = c.place;
+      li.querySelector('.nom').append(c.nom.slice(0, d), Object.assign(document.createElement('b'), { textContent: c.nom.slice(d, f) }), c.nom.slice(f));
+      li.querySelector('small').textContent = c.info;
+      return li;
+    }));
+    surligner();
+    liste.hidden = false;
+    const r = document.createRange();
+    r.setStart(n, s.anchorOffset);
+    const c = r.getClientRects()[0] ?? n.parentElement.getBoundingClientRect();
+    const z = zone.getBoundingClientRect();
+    liste.style.top = `${c.bottom - z.top + 6}px`;
+    liste.style.left = `${Math.max(0, Math.min(c.left - z.left - 40, z.width - liste.offsetWidth))}px`;
+  };
+
+  zone.addEventListener('input', ouvrir);
+  zone.addEventListener('keydown', e => {
+    if (liste.hidden) return;
+    const d = { ArrowDown: 1, ArrowUp: -1 }[e.key];
+    if (d) actif = (actif + d + choix.length) % choix.length, surligner();
+    else if (e.key === 'Enter' || e.key === 'Tab') choisir(actif);
+    else if (e.key === 'Escape') fermer();
+    else return;
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  liste.addEventListener('mousedown', e => e.preventDefault()); // ne pas quitter le texte (voir la bulle)
+  liste.addEventListener('click', e => { const li = e.target.closest('li'); if (li) choisir(+li.dataset.i); });
+  zone.addEventListener('click', e => { if (!liste.contains(e.target)) fermer(); });
+  zone.addEventListener('focusout', e => { if (!zone.contains(e.relatedTarget)) fermer(); });
+}

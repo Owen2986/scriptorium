@@ -286,6 +286,23 @@ input.nom-fiche:hover { border-color: var(--bordure); }
 .bulle span:empty { display: none; }
 .bulle button { flex-shrink: 0; min-height: 32px; padding: 0 var(--espace-3); }
 
+/* Suggestions en tapant [[ */
+.suggestions {
+  position: absolute; z-index: 3; width: min(20rem, 100%); margin: 0; padding: var(--espace-1); list-style: none;
+  font: 400 .9375rem var(--police-texte);
+  background: var(--surface); color: var(--texte); border: 1px solid var(--bordure); border-radius: var(--rayon); box-shadow: 0 4px 14px rgb(0 0 0 / .12);
+}
+.suggestions[hidden] { display: none; }
+.suggestions li { display: flex; align-items: center; gap: var(--espace-2); min-height: var(--cible-tactile); padding: 0 var(--espace-2); border-radius: 6px; cursor: pointer; }
+.suggestions li[aria-selected="true"] { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.suggestions .icone { flex-shrink: 0; width: 1.1rem; height: 1.1rem; color: var(--couleur-type); }
+.suggestions .nom { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.suggestions small { margin-left: auto; padding-left: var(--espace-2); color: var(--texte-doux); white-space: nowrap; }
+.suggestions b { font-weight: 600; }
+.suggestions .creer { color: var(--texte-doux); }
+.suggestions .creer em { color: var(--texte); margin-left: .3em; }
+@media (max-width: 30rem) { .suggestions { left: 0 !important; width: 100%; } }
+
 /* Autres noms, sous le nom de la fiche */
 .autres-noms { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espace-1); margin: var(--espace-1) 0; padding-left: var(--espace-1); color: var(--texte-doux); font-size: .9375rem; }
 .autres-noms .etiquettes { display: contents; }

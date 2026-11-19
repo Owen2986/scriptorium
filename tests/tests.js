@@ -3,7 +3,7 @@ import { MIGRATIONS } from '../js/stockage/migrations.js';
 import { attendre } from '../js/stockage/indexeddb.js';
 import { dupliquerUnivers, supprimerUnivers } from '../js/modele/univers.js';
 import { nettoyer, depuisTexteBrut } from '../js/ui/texte-riche.js';
-import { cle, indexNoms, renommerLiens } from '../js/modele/liens.js';
+import { cle, indexNoms, renommerLiens, suggestions } from '../js/modele/liens.js';
 import { decorerLiens } from '../js/ui/liens.js';
 import { parentesPossibles, dupliquerFiche } from '../js/modele/fiches.js';
 import { contenuCorbeille, mettreALaCorbeille, restaurer, supprimerDefinitivement, viderCorbeille } from '../js/modele/corbeille.js';
@@ -208,6 +208,14 @@ test('liens [[ ]] : noms et surnoms reconnus sans majuscules ni accents', () => 
   egal(index.get(cle('  maelle   CORBIN ')).id, 'a');
   egal(index.get(cle('la gouverneure')).id, 'b', 'un nom passe avant un surnom :');
   egal(cle('L’Ordre'), cle("l'ordre"));
+});
+
+test('suggestions en tapant [[ : noms et autres noms, début du nom d’abord', () => {
+  const f = [{ id: 'a', nom: 'Ysolde de Brume' }, { id: 'b', nom: 'Port-Brume' }, { id: 'c', nom: 'Aldric', autresNoms: ['Le Borgne'] }, { id: 'd', nom: 'Brume-Haute' }];
+  egal(suggestions(f, 'bru').map(s => s.nom), ['Brume-Haute', 'Port-Brume', 'Ysolde de Brume']);
+  egal(suggestions(f, 'BOR').map(s => [s.nom, s.fiche.id, s.place]), [['Le Borgne', 'c', [3, 6]]]);
+  egal(suggestions(f, 'YSOLDÉ').map(s => s.fiche.id), ['a'], 'accents ignorés :');
+  egal(suggestions(f, '', 2).length, 2, 'au plus N :');
 });
 
 test('liens [[ ]] : affichés puis enregistrés tels quels', () => {

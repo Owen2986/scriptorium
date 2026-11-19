@@ -1,3 +1,5 @@
+import { plier } from './recherche.js';
+
 // Liens [[Nom de fiche]] : un nom est reconnu sans tenir compte des majuscules, des accents ni des espaces en trop.
 export const cle = nom => (nom ?? '').normalize('NFD').replace(/\p{M}/gu, '').replace(/[’‘]/g, "'")
   .replace(/\s+/g, ' ').trim().toLowerCase();
@@ -30,4 +32,18 @@ export async function renommerLiens(stockage, fiches, ancien, nouveau) {
   });
   if (modifiees.length) await stockage.lot(modifiees.map(f => ['put', 'fiches', f]));
   return modifiees;
+}
+
+// Suggestions en tapant [[ : noms et autres noms contenant `q` (sans majuscules ni accents), ceux qui commencent par `q` d'abord.
+// → [{ nom, fiche, place: [début, fin] du morceau trouvé dans `nom` }], au plus `max`.
+export function suggestions(fiches, q, max = 8) {
+  const m = plier(q.trim());
+  const trouves = [];
+  for (const fiche of fiches) {
+    for (const nom of [fiche.nom, ...(fiche.autresNoms ?? [])]) {
+      const i = nom ? plier(nom).indexOf(m) : -1;
+      if (i >= 0) trouves.push({ nom, fiche, place: [i, i + m.length] });
+    }
+  }
+  return trouves.sort((a, b) => (a.place[0] > 0) - (b.place[0] > 0) || a.nom.localeCompare(b.nom, 'fr')).slice(0, max);
 }

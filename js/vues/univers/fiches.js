@@ -8,8 +8,8 @@ import { urlImage } from '../../ui/images.js';
 import { dessin } from '../../ui/icones.js';
 import { message } from '../../ui/message.js';
 import { editeur, depuisTexteBrut, nettoyer } from '../../ui/texte-riche.js';
-import { cle, indexNoms, renommerLiens } from '../../modele/liens.js';
-import { decorerLiens, bulleLiens } from '../../ui/liens.js';
+import { cle, indexNoms, renommerLiens, suggestions } from '../../modele/liens.js';
+import { decorerLiens, bulleLiens, suggestionsLiens } from '../../ui/liens.js';
 import { ouvrirUnivers } from './commun.js';
 import { exporter } from './export.js';
 
@@ -247,6 +247,14 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   };
   bulleLiens($('.zone-texte'), decrire);
   bulleLiens($('.zone-secrets'), decrire);
+  // Suggestions en tapant [[ : les autres fiches, avec leur type (ou le nom de la fiche pour un autre nom).
+  const proposer = q => suggestions(liste.filter(f => f !== fiche), q).map(({ nom, fiche: f, place }) => {
+    const t = types.find(t => t.id === f.typeId);
+    return { nom, place, info: nom === f.nom ? t?.nom ?? '' : f.nom, icone: iconeSvg(t?.icone), couleur: t?.couleur ?? 'var(--texte-doux)' };
+  });
+  const creerDepuisLien = nom => avecType(page, types, t => creer(stockage, u, t, nom));
+  suggestionsLiens($('.zone-texte'), proposer, creerDepuisLien);
+  suggestionsLiens($('.zone-secrets'), proposer, creerDepuisLien);
   const redecorer = () => {
     index = indexNoms(liste);
     article.querySelectorAll('.lien').forEach(l => l.classList.toggle('absent', !trouver(l.dataset.nom)));
