@@ -422,6 +422,12 @@ dialog.versions[open] { display: flex; flex-direction: column; }
 .resultat small, .resultat .ou { color: var(--texte-doux); }
 .resultat p { margin: var(--espace-1) 0 0; color: var(--texte-doux); overflow-wrap: anywhere; }
 .resultat .ou { font-size: .8125rem; }
+/* « Citée dans », colonne de droite d'une fiche */
+.citee h3 small { color: var(--texte-doux); font-weight: 400; }
+.citee .resultat { gap: var(--espace-2); padding: var(--espace-2) 0; }
+.citee .resultat:last-child { border-bottom: 0; }
+.citee .vignette-fiche { width: 32px; height: 32px; font-size: 1rem; }
+.citee .extrait { font-size: .9375rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 mark { font: inherit; color: var(--texte); background: color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 2px; padding: 0 1px; }
 
 /* Statistiques */

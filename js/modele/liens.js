@@ -1,4 +1,4 @@
-import { plier } from './recherche.js';
+import { plier, texteBrut, extrait } from './recherche.js';
 
 // Liens [[Nom de fiche]] : un nom est reconnu sans tenir compte des majuscules, des accents ni des espaces en trop.
 export const cle = nom => (nom ?? '').normalize('NFD').replace(/\p{M}/gu, '').replace(/[’‘]/g, "'")
@@ -46,4 +46,22 @@ export function suggestions(fiches, q, max = 8) {
     }
   }
   return trouves.sort((a, b) => (a.place[0] > 0) - (b.place[0] > 0) || a.nom.localeCompare(b.nom, 'fr')).slice(0, max);
+}
+
+// Fiches qui citent `cible` : liens [[ ]] (texte, secrets) et cases « lien vers une fiche ».
+// → [{ fiche, extrait (autour du premier lien du texte, sinon null), mot (nom écrit dans ce lien), ailleurs: ['les secrets', 'la case X'] }], par nom.
+export function citeeDans(cible, fiches, types) {
+  const index = indexNoms(fiches);
+  const vise = html => [...(html ?? '').matchAll(LIEN)].map(m => m[1].trim()).filter(n => index.get(cle(n)) === cible);
+  const resultats = [];
+  for (const f of fiches) {
+    if (f === cible) continue;
+    const [mot] = vise(f.texte);
+    const ailleurs = [
+      vise(f.secrets).length && 'les secrets',
+      ...(types.find(t => t.id === f.typeId)?.cases ?? []).filter(c => c.sorte === 'fiche' && f.valeurs?.[c.id] === cible.id).map(c => `la case ${c.nom}`),
+    ].filter(Boolean);
+    if (mot || ailleurs.length) resultats.push({ fiche: f, mot, extrait: mot ? extrait(texteBrut(f.texte.replace(/<(h[23])\b[^>]*>.*?<\/\1>/gs, ' ')), mot, 40, 100) : null, ailleurs });
+  }
+  return resultats.sort((a, b) => (a.fiche.nom || '').localeCompare(b.fiche.nom || '', 'fr'));
 }

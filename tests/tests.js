@@ -3,7 +3,7 @@ import { MIGRATIONS } from '../js/stockage/migrations.js';
 import { attendre } from '../js/stockage/indexeddb.js';
 import { dupliquerUnivers, supprimerUnivers } from '../js/modele/univers.js';
 import { nettoyer, depuisTexteBrut } from '../js/ui/texte-riche.js';
-import { cle, indexNoms, renommerLiens, suggestions } from '../js/modele/liens.js';
+import { cle, indexNoms, renommerLiens, suggestions, citeeDans } from '../js/modele/liens.js';
 import { decorerLiens } from '../js/ui/liens.js';
 import { parentesPossibles, dupliquerFiche } from '../js/modele/fiches.js';
 import { contenuCorbeille, mettreALaCorbeille, restaurer, supprimerDefinitivement, viderCorbeille } from '../js/modele/corbeille.js';
@@ -216,6 +216,23 @@ test('suggestions en tapant [[ : noms et autres noms, début du nom d’abord', 
   egal(suggestions(f, 'BOR').map(s => [s.nom, s.fiche.id, s.place]), [['Le Borgne', 'c', [3, 6]]]);
   egal(suggestions(f, 'YSOLDÉ').map(s => s.fiche.id), ['a'], 'accents ignorés :');
   egal(suggestions(f, '', 2).length, 2, 'au plus N :');
+});
+
+test('« Citée dans » : liens du texte, des secrets et cases « fiche », surnoms compris', () => {
+  const types = [{ id: 'p', cases: [{ id: 'n', nom: 'Lieu de naissance', sorte: 'fiche' }] }];
+  const port = { id: 'port', nom: 'Port-Brume', autresNoms: ['La Ville grise'] };
+  const f = [port,
+    { id: 'a', nom: 'Aldric', typeId: 'p', texte: '<h2>Histoire</h2><p>Fils d’un pêcheur de [[port-brume]].</p>', valeurs: { n: 'port' } },
+    { id: 'b', nom: 'Bran', typeId: 'p', secrets: '<p>Né à [[La Ville grise]].</p>' },
+    { id: 'c', nom: 'Cael', typeId: 'p', texte: '<p>[[Autre]] et Port-Brume sans lien.</p>' },
+    { id: 'd', nom: 'Ville', texte: '<p>Voir [[Port-Brume]] ici.</p>' }];
+  f.push({ ...port, id: 'x', texte: '<p>[[Port-Brume]]</p>' }); // homonyme : le lien vise la première fiche
+  const r = citeeDans(port, f, types);
+  egal(r.map(c => [c.fiche.id, c.mot, c.extrait, c.ailleurs]), [
+    ['a', 'port-brume', 'Fils d’un pêcheur de port-brume.', ['la case Lieu de naissance']],
+    ['b', undefined, null, ['les secrets']],
+    ['x', 'Port-Brume', 'Port-Brume', []],
+    ['d', 'Port-Brume', 'Voir Port-Brume ici.', []]]);
 });
 
 test('liens [[ ]] : affichés puis enregistrés tels quels', () => {

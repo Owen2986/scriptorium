@@ -5,7 +5,7 @@ import { ouvrirUnivers } from './commun.js';
 import { lienFiche } from './fiches.js';
 
 // Texte avec chaque `q` entouré d'un <mark>.
-function surligne(texte, q) {
+export function surligne(texte, q) {
   const morceaux = document.createDocumentFragment();
   let i = 0;
   for (const [debut, fin] of trouver(texte, q)) {

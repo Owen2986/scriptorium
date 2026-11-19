@@ -8,10 +8,11 @@ import { urlImage } from '../../ui/images.js';
 import { dessin } from '../../ui/icones.js';
 import { message } from '../../ui/message.js';
 import { editeur, depuisTexteBrut, nettoyer } from '../../ui/texte-riche.js';
-import { cle, indexNoms, renommerLiens, suggestions } from '../../modele/liens.js';
+import { cle, indexNoms, renommerLiens, suggestions, citeeDans } from '../../modele/liens.js';
 import { decorerLiens, bulleLiens, suggestionsLiens } from '../../ui/liens.js';
 import { ouvrirUnivers } from './commun.js';
 import { exporter } from './export.js';
+import { surligne } from './recherche.js';
 
 const ETOILE = '<svg class="icone" aria-hidden="true"><use href="icones/types.svg#round-star"></use></svg>';
 export const lienFiche = (u, f) => `#/univers/${encodeURIComponent(u.id)}/fiches/${encodeURIComponent(f.id)}`;
@@ -211,6 +212,8 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
         <ul class="etiquettes" aria-label="Étiquettes"></ul>
         <form class="ajout-etiquette"><input name="etiquette" placeholder="Étiquette" aria-label="Nouvelle étiquette" autocomplete="off">
           <button type="submit">Ajouter</button></form>
+        <section class="citee" hidden><h3>Citée dans <small></small></h3><ul class="resultats"></ul>
+          <button type="button" data-action="toutes-citations" hidden></button></section>
       </aside>
     </div>`;
   page.append(article);
@@ -396,6 +399,37 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
     champ.value = '';
   });
 
+  // « Citée dans » : les fiches qui citent celle-ci (10 d'abord, puis « Voir les N autres »).
+  const citations = citeeDans(fiche, liste, types);
+  if (citations.length) {
+    $('.citee').hidden = false;
+    $('.citee small').textContent = `· ${citations.length} fiche${citations.length > 1 ? 's' : ''}`;
+    $('.citee ul').append(...citations.map((c, i) => {
+      const t = types.find(t => t.id === c.fiche.typeId);
+      const li = document.createElement('li');
+      li.className = 'resultat';
+      li.hidden = i >= 10;
+      li.style.setProperty('--couleur-type', t?.couleur ?? 'var(--texte-doux)');
+      li.innerHTML = `<span class="vignette-fiche">${iconeSvg(t?.icone ?? 'scroll-unfurled')}</span><div><a></a> <small></small></div>`;
+      const a = li.querySelector('a');
+      a.href = lienFiche(u, c.fiche);
+      a.textContent = c.fiche.nom || 'Sans nom';
+      li.querySelector('small').textContent = `· ${t?.nom || 'Sans type'}`;
+      const ligne = (classe, contenu) => {
+        const p = document.createElement('p');
+        p.className = classe;
+        p.append(contenu);
+        li.querySelector('div').append(p);
+      };
+      if (c.extrait) ligne('extrait', surligne(c.extrait, c.mot));
+      if (c.ailleurs.length) ligne('ou', `${c.extrait ? 'Aussi dans' : 'Dans'} ${c.ailleurs.join(', ')}`);
+      return li;
+    }));
+    const plus = $('[data-action="toutes-citations"]');
+    plus.hidden = citations.length <= 10;
+    plus.textContent = `Voir les ${citations.length - 10} autres`;
+  }
+
   article.addEventListener('click', async e => {
     const action = e.target.closest('[data-action]')?.dataset.action;
     if (action === 'favori') {
@@ -488,6 +522,10 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
       });
     });
     if (action === 'exporter') exporter(page, stockage, u, fiche);
+    if (action === 'toutes-citations') {
+      article.querySelectorAll('.citee li[hidden]').forEach(li => { li.hidden = false; });
+      e.target.hidden = true;
+    }
     if (action === 'corbeille') {
       await mettreALaCorbeille(stockage, 'fiche', fiche);
       location.hash = `#/univers/${encodeURIComponent(u.id)}/fiches`;
