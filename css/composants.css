@@ -300,7 +300,8 @@ input.nom-fiche:hover { border-color: var(--bordure); }
 .suggestions small { margin-left: auto; padding-left: var(--espace-2); color: var(--texte-doux); white-space: nowrap; }
 .suggestions b { font-weight: 600; }
 .suggestions .creer { color: var(--texte-doux); }
-.suggestions .creer em { color: var(--texte); margin-left: .3em; }
+.suggestions .creer::before { content: "+"; width: 1.1rem; text-align: center; font-size: 1.1rem; }
+.suggestions .creer em { color: var(--texte); }
 @media (max-width: 30rem) { .suggestions { left: 0 !important; width: 100%; } }
 
 /* Autres noms, sous le nom de la fiche */
