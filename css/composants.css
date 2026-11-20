@@ -424,6 +424,8 @@ dialog.versions[open] { display: flex; flex-direction: column; }
 .resultat .ou { font-size: .8125rem; }
 /* « Citée dans », colonne de droite d'une fiche */
 .citee h3 small { color: var(--texte-doux); font-weight: 400; }
+.citee .resultat small { font-size: .8125rem; }
+.citee .ou span { color: var(--texte); }
 .citee .resultat { gap: var(--espace-2); padding: var(--espace-2) 0; }
 .citee .resultat:last-child { border-bottom: 0; }
 .citee .vignette-fiche { width: 32px; height: 32px; font-size: 1rem; }

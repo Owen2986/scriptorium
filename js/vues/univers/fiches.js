@@ -422,7 +422,17 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
         li.querySelector('div').append(p);
       };
       if (c.extrait) ligne('extrait', surligne(c.extrait, c.mot));
-      if (c.ailleurs.length) ligne('ou', `${c.extrait ? 'Aussi dans' : 'Dans'} ${c.ailleurs.join(', ')}`);
+      if (c.ailleurs.length) {
+        // Le nom de la case en couleur du texte, pour le repérer d'un coup d'œil.
+        const morceaux = c.ailleurs.flatMap((a, i) => {
+          const nom = a.startsWith('la case ') ? Object.assign(document.createElement('span'), { textContent: a.slice(8) }) : null;
+          return [i ? ', ' : '', ...(nom ? ['la case ', nom] : [a])];
+        });
+        const p = document.createElement('p');
+        p.className = 'ou';
+        p.append(`${c.extrait ? 'Aussi dans' : 'Dans'} `, ...morceaux);
+        li.querySelector('div').append(p);
+      }
       return li;
     }));
     const plus = $('[data-action="toutes-citations"]');
