@@ -227,7 +227,9 @@ dialog::backdrop { background: rgb(0 0 0 / .5); }
 .carte-fiche { position: relative; padding: 0; overflow: hidden; }
 .carte-fiche a { display: block; color: inherit; text-decoration: none; }
 .carte-fiche .image { display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 5;
-  background: color-mix(in srgb, var(--couleur-type) 25%, var(--surface)); color: var(--couleur-type); font-size: 3rem; }
+  background: color-mix(in srgb, var(--couleur-type) 25%, var(--surface)); color: var(--couleur-type); font-size: 2rem; }
+.carte-fiche .image > .icone { opacity: .55; }
+@media (max-width: 30rem) { .carte-fiche .image { aspect-ratio: 1; } }
 .carte-fiche .image img { width: 100%; height: 100%; object-fit: cover; }
 .carte-fiche .nom { display: block; padding: var(--espace-2) var(--espace-3) var(--espace-3); }
 .carte-fiche strong { display: block; font-weight: 500; }
