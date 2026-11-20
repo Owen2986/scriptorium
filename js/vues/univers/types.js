@@ -1,5 +1,6 @@
 import { message } from '../../ui/message.js';
-import { SORTES, ICONES, iconeSvg, nouveauType, nouvelleCase, typesUnivers, supprimerType } from '../../modele/types.js';
+import { SORTES, ICONES, iconeSvg, nouveauType, nouvelleCase, typesUnivers, supprimerType, copierType } from '../../modele/types.js';
+import { htmlMenu, brancherMenu } from '../../ui/menu.js';
 import { ouvrirUnivers } from './commun.js';
 
 const lienType = (u, t) => `#/univers/${encodeURIComponent(u.id)}/types/${encodeURIComponent(t.id)}`;
@@ -72,7 +73,8 @@ export async function vueType(page, { id, typeId }, { stockage }) {
   }
   const autres = (await typesUnivers(stockage, u.id)).filter(t => t.id !== type.id);
 
-  page.insertAdjacentHTML('beforeend', `<p><a href="#/univers/${encodeURIComponent(u.id)}/types">← Types de fiches</a></p>
+  page.insertAdjacentHTML('beforeend', `<div class="haut-type"><a href="#/univers/${encodeURIComponent(u.id)}/types">← Types de fiches</a>
+      ${htmlMenu([['dupliquer', 'copier', 'Dupliquer'], ['copier', 'exporter', 'Copier vers un autre univers']])}</div>
     <form class="carte type-edition">
       <label>Nom du type <input name="nom" autocomplete="off"></label>
       <fieldset><legend>Icône</legend><div class="grille-icones">
@@ -88,6 +90,15 @@ export async function vueType(page, { id, typeId }, { stockage }) {
       <button type="button" data-action="ajouter">Ajouter une case</button>
       <button type="button" data-action="supprimer" class="danger">Supprimer le type</button>
     </div>`);
+
+  brancherMenu(page.querySelector('.ancre-menu'), async action => {
+    if (action === 'dupliquer') {
+      const copie = await copierType(stockage, type, u);
+      location.hash = lienType(u, copie);
+      message(`Copie de « ${type.nom || 'Sans nom'} » créée`);
+    }
+    if (action === 'copier') choisirUnivers(page, stockage, u, type);
+  });
 
   const form = page.querySelector('form');
   form.elements.nom.value = type.nom;
@@ -165,6 +176,33 @@ export async function vueType(page, { id, typeId }, { stockage }) {
     }
     if (action === 'supprimer') await demanderSuppression(page, stockage, u, type, autres);
   });
+}
+
+// Petite fenêtre « Vers quel univers ? » : un bouton par autre univers.
+async function choisirUnivers(page, stockage, u, type) {
+  const univers = (await stockage.tous('univers')).filter(x => !x.corbeille && x.id !== u.id)
+    .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+  const dialogue = document.createElement('dialog');
+  dialogue.className = 'carte';
+  dialogue.innerHTML = `<h2></h2>
+    <p>${univers.length ? 'Vers quel univers ? Seuls le type et ses cases sont copiés, pas les fiches' : 'Il n’y a pas d’autre univers'}</p>
+    <div class="choix-types choix-univers">${univers.map((x, i) =>
+      `<button type="button" data-i="${i}" style="--couleur-univers:${x.couleur}"><i></i><span></span></button>`).join('')}</div>
+    <div class="actions"><button type="button" data-action="annuler">Annuler</button></div>`;
+  dialogue.querySelector('h2').textContent = `Copier « ${type.nom || 'Sans nom'} »`;
+  univers.forEach((x, i) => { dialogue.querySelector(`[data-i="${i}"] span`).textContent = x.nom || 'Sans nom'; });
+  dialogue.addEventListener('click', async e => {
+    const b = e.target.closest('[data-i]');
+    if (b) {
+      const cible = univers[b.dataset.i];
+      const copie = await copierType(stockage, type, cible);
+      message(`« ${copie.nom} » copié dans ${cible.nom || 'Sans nom'}`);
+    }
+    if (b || e.target.closest('[data-action="annuler"]')) dialogue.close();
+  });
+  dialogue.addEventListener('close', () => dialogue.remove());
+  page.append(dialogue);
+  dialogue.showModal();
 }
 
 // Avertit, puis propose de déplacer les fiches vers un autre type ; les autres vont à la corbeille.

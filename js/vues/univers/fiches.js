@@ -7,6 +7,7 @@ import { etatFiche, memeEtat, differences, versionsFiche, garderVersion } from '
 import { urlImage } from '../../ui/images.js';
 import { dessin } from '../../ui/icones.js';
 import { message } from '../../ui/message.js';
+import { htmlMenu, brancherMenu } from '../../ui/menu.js';
 import { editeur, depuisTexteBrut, nettoyer } from '../../ui/texte-riche.js';
 import { cle, indexNoms, renommerLiens, suggestions, citeeDans } from '../../modele/liens.js';
 import { decorerLiens, bulleLiens, suggestionsLiens } from '../../ui/liens.js';
@@ -214,16 +215,8 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
         <span class="type-fiche">${iconeSvg(type?.icone)} <span class="nom-type"></span> <span class="etat" aria-live="polite"></span></span>
       </div>
       <button type="button" class="etoile" data-action="favori" aria-pressed="${!!fiche.favori}" aria-label="Favori">${ETOILE}</button>
-      <div class="ancre-menu">
-        <button type="button" class="bouton-plus" data-action="menu" aria-expanded="false" aria-haspopup="true" aria-label="Plus d’actions">${dessin('points')}</button>
-        <ul class="menu" hidden>
-          <li><button type="button" data-action="dupliquer">${dessin('copier')}Dupliquer</button></li>
-          <li><button type="button" data-action="versions">${dessin('horloge')}Versions</button></li>
-          <li><button type="button" data-action="exporter">${dessin('exporter')}Exporter</button></li>
-          <li><hr></li>
-          <li><button type="button" class="danger" data-action="corbeille">${dessin('poubelle')}Mettre à la corbeille</button></li>
-        </ul>
-      </div>
+      ${htmlMenu([['dupliquer', 'copier', 'Dupliquer'], ['versions', 'horloge', 'Versions'], ['exporter', 'exporter', 'Exporter'], 'trait',
+        ['corbeille', 'poubelle', 'Mettre à la corbeille', 'danger']])}
     </div>
     <div class="corps-fiche">
       <div class="colonne-texte">
@@ -478,6 +471,10 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   }
 
   article.addEventListener('click', async e => {
+    if (e.target.closest('[data-action="toutes-citations"]')) {
+      article.querySelectorAll('.citee li[hidden]').forEach(li => { li.hidden = false; });
+      e.target.hidden = true;
+    }
     const action = e.target.closest('[data-action]')?.dataset.action;
     if (action === 'favori') {
       fiche.favori = !fiche.favori;
@@ -534,20 +531,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   const reafficher = () => dispatchEvent(new HashChangeEvent('hashchange'));
 
   // Menu « Plus ».
-  const boutonMenu = $('[data-action="menu"]');
-  const menu = $('.menu');
-  const ouvrirMenu = ouvert => {
-    menu.hidden = !ouvert;
-    boutonMenu.setAttribute('aria-expanded', ouvert);
-    if (ouvert) menu.querySelector('button').focus();
-  };
-  boutonMenu.addEventListener('click', () => ouvrirMenu(menu.hidden));
-  $('.ancre-menu').addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { ouvrirMenu(false); boutonMenu.focus(); } });
-  $('.ancre-menu').addEventListener('focusout', e => { if (!$('.ancre-menu').contains(e.relatedTarget)) ouvrirMenu(false); });
-  menu.addEventListener('click', async e => {
-    const action = e.target.closest('[data-action]')?.dataset.action;
-    if (!action) return;
-    ouvrirMenu(false);
+  brancherMenu($('.ancre-menu'), async action => {
     const nom = fiche.nom || 'Sans nom';
     if (action === 'dupliquer') {
       const copie = await dupliquerFiche(stockage, fiche);
@@ -569,10 +553,6 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
       });
     });
     if (action === 'exporter') exporter(page, stockage, u, fiche);
-    if (action === 'toutes-citations') {
-      article.querySelectorAll('.citee li[hidden]').forEach(li => { li.hidden = false; });
-      e.target.hidden = true;
-    }
     if (action === 'corbeille') {
       await mettreALaCorbeille(stockage, 'fiche', fiche);
       location.hash = `#/univers/${encodeURIComponent(u.id)}/fiches`;

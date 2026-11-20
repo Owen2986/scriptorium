@@ -71,6 +71,21 @@ export async function assurerTypes(stockage, u) {
 export const typesUnivers = async (stockage, universId) =>
   (await stockage.query('typesFiches', 'universId', universId)).filter(t => !t.corbeille).sort((a, b) => a.ordre - b.ordre);
 
+// Copie un type et ses cases (sans les fiches) dans l'univers `cible` : « Nom (copie) » si le nom y est déjà pris.
+// Une case « lien vers une fiche » vise le type du même nom dans `cible` (tous les types s'il n'y en a pas).
+export async function copierType(stockage, type, cible) {
+  await assurerTypes(stockage, cible); // sinon les types de base arriveraient plus tard, en double
+  const existants = await typesUnivers(stockage, cible.id);
+  const nomDe = new Map((await typesUnivers(stockage, type.universId)).map(t => [t.id, t.nom]));
+  const idDe = new Map(existants.map(t => [t.nom, t.id]));
+  const copie = nouveauType(cible.id, { nom: idDe.has(type.nom) ? `${type.nom} (copie)` : type.nom,
+    icone: type.icone, couleur: type.couleur });
+  copie.cases = type.cases.map(c => nouvelleCase({ ...structuredClone(c), id: undefined,
+    ...(c.typeCibleId && { typeCibleId: c.typeCibleId === type.id ? copie.id : idDe.get(nomDe.get(c.typeCibleId)) ?? null }) }));
+  await stockage.put('typesFiches', copie);
+  return copie;
+}
+
 // Met un type à la corbeille. destinations : Map ficheId → id du type d'arrivée, ou null pour la corbeille.
 // nouveaux : types créés pendant la suppression, enregistrés dans la même opération (tout ou rien).
 // Renvoie de quoi tout remettre comme avant (pour le bouton « Annuler ») : à passer à stockage.lot.

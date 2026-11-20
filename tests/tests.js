@@ -12,7 +12,7 @@ import { creerExempleSiBesoin } from '../js/modele/exemple.js';
 import { chercher, texteBrut, extrait } from '../js/modele/recherche.js';
 import { statistiques, compterMots } from '../js/modele/statistiques.js';
 import { versMarkdown, universMarkdown } from '../js/modele/export.js';
-import { assurerTypes, typesUnivers, supprimerType, nouveauType, ICONES } from '../js/modele/types.js';
+import { assurerTypes, typesUnivers, supprimerType, nouveauType, copierType, ICONES } from '../js/modele/types.js';
 
 const NOM = 'scriptorium-test';
 const tests = [];
@@ -187,6 +187,27 @@ test('tri des fiches : nom dans les deux sens, modifiées puis créées récemme
   egal(ordre('nom-inverse'), ['Zed', 'Éa', 'bob']);
   egal(ordre('modifiees'), ['bob', 'Zed', 'Éa']);
   egal(ordre('creees'), ['Éa', 'Zed', 'bob']);
+});
+
+test('copier un type : même univers ou autre, « (copie) » si le nom est pris, cases « fiche » suivies par nom', async () => {
+  const s = await creerStockage(NOM, MIGRATIONS);
+  const a = { id: 'a', nom: 'A' }, b = { id: 'b', nom: 'B', typesCrees: true };
+  await s.put('univers', a); await s.put('univers', b);
+  await assurerTypes(s, a);
+  const lieuB = nouveauType('b', { nom: 'Lieu' });
+  await s.put('typesFiches', lieuB);
+  const perso = (await typesUnivers(s, 'a')).find(t => t.nom === 'Personnage');
+  const double = await copierType(s, perso, a);
+  egal(double.nom, 'Personnage (copie)');
+  egal(double.cases.find(c => c.nom === 'Lieu de naissance').typeCibleId, perso.cases.find(c => c.nom === 'Lieu de naissance').typeCibleId);
+  const ailleurs = await copierType(s, perso, b);
+  egal(ailleurs.nom, 'Personnage');
+  egal(ailleurs.universId, 'b');
+  egal(ailleurs.cases.map(c => c.typeCibleId ?? null).filter(x => x !== undefined && x !== null), [lieuB.id]);
+  egal(ailleurs.cases.map(c => c.nom), perso.cases.map(c => c.nom));
+  if (ailleurs.cases.some((c, i) => c.id === perso.cases[i].id)) throw new Error('les cases doivent avoir de nouveaux identifiants');
+  egal((await copierType(s, perso, b)).nom, 'Personnage (copie)');
+  s.fermer();
 });
 
 test('fiche parente : ni elle-même ni ses descendantes', () => {

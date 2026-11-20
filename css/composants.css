@@ -383,6 +383,8 @@ label.ajout-galerie { display: flex; align-items: center; justify-content: cente
 .bas-corbeille { justify-content: flex-end; margin-top: var(--espace-4); }
 
 /* Menu « Plus » d'une fiche */
+.haut-type { display: flex; align-items: center; justify-content: space-between; gap: var(--espace-3); margin: var(--espace-3) 0; }
+.choix-univers i { width: 4px; height: 1.1em; border-radius: 2px; background: var(--couleur-univers); }
 .ancre-menu { position: relative; display: flex; }
 .bouton-plus { min-width: var(--cible-tactile); padding: 0; border-color: transparent; background: none; color: var(--texte-doux); }
 .bouton-plus[aria-expanded="true"] { border-color: var(--bordure); color: var(--texte); }
