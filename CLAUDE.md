@@ -225,3 +225,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-19, PC Linux : unslop du morceau 9, retouche de la ligne « Créer la fiche » validée et appliquée ; morceau 9 terminé.
 - 2026-11-19, PC Linux : morceau 10, place et choix de « Citée dans » enregistrés ; maquette avec extrait montrée.
 - 2026-11-19, PC Linux : maquette du morceau 10 validée ; morceau 10 (« Citée dans ») fait, 22 tests OK, vérifié dans Chrome.
+- 2026-11-20, PC Linux : unslop du morceau 10, 2 retouches validées et appliquées (petits textes égaux, nom de la case visible) ; morceau 10 terminé.
