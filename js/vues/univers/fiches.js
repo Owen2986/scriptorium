@@ -1,5 +1,5 @@
 import { iconeSvg, typesUnivers } from '../../modele/types.js';
-import { nouvelleFiche, fichesUnivers, parentesPossibles, dupliquerFiche } from '../../modele/fiches.js';
+import { nouvelleFiche, fichesUnivers, TRIS, parentesPossibles, dupliquerFiche } from '../../modele/fiches.js';
 import { nouvelId } from '../../modele/univers.js';
 import { mettreALaCorbeille } from '../../modele/corbeille.js';
 import { lireReglages } from '../../modele/reglages.js';
@@ -49,7 +49,18 @@ function pastilles(ul, liste, attr, quoi) {
   }));
 }
 
-// Liste des fiches d'un univers, groupées par type, avec un filtre.
+// Tri et affichage de la liste, propres à l'appareil (comme le thème).
+const CLE_LISTE = 'scriptorium.liste';
+function lireListe() {
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem(CLE_LISTE)) || {}; } catch { /* stockage indisponible */ }
+  return { tri: Object.hasOwn(TRIS, p.tri) ? p.tri : 'nom', vue: p.vue === 'cartes' ? 'cartes' : 'liste' };
+}
+function garderListe(pref) {
+  try { localStorage.setItem(CLE_LISTE, JSON.stringify(pref)); } catch { /* le choix vaut pour cette visite */ }
+}
+
+// Liste des fiches d'un univers, groupées par type, avec un filtre, un tri et deux affichages.
 export async function vueFiches(page, { id }, { stockage }) {
   const u = await ouvrirUnivers(page, id, stockage, '/fiches');
   if (!u) return;
@@ -58,37 +69,51 @@ export async function vueFiches(page, { id }, { stockage }) {
   const parId = new Map(fiches.map(f => [f.id, f]));
   const vignettes = new Map(await Promise.all(fiches.map(async f => [f.id, await urlImage(stockage, f.imageId)])));
   let filtre = 'tous';
+  const pref = lireListe();
 
   page.insertAdjacentHTML('beforeend', `<div class="titre-page">
       <h1>Fiches</h1>
       <button type="button" class="principal" data-action="nouvelle">Nouvelle fiche</button>
     </div>
-    <div class="filtre" role="group" aria-label="Filtrer les fiches">
-      <button type="button" data-filtre="tous" aria-pressed="true">Tous</button>
-      ${types.map(t => `<button type="button" data-filtre="${t.id}" aria-pressed="false"></button>`).join('')}
-      <button type="button" data-filtre="favoris" aria-pressed="false">${ETOILE} Favoris</button>
+    <div class="barre-fiches">
+      <div class="filtre" role="group" aria-label="Filtrer les fiches">
+        <button type="button" data-filtre="tous" aria-pressed="true">Tous</button>
+        ${types.map(t => `<button type="button" data-filtre="${t.id}" aria-pressed="false"></button>`).join('')}
+        <button type="button" data-filtre="favoris" aria-pressed="false">${ETOILE} Favoris</button>
+      </div>
+      <div class="reglage-liste">
+        <select aria-label="Trier les fiches">${Object.entries(TRIS).map(([k, [libelle]]) =>
+          `<option value="${k}"${k === pref.tri ? ' selected' : ''}>${libelle}</option>`).join('')}</select>
+        <div class="bascule" role="group" aria-label="Affichage">
+          <button type="button" data-vue="liste" aria-label="Liste" aria-pressed="${pref.vue === 'liste'}">${dessin('vue-liste')}</button>
+          <button type="button" data-vue="cartes" aria-label="Cartes" aria-pressed="${pref.vue === 'cartes'}">${dessin('vue-cartes')}</button>
+        </div>
+      </div>
     </div>
     <div class="sections-fiches"></div>`);
   types.forEach(t => { page.querySelector(`[data-filtre="${t.id}"]`).textContent = t.nom || 'Sans nom'; });
   const sections = page.querySelector('.sections-fiches');
 
   const afficher = () => {
-    const visibles = fiches.filter(f => filtre === 'tous' || (filtre === 'favoris' ? f.favori : f.typeId === filtre));
+    const visibles = fiches.filter(f => filtre === 'tous' || (filtre === 'favoris' ? f.favori : f.typeId === filtre))
+      .sort(TRIS[pref.tri][1]);
+    const cartes = pref.vue === 'cartes';
     sections.replaceChildren(...types.map(t => {
       const siennes = visibles.filter(f => f.typeId === t.id);
       if (!siennes.length) return '';
       const s = document.createElement('section');
       s.className = 'section-type';
       s.style.setProperty('--couleur-type', t.couleur);
-      s.innerHTML = `<h2>${iconeSvg(t.icone)} <span></span> <small>${siennes.length}</small></h2><ul class="rangs"></ul>`;
+      s.innerHTML = `<h2>${iconeSvg(t.icone)} <span></span> <small>${siennes.length}</small></h2><ul class="${cartes ? 'cartes-fiches' : 'rangs'}"></ul>`;
       s.querySelector('h2 span').textContent = t.nom || 'Sans nom';
       s.querySelector('ul').append(...siennes.map(f => {
         const li = document.createElement('li');
-        li.className = 'carte rang';
+        li.className = cartes ? 'carte carte-fiche' : 'carte rang';
         const url = vignettes.get(f.id);
-        li.innerHTML = `<a class="rang-lien"><span class="vignette-fiche">${url ? `<img alt="" src="${url}">` : iconeSvg(t.icone)}</span>
-            <span class="rang-nom"><strong></strong><small></small></span></a>
-          <button type="button" class="etoile" data-favori="${f.id}" aria-pressed="${!!f.favori}" aria-label="Favori">${ETOILE}</button>`;
+        const image = url ? `<img alt="" src="${url}">` : iconeSvg(t.icone);
+        li.innerHTML = (cartes ? `<a><span class="image">${image}</span><span class="nom"><strong></strong><small></small></span></a>`
+          : `<a class="rang-lien"><span class="vignette-fiche">${image}</span><span class="rang-nom"><strong></strong><small></small></span></a>`) + `
+<button type="button" class="etoile" data-favori="${f.id}" aria-pressed="${!!f.favori}" aria-label="Favori">${ETOILE}</button>`;
         li.querySelector('a').href = lienFiche(u, f);
         li.querySelector('strong').textContent = f.nom || 'Sans nom';
         li.querySelector('small').textContent = infoFiche(f, t, parId);
@@ -102,7 +127,19 @@ export async function vueFiches(page, { id }, { stockage }) {
   };
   afficher();
 
+  page.querySelector('.reglage-liste select').addEventListener('change', e => {
+    pref.tri = e.target.value;
+    garderListe(pref);
+    afficher();
+  });
   page.addEventListener('click', async e => {
+    const vue = e.target.closest('[data-vue]');
+    if (vue) {
+      pref.vue = vue.dataset.vue;
+      page.querySelectorAll('[data-vue]').forEach(b => b.setAttribute('aria-pressed', b === vue));
+      garderListe(pref);
+      afficher();
+    }
     const filtreBouton = e.target.closest('[data-filtre]');
     if (filtreBouton) {
       filtre = filtreBouton.dataset.filtre;

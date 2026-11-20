@@ -5,7 +5,7 @@ import { dupliquerUnivers, supprimerUnivers } from '../js/modele/univers.js';
 import { nettoyer, depuisTexteBrut } from '../js/ui/texte-riche.js';
 import { cle, indexNoms, renommerLiens, suggestions, citeeDans } from '../js/modele/liens.js';
 import { decorerLiens } from '../js/ui/liens.js';
-import { parentesPossibles, dupliquerFiche } from '../js/modele/fiches.js';
+import { parentesPossibles, dupliquerFiche, TRIS } from '../js/modele/fiches.js';
 import { contenuCorbeille, mettreALaCorbeille, restaurer, supprimerDefinitivement, viderCorbeille } from '../js/modele/corbeille.js';
 import { etatFiche, differences, versionsFiche, garderVersion } from '../js/modele/versions.js';
 import { creerExempleSiBesoin } from '../js/modele/exemple.js';
@@ -178,6 +178,15 @@ test('texte mis en forme : balises dangereuses et attributs retirés', () => {
     '<h2>Titre</h2><p>a <b>b</b> lien</p>');
   egal(nettoyer('<img src=x onerror="alert(1)"><script>alert(2)</script><p>ok</p><!-- c -->'), '<p>ok</p>');
   egal(nettoyer('<blockquote>c</blockquote><hr><u>s</u>'), '<blockquote>c</blockquote><hr><u>s</u>');
+});
+
+test('tri des fiches : nom dans les deux sens, modifiées puis créées récemment', () => {
+  const f = [{ nom: 'Éa', creeLe: 3 }, { nom: 'bob', creeLe: 1, modifieLe: 9 }, { nom: 'Zed', creeLe: 2, modifieLe: 5 }];
+  const ordre = tri => [...f].sort(TRIS[tri][1]).map(x => x.nom);
+  egal(ordre('nom'), ['bob', 'Éa', 'Zed']);
+  egal(ordre('nom-inverse'), ['Zed', 'Éa', 'bob']);
+  egal(ordre('modifiees'), ['bob', 'Zed', 'Éa']);
+  egal(ordre('creees'), ['Éa', 'Zed', 'bob']);
 });
 
 test('fiche parente : ni elle-même ni ses descendantes', () => {

@@ -25,6 +25,15 @@ export async function dupliquerFiche(stockage, f) {
 
 const parNom =(a, b) => (a.nom || '').localeCompare(b.nom || '', 'fr');
 
+const recente = (cle, a, b) => (b[cle] ?? b.creeLe ?? 0) - (a[cle] ?? a.creeLe ?? 0) || parNom(a, b);
+// Ordres de tri de la liste des fiches : clé → [libellé, comparaison].
+export const TRIS = {
+  nom: ['Nom, de A à Z', parNom],
+  'nom-inverse': ['Nom, de Z à A', (a, b) => parNom(b, a)],
+  modifiees: ['Modifiées récemment', (a, b) => recente('modifieLe', a, b)],
+  creees: ['Créées récemment', (a, b) => recente('creeLe', a, b)],
+};
+
 // Fiches d'un univers hors corbeille, par ordre alphabétique.
 export const fichesUnivers = async (stockage, universId) =>
   (await stockage.query('fiches', 'universId', universId)).filter(f => !f.corbeille).sort(parNom);
