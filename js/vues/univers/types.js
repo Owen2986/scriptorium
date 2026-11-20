@@ -123,7 +123,7 @@ export async function vueType(page, { id, typeId }, { stockage }) {
         </select></label>
       </div>
       <label data-pour="liste">Choix possibles (un par ligne) <textarea name="choix" rows="4"></textarea></label>
-      <label data-pour="fiche">Fiches proposées <select name="typeCibleId"><option value="">Tous les types</option></select></label>
+      <label data-pour="fiche fiches">Fiches proposées <select name="typeCibleId"><option value="">Tous les types</option></select></label>
       <div class="actions">
         <button type="button" data-action="monter" aria-label="Monter la case"${i ? '' : ' disabled'}>↑</button>
         <button type="button" data-action="descendre" aria-label="Descendre la case"${i < type.cases.length - 1 ? '' : ' disabled'}>↓</button>
@@ -135,7 +135,7 @@ export async function vueType(page, { id, typeId }, { stockage }) {
     champ('sorte').value = c.sorte;
     champ('choix').value = (c.choix || []).join('\n');
     champ('typeCibleId').value = c.typeCibleId || '';
-    li.querySelectorAll('[data-pour]').forEach(l => { l.hidden = l.dataset.pour !== c.sorte; });
+    li.querySelectorAll('[data-pour]').forEach(l => { l.hidden = !l.dataset.pour.split(' ').includes(c.sorte); });
     return li;
   }));
   afficherCases();
@@ -147,7 +147,7 @@ export async function vueType(page, { id, typeId }, { stockage }) {
     if (name === 'choix') c.choix = value.split('\n').map(x => x.trim()).filter(Boolean);
     else if (name === 'typeCibleId') c.typeCibleId = value || null;
     else c[name] = value;
-    if (name === 'sorte') li.querySelectorAll('[data-pour]').forEach(l => { l.hidden = l.dataset.pour !== value; });
+    if (name === 'sorte') li.querySelectorAll('[data-pour]').forEach(l => { l.hidden = !l.dataset.pour.split(' ').includes(value); });
     enregistrer();
   });
 

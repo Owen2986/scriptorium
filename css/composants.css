@@ -522,3 +522,14 @@ mark { font: inherit; color: var(--texte); background: color-mix(in srgb, var(--
   .imp-galerie { display: flex; flex-wrap: wrap; gap: 3mm; margin-top: 5mm; break-inside: avoid; }
   .imp-galerie img { width: 30mm; height: 30mm; object-fit: cover; border-radius: 3px; }
 }
+
+/* Cases « case à cocher » et « plusieurs fiches liées » */
+.cote-fiche label.case-cocher { display: flex; align-items: center; gap: var(--espace-2); min-height: var(--cible-tactile); color: var(--texte); }
+.case-cocher input { width: 1.1rem; height: 1.1rem; margin: 0; accent-color: var(--accent); }
+.case-fiches { margin-bottom: var(--espace-2); color: var(--texte-doux); }
+.case-fiches .etiquettes { margin: var(--espace-1) 0; }
+.case-fiches .etiquette a { color: var(--texte); text-decoration: none; }
+.case-fiches .etiquette a:hover { text-decoration: underline; }
+.ajout-liee { position: relative; }
+.ajout-liee input { color: var(--texte); }
+.ajout-liee .suggestions { left: 0; top: 100%; }

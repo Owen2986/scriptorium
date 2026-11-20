@@ -1,6 +1,9 @@
 import { nouvelId } from './univers.js';
 
-export const SORTES = { texte: 'Texte', nombre: 'Nombre', liste: 'Liste de choix', fiche: 'Lien vers une fiche' };
+export const SORTES = { texte: 'Texte', nombre: 'Nombre', liste: 'Liste de choix', coche: 'Case à cocher',
+  fiche: 'Lien vers une fiche', fiches: 'Plusieurs fiches liées' };
+// Fiches visées par une case « fiche » ou « fiches » (une valeur garde son sens quand on passe de l'une à l'autre).
+export const fichesCase = (c, v) => c.sorte === 'fiche' || c.sorte === 'fiches' ? [].concat(v ?? []).filter(Boolean) : [];
 
 // Dessins de icones/types.svg (game-icons.net, licence CC BY 3.0) → nom lu par les lecteurs d'écran.
 export const ICONES = {

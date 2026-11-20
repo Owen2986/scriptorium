@@ -1,3 +1,4 @@
+import { fichesCase } from './types.js';
 // Export d'un univers ou d'une fiche : fichier texte Markdown (les liens restent en [[Nom]]).
 
 const BLOCS = new Set(['P', 'DIV', 'H2', 'H3', 'BLOCKQUOTE', 'HR']);
@@ -53,7 +54,9 @@ export function proprietes(f, type, nomDe) {
   return [
     ['Autres noms', f.autresNoms?.join(', ')],
     ['Dans', f.parentId && lien(f.parentId)],
-    ...(type?.cases ?? []).map(c => [c.nom, c.sorte === 'fiche' ? lien(f.valeurs?.[c.id]) : f.valeurs?.[c.id]]),
+    ...(type?.cases ?? []).map(c => [c.nom, c.sorte === 'coche' ? (f.valeurs?.[c.id] ? 'Oui' : 'Non')
+      : c.sorte === 'fiche' || c.sorte === 'fiches' ? fichesCase(c, f.valeurs?.[c.id]).map(lien).filter(Boolean).join(', ')
+      : f.valeurs?.[c.id]]),
     ['Étiquettes', f.etiquettes?.join(', ')],
   ].filter(([, v]) => v !== undefined && v !== null && v !== '');
 }

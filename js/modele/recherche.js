@@ -1,3 +1,4 @@
+import { fichesCase } from './types.js';
 // Recherche dans les fiches d'un univers, sans tenir compte des majuscules ni des accents.
 
 // Texte mis en forme (HTML) → texte simple, liens [[Nom]] sans leurs crochets.
@@ -63,7 +64,8 @@ export function chercher(fiches, types, q) {
     const zones = [['texte', texte, texteP], ['secrets', secrets, secretsP]].filter(([, s, p]) => trouver(s, q, p).length);
     const aussi = [
       (f.autresNoms ?? []).some(contient) && 'les autres noms',
-      ...(type?.cases ?? []).filter(c => contient(c.sorte === 'fiche' ? nomDe.get(f.valeurs?.[c.id]) : f.valeurs?.[c.id]))
+      ...(type?.cases ?? []).filter(c => c.sorte === 'fiche' || c.sorte === 'fiches' ? fichesCase(c, f.valeurs?.[c.id]).some(id => contient(nomDe.get(id)))
+        : c.sorte !== 'coche' && contient(f.valeurs?.[c.id]))
         .map(c => `la case ${c.nom}`),
       (f.etiquettes ?? []).some(contient) && 'les étiquettes',
       zones.length > 1 && 'les secrets',

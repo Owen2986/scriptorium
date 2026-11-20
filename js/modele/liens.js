@@ -1,3 +1,4 @@
+import { fichesCase } from './types.js';
 import { plier, texteBrut, extrait } from './recherche.js';
 
 // Liens [[Nom de fiche]] : un nom est reconnu sans tenir compte des majuscules, des accents ni des espaces en trop.
@@ -59,7 +60,7 @@ export function citeeDans(cible, fiches, types) {
     const [mot] = vise(f.texte);
     const ailleurs = [
       vise(f.secrets).length && 'les secrets',
-      ...(types.find(t => t.id === f.typeId)?.cases ?? []).filter(c => c.sorte === 'fiche' && f.valeurs?.[c.id] === cible.id).map(c => `la case ${c.nom}`),
+      ...(types.find(t => t.id === f.typeId)?.cases ?? []).filter(c => fichesCase(c, f.valeurs?.[c.id]).includes(cible.id)).map(c => `la case ${c.nom}`),
     ].filter(Boolean);
     if (mot || ailleurs.length) resultats.push({ fiche: f, mot, extrait: mot ? extrait(texteBrut(f.texte.replace(/<(h[23])\b[^>]*>.*?<\/\1>/gs, ' ')), mot, 40, 100) : null, ailleurs });
   }

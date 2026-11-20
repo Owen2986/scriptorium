@@ -11,7 +11,7 @@ import { etatFiche, differences, versionsFiche, garderVersion } from '../js/mode
 import { creerExempleSiBesoin } from '../js/modele/exemple.js';
 import { chercher, texteBrut, extrait } from '../js/modele/recherche.js';
 import { statistiques, compterMots } from '../js/modele/statistiques.js';
-import { versMarkdown, universMarkdown } from '../js/modele/export.js';
+import { versMarkdown, universMarkdown, proprietes } from '../js/modele/export.js';
 import { assurerTypes, typesUnivers, supprimerType, nouveauType, copierType, ICONES } from '../js/modele/types.js';
 
 const NOM = 'scriptorium-test';
@@ -379,6 +379,19 @@ test('statistiques : mots, citations, fiches que rien ne cite, liens vers des fi
   egal(s.plusCitees.map(c => [c.fiche.id, c.n]), [['a', 3], ['b', 1]]);
   egal(s.orphelines.map(f => f.id), ['c']);
   egal(s.absents.map(a => [a.nom, a.sources.map(f => f.id)]), [['Tour', ['b', 'c']]]);
+});
+
+test('case à cocher et plusieurs fiches liées : export, « Citée dans », statistiques, recherche', () => {
+  const type = { id: 't', nom: 'Groupe', cases: [{ id: 'k', nom: 'Secret', sorte: 'coche' }, { id: 'm', nom: 'Membres', sorte: 'fiches' },
+    { id: 'u', nom: 'Chef', sorte: 'fiche' }] };
+  const fiches = [{ id: 'a', typeId: 't', nom: 'Aldric' }, { id: 'b', typeId: 't', nom: 'Bran' },
+    { id: 'o', typeId: 't', nom: 'Ordre', valeurs: { k: true, m: ['a', 'b'], u: ['b'] } }]; // u : ancienne case « plusieurs » repassée en « une »
+  const nomDe = new Map(fiches.map(f => [f.id, f.nom]));
+  egal(proprietes(fiches[2], type, nomDe).filter(([n]) => n !== 'Autres noms'), [['Secret', 'Oui'], ['Membres', '[[Aldric]], [[Bran]]'], ['Chef', '[[Bran]]']]);
+  egal(proprietes(fiches[0], type, nomDe), [['Secret', 'Non']]);
+  egal(citeeDans(fiches[1], fiches, [type]).map(r => r.ailleurs), [['la case Membres', 'la case Chef']]);
+  egal(statistiques(fiches, [type]).plusCitees.map(c => [c.fiche.id, c.n]), [['b', 2], ['a', 1]]);
+  egal(chercher(fiches, [type], 'bran').map(r => r.fiche.id), ['b', 'o']);
 });
 
 let echecs = 0;

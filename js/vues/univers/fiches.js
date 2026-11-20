@@ -1,4 +1,4 @@
-import { iconeSvg, typesUnivers } from '../../modele/types.js';
+import { iconeSvg, typesUnivers, fichesCase } from '../../modele/types.js';
 import { nouvelleFiche, fichesUnivers, TRIS, parentesPossibles, dupliquerFiche } from '../../modele/fiches.js';
 import { nouvelId } from '../../modele/univers.js';
 import { mettreALaCorbeille } from '../../modele/corbeille.js';
@@ -10,7 +10,7 @@ import { message } from '../../ui/message.js';
 import { htmlMenu, brancherMenu } from '../../ui/menu.js';
 import { editeur, depuisTexteBrut, nettoyer } from '../../ui/texte-riche.js';
 import { cle, indexNoms, renommerLiens, suggestions, citeeDans } from '../../modele/liens.js';
-import { decorerLiens, bulleLiens, suggestionsLiens } from '../../ui/liens.js';
+import { decorerLiens, bulleLiens, suggestionsLiens, suggestionsChamp } from '../../ui/liens.js';
 import { ouvrirUnivers } from './commun.js';
 import { exporter } from './export.js';
 import { surligne } from './recherche.js';
@@ -281,9 +281,9 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   bulleLiens($('.zone-texte'), decrire);
   bulleLiens($('.zone-secrets'), decrire);
   // Suggestions en tapant [[ : les autres fiches, avec leur type (ou le nom de la fiche pour un autre nom).
-  const proposer = q => suggestions(liste.filter(f => f !== fiche), q).map(({ nom, fiche: f, place }) => {
+  const proposer = (q, garder = f => f !== fiche) => suggestions(liste.filter(garder), q).map(({ nom, fiche: f, place }) => {
     const t = types.find(t => t.id === f.typeId);
-    return { nom, place, info: nom === f.nom ? t?.nom ?? '' : f.nom, icone: iconeSvg(t?.icone), couleur: t?.couleur ?? 'var(--texte-doux)' };
+    return { fiche: f, nom, place, info: nom === f.nom ? t?.nom ?? '' : f.nom, icone: iconeSvg(t?.icone), couleur: t?.couleur ?? 'var(--texte-doux)' };
   });
   const creerDepuisLien = nom => avecType(page, types, t => creer(stockage, u, t, nom));
   suggestionsLiens($('.zone-texte'), proposer, creerDepuisLien);
@@ -324,14 +324,65 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   champAutreNom.addEventListener('change', ajouterAutreNom);
   champAutreNom.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); ajouterAutreNom(); } });
 
+  // Case « plusieurs fiches liées » : pastilles (clic = ouvrir, × = retirer) + champ avec suggestions.
+  const parId = new Map(liste.map(f => [f.id, f]));
+  function caseFiches(c) {
+    const div = document.createElement('div');
+    div.className = 'large case-fiches';
+    div.innerHTML = '<span></span><ul class="etiquettes"></ul><div class="ajout-liee"><input autocomplete="off" placeholder="Ajouter une fiche"></div>';
+    div.querySelector('span').textContent = c.nom || 'Sans nom';
+    const champ = div.querySelector('input');
+    champ.setAttribute('aria-label', `Ajouter une fiche : ${c.nom || 'Sans nom'}`);
+    const ids = () => fichesCase(c, fiche.valeurs[c.id]);
+    const afficher = () => div.querySelector('ul').replaceChildren(...ids().map(id => parId.get(id)).filter(Boolean).map(f => {
+      const li = document.createElement('li');
+      li.className = 'etiquette';
+      li.innerHTML = '<a></a><button type="button">×</button>';
+      Object.assign(li.querySelector('a'), { href: lienFiche(u, f), textContent: f.nom || 'Sans nom' });
+      li.querySelector('button').setAttribute('aria-label', `Retirer ${f.nom || 'Sans nom'}`);
+      li.querySelector('button').addEventListener('click', () => mettre(ids().filter(x => x !== f.id)));
+      return li;
+    }));
+    const mettre = async liees => {
+      if (liees.length) fiche.valeurs[c.id] = liees;
+      else delete fiche.valeurs[c.id];
+      afficher();
+      await enregistrer();
+    };
+    suggestionsChamp(champ, q => proposer(q, f => f !== fiche && !ids().includes(f.id) && (!c.typeCibleId || f.typeId === c.typeCibleId)),
+      choix => {
+        if (!choix.creer) return mettre([...ids(), choix.fiche.id]);
+        avecType(page, types.filter(t => !c.typeCibleId || t.id === c.typeCibleId), async t => {
+          const n = nouvelleFiche(u.id, t.id, { nom: choix.nom });
+          await stockage.put('fiches', n);
+          await mettre([...ids(), n.id]);
+          location.hash = lienFiche(u, n);
+        });
+      });
+    afficher();
+    return div;
+  }
+
   // Cases du type.
   const cases = $('.cases-fiche');
   for (const c of type?.cases ?? []) {
+    if (c.sorte === 'fiches') {
+      cases.append(caseFiches(c));
+      continue;
+    }
     const label = document.createElement('label');
     if (c.sorte === 'texte' || c.sorte === 'fiche') label.className = 'large'; // les cases courtes vont par deux
     label.textContent = c.nom || 'Sans nom';
     const v = fiche.valeurs[c.id];
     let champ;
+    if (c.sorte === 'coche') {
+      label.className = 'large case-cocher';
+      champ = Object.assign(document.createElement('input'), { type: 'checkbox', checked: !!v });
+      champ.dataset.case = c.id;
+      label.prepend(champ);
+      cases.append(label);
+      continue;
+    }
     if (c.sorte === 'liste' || c.sorte === 'fiche') {
       champ = document.createElement('select');
       champ.add(new Option('—', ''));
@@ -344,7 +395,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
       champ.type = c.sorte === 'nombre' ? 'number' : 'text';
       champ.autocomplete = 'off';
     }
-    champ.value = v ?? '';
+    champ.value = (c.sorte === 'fiche' ? fichesCase(c, v)[0] : v) ?? '';
     champ.dataset.case = c.id;
     label.append(champ);
     cases.append(label);
@@ -362,7 +413,8 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
     else if (t.name === 'parentId') fiche.parentId = t.value || null;
     else if (t.dataset.case) {
       const c = type.cases.find(x => x.id === t.dataset.case);
-      if (t.value === '') delete fiche.valeurs[c.id];
+      if (c.sorte === 'coche' ? !t.checked : t.value === '') delete fiche.valeurs[c.id];
+      else if (c.sorte === 'coche') fiche.valeurs[c.id] = true;
       else fiche.valeurs[c.id] = c.sorte === 'nombre' ? Number(t.value) : t.value;
     } else return;
     enregistrer();
@@ -415,7 +467,7 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
   });
 
   // Étiquettes.
-  const afficherEtiquettes = () => pastilles($('.cote-fiche .etiquettes'), fiche.etiquettes, 'data-etiquette', 'l’étiquette');
+  const afficherEtiquettes = () => pastilles($('.cote-fiche > .etiquettes'), fiche.etiquettes, 'data-etiquette', 'l’étiquette');
   afficherEtiquettes();
   $('.ajout-etiquette').addEventListener('submit', e => {
     e.preventDefault();

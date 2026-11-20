@@ -115,6 +115,60 @@ export function bulleLiens(zone, decrire) {
   zone.addEventListener('focusout', e => { if (!zone.contains(e.relatedTarget)) fermer(); });
 }
 
+// Une ligne de la liste de suggestions : fiche proposée, ou « Créer la fiche « … » ».
+function ligneSuggestion(c, i) {
+  const li = document.createElement('li');
+  li.setAttribute('role', 'option');
+  li.dataset.i = i;
+  if (c.creer) {
+    li.className = 'creer';
+    li.innerHTML = 'Créer la fiche <em></em>';
+    li.querySelector('em').textContent = `« ${c.nom} »`;
+    return li;
+  }
+  li.style.setProperty('--couleur-type', c.couleur);
+  li.innerHTML = `${c.icone}<span class="nom"></span><small></small>`;
+  const [d, f] = c.place;
+  li.querySelector('.nom').append(c.nom.slice(0, d), Object.assign(document.createElement('b'), { textContent: c.nom.slice(d, f) }), c.nom.slice(f));
+  li.querySelector('small').textContent = c.info;
+  return li;
+}
+
+// Même liste sous un simple champ (case « plusieurs fiches liées ») : `choisir(c)` reçoit la ligne choisie.
+export function suggestionsChamp(champ, proposer, choisir) {
+  const liste = document.createElement('ul');
+  liste.className = 'suggestions';
+  liste.setAttribute('role', 'listbox');
+  liste.hidden = true;
+  champ.after(liste);
+  let choix = [], actif = 0;
+  const fermer = () => { liste.hidden = true; };
+  const surligner = () => [...liste.children].forEach((li, i) => li.setAttribute('aria-selected', i === actif));
+  const prendre = i => { const c = choix[i]; champ.value = ''; fermer(); choisir(c); };
+  champ.addEventListener('input', () => {
+    const q = champ.value.trim();
+    choix = q ? proposer(q) : [];
+    if (!choix.length && q) choix = [{ nom: q, creer: true }];
+    if (!choix.length) return fermer();
+    actif = 0;
+    liste.replaceChildren(...choix.map(ligneSuggestion));
+    surligner();
+    liste.hidden = false;
+  });
+  champ.addEventListener('keydown', e => {
+    if (liste.hidden) return;
+    const d = { ArrowDown: 1, ArrowUp: -1 }[e.key];
+    if (d) actif = (actif + d + choix.length) % choix.length, surligner();
+    else if (e.key === 'Enter') prendre(actif);
+    else if (e.key === 'Escape') fermer();
+    else return;
+    e.preventDefault();
+  });
+  liste.addEventListener('mousedown', e => e.preventDefault()); // garder la main dans le champ
+  liste.addEventListener('click', e => { const li = e.target.closest('li'); if (li) prendre(+li.dataset.i); });
+  champ.addEventListener('blur', fermer);
+}
+
 // Liste de suggestions quand on tape [[ dans `zone` (en position relative).
 // `proposer(q)` → [{ nom, place: [début, fin], info, icone (svg), couleur }] ; `creer(nom)` crée la fiche absente.
 // Choisir pose [[nom]] (que `decorerLiens` transforme en lien) ; Échap ferme la liste.
@@ -154,23 +208,7 @@ export function suggestionsLiens(zone, proposer, creer) {
     if (!choix.length) return fermer();
     tape = [n, m.index, s.anchorOffset];
     actif = 0;
-    liste.replaceChildren(...choix.map((c, i) => {
-      const li = document.createElement('li');
-      li.setAttribute('role', 'option');
-      li.dataset.i = i;
-      if (c.creer) {
-        li.className = 'creer';
-        li.innerHTML = 'Créer la fiche <em></em>';
-        li.querySelector('em').textContent = `« ${c.nom} »`;
-        return li;
-      }
-      li.style.setProperty('--couleur-type', c.couleur);
-      li.innerHTML = `${c.icone}<span class="nom"></span><small></small>`;
-      const [d, f] = c.place;
-      li.querySelector('.nom').append(c.nom.slice(0, d), Object.assign(document.createElement('b'), { textContent: c.nom.slice(d, f) }), c.nom.slice(f));
-      li.querySelector('small').textContent = c.info;
-      return li;
-    }));
+    liste.replaceChildren(...choix.map(ligneSuggestion));
     surligner();
     liste.hidden = false;
     const r = document.createRange();

@@ -1,3 +1,4 @@
+import { fichesCase } from './types.js';
 import { cle, indexNoms, LIEN } from './liens.js';
 import { texteBrut } from './recherche.js';
 
@@ -22,8 +23,9 @@ export function statistiques(fiches, types) {
       if (!a.sources.includes(f)) a.sources.push(f);
     }
     for (const c of types.find(t => t.id === f.typeId)?.cases ?? []) {
-      const id = c.sorte === 'fiche' && f.valeurs?.[c.id];
-      if (citations.has(id) && id !== f.id) citations.set(id, citations.get(id) + 1);
+      for (const id of fichesCase(c, f.valeurs?.[c.id])) {
+        if (citations.has(id) && id !== f.id) citations.set(id, citations.get(id) + 1);
+      }
     }
   }
   const fiche = new Map(fiches.map(f => [f.id, f]));
