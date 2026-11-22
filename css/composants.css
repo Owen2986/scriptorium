@@ -565,3 +565,37 @@ mark { font: inherit; color: var(--texte); background: color-mix(in srgb, var(--
 .ligne-objectif input { width: 10rem; }
 .avancee { flex: 1; min-width: 10rem; }
 input.cache:focus-visible + .garde { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Manuscrit : plan d'un tome */
+.section-plan h2 { margin-top: var(--espace-5); }
+.plan { list-style: none; margin: 0; padding: 0; border: 1px solid var(--bordure); border-radius: var(--rayon-carte); background: var(--surface); }
+.plan > li { display: flex; align-items: center; gap: var(--espace-3); min-height: 52px; padding: var(--espace-1) var(--espace-1) var(--espace-1) calc(var(--espace-3) + var(--niveau, 0) * 1.5rem); }
+.plan > li + li { border-top: 1px solid var(--bordure); }
+.plan > li.vide { padding: var(--espace-3); }
+.plan .titre { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.plan .titre a { color: inherit; text-decoration: none; }
+.plan .titre a:hover { text-decoration: underline; }
+.plan .titre input { margin: 0; }
+.plan .partie .titre { font: 500 1.05rem var(--police-titre); }
+.plan .chapitre .titre { font-weight: 500; }
+.plan .meta { display: flex; align-items: center; gap: var(--espace-3); color: var(--texte-doux); font-size: .875rem; white-space: nowrap; }
+.etat::before { content: ""; display: inline-block; width: .55rem; height: .55rem; margin-right: .4rem; border-radius: 50%; background: var(--pastille); vertical-align: .05em; }
+.etat.a-ecrire { --pastille: #a3a3a3; }
+.etat.brouillon { --pastille: #d08a2e; }
+.etat.a-relire { --pastille: #3b82c4; }
+.etat.termine { --pastille: #3f8f4f; }
+.plan .mots { min-width: 5.5rem; text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 40rem) {
+  .plan > li { display: grid; grid-template-columns: 1fr auto; column-gap: var(--espace-2); padding-left: calc(var(--espace-3) + var(--niveau, 0) * .9rem); }
+  .plan .titre { grid-column: 1; grid-row: 1; padding-top: var(--espace-2); }
+  .plan .meta { grid-column: 1; grid-row: 2; padding-bottom: var(--espace-2); }
+  .plan .ancre-menu { grid-column: 2; grid-row: 1 / 3; }
+  .plan .mots { min-width: 0; text-align: left; }
+}
+.ajouts { margin-top: var(--espace-3); }
+.menu .sous { padding: var(--espace-1) var(--espace-2) 0; color: var(--texte-doux); font-size: .8rem; }
+.menu .etats { display: flex; flex-wrap: wrap; gap: 2px; padding: var(--espace-1); }
+.menu .etats button { width: auto; min-height: 36px; padding: 0 var(--espace-2); font-size: .875rem; }
+.menu .etats button[aria-pressed="true"] { background: var(--fond); border-color: var(--bordure); }
+.choix-deplacer { list-style: none; padding: 0; display: grid; gap: var(--espace-1); }
+.choix-deplacer button { width: 100%; justify-content: flex-start; text-align: left; padding-left: calc(var(--espace-3) + var(--niveau, 0) * 1.25rem); }

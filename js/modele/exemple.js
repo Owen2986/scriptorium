@@ -2,6 +2,7 @@ import { nouvelUnivers } from './univers.js';
 import { assurerTypes, typesUnivers } from './types.js';
 import { nouvelleFiche } from './fiches.js';
 import { nouveauTome } from './tomes.js';
+import { nouveauNoeud } from './plan.js';
 
 const NOM = 'Royaume d’Elsméria';
 
@@ -88,9 +89,21 @@ export async function creerExempleSiBesoin(stockage) {
     if (u && !(await stockage.query('tomes', 'universId', u.id)).length) await stockage.put('tomes', TOME(u.id));
     await stockage.put('meta', { cle: 'tomeExemple', valeur: true });
   }
+  if (!await stockage.get('meta', 'planExemple')) {
+    const tome = u && (await stockage.query('tomes', 'universId', u.id)).find(t => t.titre === 'L’Héritier des brumes');
+    if (tome && !(await stockage.query('noeudsManuscrit', 'tomeId', tome.id)).length) await stockage.lot(PLAN(tome));
+    await stockage.put('meta', { cle: 'planExemple', valeur: true });
+  }
 }
 
-// Tome d'exemple (ses chapitres et scènes viendront avec le plan).
+// Plan du tome d'exemple : 2 chapitres, 2 scènes chacun (leur texte viendra avec l'écran d'écriture).
+const PLAN = tome => [['Les cloches de Port-Brume', ['Sur le quai', 'La Lanterne Noire']], ['La gouverneure', ['Le palais', 'La lettre']]]
+  .flatMap(([chapitre, scenes], i) => {
+    const c = { ...nouveauNoeud(tome, 'chapitre'), titre: chapitre, etat: 'brouillon', ordre: i };
+    return [c, ...scenes.map((titre, j) => ({ ...nouveauNoeud(tome, 'scene', c.id), titre, ordre: j }))];
+  }).map(n => ['put', 'noeudsManuscrit', n]);
+
+// Tome d'exemple.
 const TOME = universId => nouveauTome(universId, { titre: 'L’Héritier des brumes', objectif: 80000, ordre: 0,
   resume: 'Vingt ans après avoir quitté Port-Brume, Aldric Ventemer revient avec une lettre qu’il n’a jamais ouverte. '
     + 'La gouverneure Maëlle Corbin l’attend, et la magie du royaume s’éteint un peu plus chaque hiver.' });

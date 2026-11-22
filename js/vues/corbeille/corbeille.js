@@ -3,6 +3,7 @@ import { iconeSvg, typesUnivers } from '../../modele/types.js';
 import { lireReglages } from '../../modele/reglages.js';
 import { message } from '../../ui/message.js';
 import { choisirType } from '../univers/fiches.js';
+import { SORTES_PLAN } from '../../modele/plan.js';
 
 const pluriel = (n, mot) => `${n} ${mot}${n > 1 ? 's' : ''}`;
 const depuis = date => {
@@ -60,6 +61,8 @@ export async function vueCorbeille(page, params, contexte) {
     } else if (sorte === 'type') {
       const n = fiches.filter(f => f.typeId === objet.id).length;
       [icone, couleur, info] = [objet.icone, objet.couleur, `Type de fiche${n ? ` · ${pluriel(n, 'fiche')}` : ''} · supprimé`];
+    } else if (sorte === 'noeud') {
+      [icone, couleur, info] = ['scroll-unfurled', universParId.get(objet.universId)?.couleur, `${SORTES_PLAN[objet.sorte]} · supprimé${objet.sorte === 'chapitre' ? '' : 'e'}`];
     } else if (sorte === 'tome') {
       [icone, couleur, info] = ['book-cover', universParId.get(objet.universId)?.couleur, 'Tome · supprimé'];
     } else {
@@ -70,7 +73,7 @@ export async function vueCorbeille(page, params, contexte) {
     li.innerHTML = `${iconeSvg(icone)}<span class="nom"><span></span><small></small></span>
       <span class="boutons"><button type="button" data-action="restaurer">Restaurer</button>
       <button type="button" class="danger" data-action="supprimer">Supprimer</button></span>`;
-    const nom = objet.nom || objet.titre || 'Sans nom';
+    const nom = objet.nom || objet.titre || (sorte === 'noeud' ? `${SORTES_PLAN[objet.sorte]} sans titre` : 'Sans nom');
     li.querySelector('.nom span').textContent = nom;
     li.querySelector('small').textContent = `${info} ${depuis(objet.corbeille)}`;
     li.querySelector('[data-action="supprimer"]').setAttribute('aria-label', `Supprimer définitivement ${nom}`);
@@ -85,9 +88,16 @@ export async function vueCorbeille(page, params, contexte) {
       if (action !== 'restaurer') return;
       const fini = async changements => {
         await restaurer(stockage, sorte, objet, changements);
-        message(`« ${nom} » restauré${sorte === 'fiche' ? 'e' : ''}`);
+        message(`« ${nom} » restauré${sorte === 'fiche' || objet.sorte === 'scene' || objet.sorte === 'partie' ? 'e' : ''}`);
         afficherDeNouveau();
       };
+      // Un élément du plan revient dans son tome ; si son parent n'y est plus, il va à la racine du plan.
+      if (sorte === 'noeud') {
+        const tome = await stockage.get('tomes', objet.tomeId);
+        if (!tome || tome.corbeille) return alert('Son tome est à la corbeille ou n’existe plus : restaurez d’abord le tome.');
+        const parent = objet.parentId && await stockage.get('noeudsManuscrit', objet.parentId);
+        return fini(parent && !parent.corbeille ? {} : { parentId: null });
+      }
       // Une fiche dont le type n'existe plus (ou est à la corbeille) doit en recevoir un autre.
       const t = typeParId.get(objet.typeId);
       if (sorte !== 'fiche' || (t && !t.corbeille)) return fini();

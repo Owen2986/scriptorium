@@ -1,5 +1,6 @@
 import { nouvelId } from './univers.js';
 import { compterMots } from './statistiques.js';
+import { noeudsTome, lignesPlan } from './plan.js';
 
 export const nouveauTome = (universId, donnees = {}) => ({
   id: nouvelId(), universId, titre: 'Nouveau tome', resume: '', couvertureId: null, objectif: null,
@@ -17,11 +18,10 @@ export const TRIS_TOMES = {
 export const tomesUnivers = async (stockage, universId) =>
   (await stockage.query('tomes', 'universId', universId)).filter(t => !t.corbeille).sort(TRIS_TOMES.ordre[1]);
 
-// Parties, chapitres et scènes d'un tome (hors corbeille), avec leurs textes.
-const noeuds = async (stockage, tomeId) => (await stockage.query('noeudsManuscrit', 'tomeId', tomeId)).filter(n => !n.corbeille);
-
+// Mots de tout le tome (sans ce qui est à la corbeille).
 export async function motsTome(stockage, tomeId) {
-  const textes = await Promise.all((await noeuds(stockage, tomeId)).map(n => stockage.get('textes', n.id)));
+  const lignes = lignesPlan(await noeudsTome(stockage, tomeId));
+  const textes = await Promise.all(lignes.map(l => stockage.get('textes', l.noeud.id)));
   return textes.reduce((total, t) => total + compterMots(t?.html), 0);
 }
 
@@ -33,7 +33,7 @@ export async function dupliquerTome(stockage, tome) {
   const img = tome.couvertureId && await stockage.get('images', tome.couvertureId);
   copie.couvertureId = img ? nouvelId() : null;
   if (img) ops.push(['put', 'images', { ...img, id: copie.couvertureId }]);
-  const liste = await noeuds(stockage, tome.id);
+  const liste = lignesPlan(await noeudsTome(stockage, tome.id)).map(l => l.noeud); // sans ce qui est à la corbeille
   const ids = new Map(liste.map(n => [n.id, nouvelId()]));
   for (const n of liste) {
     ops.push(['put', 'noeudsManuscrit', { ...n, id: ids.get(n.id), tomeId: copie.id, parentId: ids.get(n.parentId) ?? null }]);

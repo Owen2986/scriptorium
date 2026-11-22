@@ -5,6 +5,7 @@ import { urlImage } from '../../ui/images.js';
 import { dessin } from '../../ui/icones.js';
 import { message } from '../../ui/message.js';
 import { ouvrirUnivers } from './commun.js';
+import { afficherPlan } from './plan.js';
 
 const lienTome = (u, t) => `#/univers/${encodeURIComponent(u.id)}/manuscrit/${encodeURIComponent(t.id)}`;
 const nombre = n => n.toLocaleString('fr');
@@ -149,8 +150,8 @@ export async function vueTome(page, { id, tomeId }, { stockage }) {
       <button type="button" data-action="dupliquer">Dupliquer le tome</button>
       <button type="button" class="danger" data-action="supprimer">Supprimer le tome</button>
     </div>
-    <h2>Plan</h2>
-    <p class="vide">Le plan arrivera bientôt</p>`);
+    <section class="section-plan"></section>`);
+  await afficherPlan(page.querySelector('.section-plan'), stockage, tome);
 
   const form = page.querySelector('form');
   const champs = form.elements;

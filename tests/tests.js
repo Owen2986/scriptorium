@@ -10,6 +10,7 @@ import { contenuCorbeille, mettreALaCorbeille, restaurer, supprimerDefinitivemen
 import { etatFiche, differences, versionsFiche, garderVersion } from '../js/modele/versions.js';
 import { creerExempleSiBesoin } from '../js/modele/exemple.js';
 import { chercher, texteBrut, extrait } from '../js/modele/recherche.js';
+import { nouveauNoeud, lignesPlan, titreNoeud, motsPlan, ciblesPossibles, echanger } from '../js/modele/plan.js';
 import { nouveauTome, tomesUnivers, motsTome, dupliquerTome, TRIS_TOMES } from '../js/modele/tomes.js';
 import { statistiques, compterMots } from '../js/modele/statistiques.js';
 import { versMarkdown, universMarkdown, proprietes } from '../js/modele/export.js';
@@ -437,6 +438,42 @@ test('dupliquer un univers copie aussi ses tomes et leur contenu', async () => {
   const [nc] = await s.query('noeudsManuscrit', 'tomeId', tc.id);
   egal([tc.id !== t.id, nc.id !== 'n1', (await s.get('textes', nc.id))?.html], [true, true, '<p>Deux mots</p>']);
   egal((await s.tous('noeudsManuscrit')).length, 2);
+  s.fermer();
+});
+
+test('plan : ordre de lecture, numéros de chapitres, mots, déplacer, corbeille', async () => {
+  const s = await creerStockage(NOM);
+  const tome = nouveauTome('u1', { titre: 'T' });
+  const n = (sorte, parentId, ordre, titre = '') => ({ ...nouveauNoeud(tome, sorte, parentId), ordre, titre });
+  const p1 = n('partie', null, 0, 'Début');
+  const c1 = n('chapitre', p1.id, 0, 'Le retour');
+  const s1 = n('scene', c1.id, 0, 'Quai'), s2 = n('scene', c1.id, 1);
+  const c2 = n('chapitre', p1.id, 1);
+  const c3 = n('chapitre', null, 1, 'Fin');
+  const tous = [c3, s2, c2, p1, s1, c1];
+  await s.lot([['put', 'tomes', tome], ...tous.map(x => ['put', 'noeudsManuscrit', x]),
+    ['put', 'textes', { noeudId: s1.id, html: '<p>un deux trois</p>' }], ['put', 'textes', { noeudId: c1.id, html: '<p>quatre</p>' }],
+    ['put', 'textes', { noeudId: c3.id, html: '<p>cinq six</p>' }]]);
+  let lignes = lignesPlan(tous);
+  egal(lignes.map(titreNoeud), ['Début', 'Chapitre 1 – Le retour', 'Quai', 'Scène sans titre', 'Chapitre 2', 'Chapitre 3 – Fin']);
+  egal(lignes.map(l => l.niveau), [0, 1, 2, 2, 1, 0]);
+  const mots = await motsPlan(s, lignes);
+  egal([mots.get(p1.id), mots.get(c1.id), mots.get(s1.id), mots.get(c3.id)], [4, 4, 3, 2]);
+  egal(await motsTome(s, tome.id), 6);
+
+  egal(ciblesPossibles(c1, lignes).map(titreNoeud), ['Début', 'Chapitre 2', 'Chapitre 3 – Fin']); // ni lui ni ses scènes
+  egal(echanger(c1, lignes, -1), []); // déjà en premier dans sa partie
+  echanger(c1, lignes, 1);
+  egal(lignesPlan(tous).map(titreNoeud).slice(1, 3), ['Chapitre 1', 'Chapitre 2 – Le retour']);
+
+  await mettreALaCorbeille(s, 'noeud', c1); // le chapitre et ses scènes disparaissent du plan
+  c1.corbeille = 1;
+  egal(lignesPlan(tous).length, 3);
+  egal(await motsTome(s, tome.id), 2);
+  egal((await contenuCorbeille(s)).map(e => e.sorte), ['noeud']);
+  await supprimerDefinitivement(s, 'noeud', await s.get('noeudsManuscrit', c1.id));
+  egal([await s.get('noeudsManuscrit', s1.id), await s.get('textes', s1.id), await s.get('textes', c1.id)], [undefined, undefined, undefined]);
+  egal((await s.tous('noeudsManuscrit')).length, 3);
   s.fermer();
 });
 
