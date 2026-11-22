@@ -10,6 +10,7 @@ import { contenuCorbeille, mettreALaCorbeille, restaurer, supprimerDefinitivemen
 import { etatFiche, differences, versionsFiche, garderVersion } from '../js/modele/versions.js';
 import { creerExempleSiBesoin } from '../js/modele/exemple.js';
 import { chercher, texteBrut, extrait } from '../js/modele/recherche.js';
+import { nouveauTome, tomesUnivers, motsTome, dupliquerTome, TRIS_TOMES } from '../js/modele/tomes.js';
 import { statistiques, compterMots } from '../js/modele/statistiques.js';
 import { versMarkdown, universMarkdown, proprietes } from '../js/modele/export.js';
 import { assurerTypes, typesUnivers, supprimerType, nouveauType, copierType, ICONES } from '../js/modele/types.js';
@@ -392,6 +393,51 @@ test('case à cocher et plusieurs fiches liées : export, « Citée dans », sta
   egal(citeeDans(fiches[1], fiches, [type]).map(r => r.ailleurs), [['la case Membres', 'la case Chef']]);
   egal(statistiques(fiches, [type]).plusCitees.map(c => [c.fiche.id, c.n]), [['b', 2], ['a', 1]]);
   egal(chercher(fiches, [type], 'bran').map(r => r.fiche.id), ['b', 'o']);
+});
+
+test('tomes : ordre, mots, dupliquer avec le contenu, corbeille et suppression', async () => {
+  const s = await creerStockage(NOM);
+  const t1 = nouveauTome('u1', { titre: 'Un', ordre: 2, couvertureId: 'i1' });
+  const t2 = nouveauTome('u1', { titre: 'Deux', ordre: 1 });
+  await s.lot([['put', 'univers', { id: 'u1', nom: 'U' }], ['put', 'tomes', t1], ['put', 'tomes', t2],
+    ['put', 'images', { id: 'i1', universId: 'u1', fichier: new Blob(['c']) }],
+    ['put', 'noeudsManuscrit', { id: 'c1', tomeId: t1.id, parentId: null, titre: 'Chapitre 1' }],
+    ['put', 'noeudsManuscrit', { id: 's1', tomeId: t1.id, parentId: 'c1', titre: 'Scène 1' }],
+    ['put', 'textes', { noeudId: 's1', html: '<p>Il était une fois [[Aria]].</p>' }]]);
+  egal((await tomesUnivers(s, 'u1')).map(t => t.titre), ['Deux', 'Un']);
+  egal([...[t1, t2]].sort(TRIS_TOMES.recents[1])[0].titre, [t1, t2].sort((a, b) => b.creeLe - a.creeLe)[0].titre);
+  egal(await motsTome(s, t1.id), 5);
+
+  const c = await dupliquerTome(s, t1);
+  egal(c.titre, 'Un (copie)');
+  const [ch, sc] = (await s.query('noeudsManuscrit', 'tomeId', c.id)).sort((a, b) => a.titre.localeCompare(b.titre));
+  egal([sc.parentId === ch.id, ch.id !== 'c1', c.couvertureId !== 'i1'], [true, true, true]);
+  egal(await motsTome(s, c.id), 5);
+  egal(await (await s.get('images', c.couvertureId)).fichier.text(), 'c');
+
+  await mettreALaCorbeille(s, 'tome', t1);
+  egal((await tomesUnivers(s, 'u1')).map(t => t.titre), ['Deux', 'Un (copie)']);
+  egal((await contenuCorbeille(s)).map(e => e.sorte), ['tome']);
+  await supprimerDefinitivement(s, 'tome', await s.get('tomes', t1.id));
+  egal([await s.get('tomes', t1.id), await s.get('noeudsManuscrit', 's1'), await s.get('textes', 's1'), await s.get('images', 'i1')],
+    [undefined, undefined, undefined, undefined]);
+
+  await supprimerUnivers(s, 'u1'); // emporte aussi les chapitres, scènes et textes des tomes
+  egal([(await s.tous('tomes')).length, (await s.tous('noeudsManuscrit')).length, (await s.tous('textes')).length], [0, 0, 0]);
+  s.fermer();
+});
+
+test('dupliquer un univers copie aussi ses tomes et leur contenu', async () => {
+  const s = await creerStockage(NOM);
+  const t = nouveauTome('u1', { titre: 'Un' });
+  await s.lot([['put', 'univers', { id: 'u1', nom: 'U' }], ['put', 'tomes', t],
+    ['put', 'noeudsManuscrit', { id: 'n1', tomeId: t.id, parentId: null }], ['put', 'textes', { noeudId: 'n1', html: '<p>Deux mots</p>' }]]);
+  const copie = await dupliquerUnivers(s, 'u1');
+  const [tc] = await s.query('tomes', 'universId', copie.id);
+  const [nc] = await s.query('noeudsManuscrit', 'tomeId', tc.id);
+  egal([tc.id !== t.id, nc.id !== 'n1', (await s.get('textes', nc.id))?.html], [true, true, '<p>Deux mots</p>']);
+  egal((await s.tous('noeudsManuscrit')).length, 2);
+  s.fermer();
 });
 
 let echecs = 0;

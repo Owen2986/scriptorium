@@ -1,6 +1,7 @@
 import { nouvelUnivers } from './univers.js';
 import { assurerTypes, typesUnivers } from './types.js';
 import { nouvelleFiche } from './fiches.js';
+import { nouveauTome } from './tomes.js';
 
 const NOM = 'Royaume d’Elsméria';
 
@@ -77,9 +78,19 @@ export async function creerExempleSiBesoin(stockage) {
     });
     await stockage.lot([['put', 'univers', u], ['put', 'meta', { cle: 'exempleCree', valeur: true }]]);
   }
-  if (await stockage.get('meta', 'fichesExemple')) return;
-  // shortcut: l'univers d'exemple créé avant les fiches est retrouvé par son nom ; à retirer une fois l'appli publiée.
+  // shortcut: l'univers d'exemple créé avant les fiches ou les tomes est retrouvé par son nom ; à retirer une fois l'appli publiée.
   const u = (await stockage.tous('univers')).find(x => x.nom === NOM);
-  if (u && !(await stockage.query('fiches', 'universId', u.id)).length) await ajouterFichesExemple(stockage, u);
-  await stockage.put('meta', { cle: 'fichesExemple', valeur: true });
+  if (!await stockage.get('meta', 'fichesExemple')) {
+    if (u && !(await stockage.query('fiches', 'universId', u.id)).length) await ajouterFichesExemple(stockage, u);
+    await stockage.put('meta', { cle: 'fichesExemple', valeur: true });
+  }
+  if (!await stockage.get('meta', 'tomeExemple')) {
+    if (u && !(await stockage.query('tomes', 'universId', u.id)).length) await stockage.put('tomes', TOME(u.id));
+    await stockage.put('meta', { cle: 'tomeExemple', valeur: true });
+  }
 }
+
+// Tome d'exemple (ses chapitres et scènes viendront avec le plan).
+const TOME = universId => nouveauTome(universId, { titre: 'L’Héritier des brumes', objectif: 80000, ordre: 0,
+  resume: 'Vingt ans après avoir quitté Port-Brume, Aldric Ventemer revient avec une lettre qu’il n’a jamais ouverte. '
+    + 'La gouverneure Maëlle Corbin l’attend, et la magie du royaume s’éteint un peu plus chaque hiver.' });

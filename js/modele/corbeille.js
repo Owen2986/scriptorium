@@ -1,7 +1,8 @@
-// Corbeille : un univers, un type ou une fiche supprimé reçoit `corbeille: <date>` au lieu d'être effacé.
+// Corbeille : un univers, un type, une fiche ou un tome supprimé reçoit `corbeille: <date>` au lieu d'être effacé.
 import { supprimerUnivers } from './univers.js';
+import { contenuTome } from './tomes.js';
 
-const STORE = { univers: 'univers', type: 'typesFiches', fiche: 'fiches' };
+const STORE = { univers: 'univers', type: 'typesFiches', fiche: 'fiches', tome: 'tomes' };
 
 // Tout ce qui est à la corbeille : [{ sorte, objet }]. Le contenu d'un univers à la corbeille n'est pas listé à part.
 export async function contenuCorbeille(stockage) {
@@ -30,6 +31,7 @@ export async function supprimerDefinitivement(stockage, sorte, objet) {
     for (const img of [objet.imageId, ...(objet.galerie ?? [])].filter(Boolean)) ops.push(['delete', 'images', img]);
     for (const v of await stockage.query('versions', 'ficheId', objet.id)) ops.push(['delete', 'versions', v.id]);
   }
+  if (sorte === 'tome') ops.push(...await contenuTome(stockage, objet));
   await stockage.lot(ops);
 }
 

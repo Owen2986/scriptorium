@@ -60,6 +60,8 @@ export async function vueCorbeille(page, params, contexte) {
     } else if (sorte === 'type') {
       const n = fiches.filter(f => f.typeId === objet.id).length;
       [icone, couleur, info] = [objet.icone, objet.couleur, `Type de fiche${n ? ` · ${pluriel(n, 'fiche')}` : ''} · supprimé`];
+    } else if (sorte === 'tome') {
+      [icone, couleur, info] = ['book-cover', universParId.get(objet.universId)?.couleur, 'Tome · supprimé'];
     } else {
       const n = fiches.filter(f => f.universId === objet.id).length;
       [icone, couleur, info] = ['book-cover', objet.couleur, `Univers · ${pluriel(n, 'fiche')} · supprimé`];
@@ -68,7 +70,7 @@ export async function vueCorbeille(page, params, contexte) {
     li.innerHTML = `${iconeSvg(icone)}<span class="nom"><span></span><small></small></span>
       <span class="boutons"><button type="button" data-action="restaurer">Restaurer</button>
       <button type="button" class="danger" data-action="supprimer">Supprimer</button></span>`;
-    const nom = objet.nom || 'Sans nom';
+    const nom = objet.nom || objet.titre || 'Sans nom';
     li.querySelector('.nom span').textContent = nom;
     li.querySelector('small').textContent = `${info} ${depuis(objet.corbeille)}`;
     li.querySelector('[data-action="supprimer"]').setAttribute('aria-label', `Supprimer définitivement ${nom}`);
