@@ -8,7 +8,9 @@ import { ouvrirUnivers } from './commun.js';
 
 const lienTome = (u, t) => `#/univers/${encodeURIComponent(u.id)}/manuscrit/${encodeURIComponent(t.id)}`;
 const nombre = n => n.toLocaleString('fr');
-const mots = (n, objectif) => `${nombre(n)} mot${n > 1 ? 's' : ''}${objectif ? ` sur ${nombre(objectif)}` : ''}`;
+const mots = (n, objectif) => n
+  ? `${nombre(n)} mot${n > 1 ? 's' : ''}${objectif ? ` sur ${nombre(objectif)}` : ''}`
+  : `Pas encore de texte${objectif ? ` · objectif ${nombre(objectif)} mots` : ''}`;
 const barre = (n, objectif) => objectif
   ? `<div class="progression"><i style="width:${Math.min(100, n / objectif * 100)}%"></i></div>` : '';
 const initiale = t => (t.titre || 'S').trim().charAt(0).toUpperCase();
@@ -158,7 +160,7 @@ export async function vueTome(page, { id, tomeId }, { stockage }) {
 
   const afficherAvancee = () => {
     form.querySelector('.avancee small').textContent =
-      mots(n, tome.objectif) + (tome.objectif ? ` · ${Math.floor(n / tome.objectif * 100)} %` : '');
+      mots(n, tome.objectif) + (n && tome.objectif ? ` · ${Math.floor(n / tome.objectif * 100)} %` : '');
     form.querySelector('.avancee .barre').innerHTML = barre(n, tome.objectif);
   };
   afficherAvancee();

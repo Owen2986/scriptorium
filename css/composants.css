@@ -559,7 +559,7 @@ mark { font: inherit; color: var(--texte); background: color-mix(in srgb, var(--
 .page-tome .garde { aspect-ratio: 2 / 3; margin: 0; border: 0; border-radius: var(--rayon); overflow: hidden; cursor: pointer; }
 .page-tome .actions-couverture { flex-direction: column; }
 .page-tome .actions-couverture > * { width: 100%; }
-@media (max-width: 40rem) { .page-tome { grid-template-columns: 1fr; } .page-tome .cote { max-width: 10rem; } }
+@media (max-width: 40rem) { .page-tome { grid-template-columns: 1fr; } .page-tome .cote { max-width: 7rem; } .page-tome .garde { font-size: 3rem; } }
 .ligne-objectif { display: flex; flex-wrap: wrap; align-items: end; gap: var(--espace-3); }
 .ligne-objectif label { margin: 0; }
 .ligne-objectif input { width: 10rem; }
