@@ -46,9 +46,10 @@ export async function afficherPlan(section, stockage, tome) {
       li.className = n.sorte;
       li.dataset.id = n.id;
       li.style.setProperty('--niveau', l.niveau);
-      li.innerHTML = `<span class="titre"><a href="#"></a></span>
-        <span class="meta">${n.sorte === 'partie' ? '' : `<span class="etat ${n.etat}">${ETATS[n.etat]}</span>`}
-          <span class="mots">${mots.get(n.id) ? `${nombre(mots.get(n.id))} mot${mots.get(n.id) > 1 ? 's' : ''}` : '—'}</span></span>
+      const m = mots.get(n.id); // pas de nombre tant qu'il n'y a pas de texte
+      const meta = (n.sorte === 'partie' ? '' : `<span class="etat ${n.etat}">${ETATS[n.etat]}</span>`)
+        + (m ? `<span class="mots">${nombre(m)} mot${m > 1 ? 's' : ''}</span>` : '');
+      li.innerHTML = `<span class="titre"><a href="#"></a></span>${meta ? `<span class="meta">${meta}</span>` : ''}
         ${menuLigne(n)}`;
       li.querySelector('.titre a').textContent = titreNoeud(l);
       li.querySelector('.bouton-plus').setAttribute('aria-label', `Actions pour ${titreNoeud(l)}`);
