@@ -16,6 +16,15 @@ const garderPosition = (tomeId, id) => {
   try { localStorage.setItem(CLE, JSON.stringify({ ...lirePositions(), [tomeId]: id })); } catch { /* retenu pour cette visite seulement */ }
 };
 
+// Lettrine sur le premier paragraphe qui a du texte ; les retours à la ligne et espaces qui le précèdent sont retirés.
+function lettrine(scene) {
+  const p = [...scene.querySelectorAll(':scope > p')].find(x => x.textContent.trim());
+  if (!p) return;
+  for (let n = p.firstChild; n && (n.nodeName === 'BR' || (n.nodeType === Node.TEXT_NODE && !n.data.trim())); n = p.firstChild) n.remove();
+  if (p.firstChild?.nodeType === Node.TEXT_NODE) p.firstChild.data = p.firstChild.data.trimStart();
+  p.classList.add('lettrine');
+}
+
 // Lecture continue d'un tome : tout le texte à la suite, sommaire, « Modifier » par scène, reprise où l'on s'était arrêté.
 export async function vueLecture(page, { id, tomeId, noeudId }, { stockage }) {
   const u = await ouvrirUnivers(page, id, stockage, '/manuscrit');
@@ -79,7 +88,7 @@ export async function vueLecture(page, { id, tomeId, noeudId }, { stockage }) {
       scene.innerHTML = `<a class="modifier" href="${lienEcriture(u, tome, n)}">Modifier</a>${nettoyer(html).replace(LIEN, (_, nom) => nom)}`;
       scene.querySelector('.modifier').setAttribute('aria-label', `Modifier ${titreNoeud(l)}`);
       if (apresTexte) bloc.insertAdjacentHTML('beforeend', '<p class="ornement" aria-hidden="true">***</p>');
-      else scene.classList.add('debut'); // premier texte après un titre : lettrine
+      else lettrine(scene); // premier texte après un titre
       bloc.append(scene);
       apresTexte = true;
     }
