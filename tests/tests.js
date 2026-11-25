@@ -179,7 +179,14 @@ test('texte mis en forme : balises dangereuses et attributs retirés', () => {
   egal(nettoyer('<h2 style="x">Titre</h2><p onclick="y">a <b>b</b> <a href="javascript:z">lien</a></p>'),
     '<h2>Titre</h2><p>a <b>b</b> lien</p>');
   egal(nettoyer('<img src=x onerror="alert(1)"><script>alert(2)</script><p>ok</p><!-- c -->'), '<p>ok</p>');
-  egal(nettoyer('<blockquote>c</blockquote><hr><u>s</u>'), '<blockquote>c</blockquote><hr><u>s</u>');
+  egal(nettoyer('<blockquote>c</blockquote><hr><u>s</u>'), '<blockquote>c</blockquote><hr><p><u>s</u></p>');
+});
+
+test('texte tapé hors paragraphe : rangé dans des <p> (lettrine, export)', () => {
+  egal(nettoyer('Il pleuvait.<p>Suite</p>'), '<p>Il pleuvait.</p><p>Suite</p>');
+  egal(nettoyer('Un <b>mot</b><br>deux<h2>T</h2>trois'), '<p>Un <b>mot</b><br>deux</p><h2>T</h2><p>trois</p>');
+  egal(nettoyer('<div>Ancien</div><div>texte</div>'), '<p>Ancien</p><p>texte</p>');
+  egal(nettoyer('<p>a</p>\n<p>b</p>'), '<p>a</p><p>b</p>');
 });
 
 test('tri des fiches : nom dans les deux sens, modifiées puis créées récemment', () => {

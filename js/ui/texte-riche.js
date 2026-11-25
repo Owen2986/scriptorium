@@ -2,6 +2,7 @@ import { dessin } from './icones.js';
 
 // Texte mis en forme des fiches : seules ces balises sont gardées, sans aucun attribut.
 const PERMIS = new Set(['P', 'BR', 'B', 'STRONG', 'I', 'EM', 'U', 'H2', 'H3', 'BLOCKQUOTE', 'HR', 'DIV']);
+const BLOCS = new Set(['P', 'H2', 'H3', 'BLOCKQUOTE', 'HR']);
 const A_JETER = new Set(['SCRIPT', 'STYLE', 'TEMPLATE', 'IFRAME', 'OBJECT', 'EMBED', 'SVG', 'MATH', 'NOSCRIPT', 'TITLE', 'HEAD']);
 
 // Nettoie du HTML venu d'ailleurs (collé, importé d'une sauvegarde) avant de l'afficher ou de l'enregistrer.
@@ -17,6 +18,19 @@ export function nettoyer(html) {
     }
   };
   propre(doc.body);
+  // Texte tapé hors paragraphe (début d'un texte vide, ancienne <div>) : rangé dans des <p>.
+  let p = null;
+  for (const n of [...doc.body.childNodes]) {
+    if (n.nodeName === 'DIV') { p = doc.createElement('p'); p.append(...n.childNodes); n.replaceWith(p); p = null; continue; }
+    if (BLOCS.has(n.nodeName)) { p = null; continue; }
+    if (!p) {
+      if (n.nodeType === Node.TEXT_NODE && !n.data.trim()) { n.remove(); continue; } // espaces entre deux blocs
+      p = doc.createElement('p');
+      n.before(p);
+    }
+    p.append(n);
+  }
+  doc.body.querySelectorAll(':scope > p').forEach(q => { if (!q.textContent.trim() && !q.querySelector('br')) q.remove(); });
   return doc.body.innerHTML;
 }
 
