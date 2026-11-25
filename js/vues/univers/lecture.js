@@ -79,6 +79,7 @@ export async function vueLecture(page, { id, tomeId, noeudId }, { stockage }) {
       scene.innerHTML = `<a class="modifier" href="${lienEcriture(u, tome, n)}">Modifier</a>${nettoyer(html).replace(LIEN, (_, nom) => nom)}`;
       scene.querySelector('.modifier').setAttribute('aria-label', `Modifier ${titreNoeud(l)}`);
       if (apresTexte) bloc.insertAdjacentHTML('beforeend', '<p class="ornement" aria-hidden="true">***</p>');
+      else scene.classList.add('debut'); // premier texte après un titre : lettrine
       bloc.append(scene);
       apresTexte = true;
     }

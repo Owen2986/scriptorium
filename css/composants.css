@@ -669,10 +669,13 @@ input.titre-ecriture:hover { border-color: var(--bordure); }
 .livre .scene p { text-indent: 1.5em; }
 .livre .scene p:first-of-type, .livre .scene :is(h2, h3, hr, blockquote) + p { text-indent: 0; }
 .livre .scene blockquote { margin: var(--espace-3) var(--espace-4); font-style: italic; }
-.livre .ornement { margin: var(--espace-4) 0; text-align: center; letter-spacing: .6em; color: var(--texte-doux); }
+.livre .ornement { margin: var(--espace-4) 0; padding-left: .6em; text-align: center; letter-spacing: .6em; color: var(--texte-doux); } /* le décalage compense l'espace après le dernier astérisque */
+.livre .scene.debut > p:first-of-type::first-letter { float: left; margin: .08em .1em 0 0; font: 500 3.4em/.85 var(--police-titre); color: var(--couleur-univers); }
 .livre .modifier { position: absolute; right: calc(100% + var(--espace-3)); top: .2rem; font-size: .8rem; color: var(--texte-doux); text-decoration: none; white-space: nowrap; }
 .livre .modifier:hover { text-decoration: underline; }
 @media (max-width: 64rem) { .livre .modifier { position: static; display: block; margin-bottom: var(--espace-1); text-align: right; } }
+/* Ordinateur : « Modifier » n'apparaît qu'au survol de la scène (ou au clavier) */
+@media (hover: hover) and (min-width: 64.01rem) { .livre .modifier { opacity: 0; transition: opacity .2s; } .livre .scene:hover .modifier, .livre .modifier:focus-visible { opacity: 1; } }
 @media (max-width: 48rem) { .livre .titre-tome { font-size: 1.75rem; } .livre .scene :is(p, blockquote) { font-size: 1.05rem; } }
 .plan-leger .lire-ici { display: block; margin-top: var(--espace-1); }
 a.bouton { text-decoration: none; }
