@@ -286,3 +286,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-25, PC Linux : correction, lettrine absente au début de certains chapitres (texte tapé hors paragraphe) ; 31 tests OK.
 - 2026-11-25, PC Linux : lettrine, 2e correction (paragraphe vide ou retour à la ligne au début du chapitre).
 - 2026-11-25, PC Linux : lettrine, vraie cause trouvée (texte de chapitre tapé puis effacé) et corrigée.
+- 2026-11-25, PC Linux : fin de session ; master (site public) laissé tel quel (nouveau nom + morceaux 1 à 4, sans la lecture continue ni les corrections de la lettrine) ; prochaine action : questions du morceau 6.
