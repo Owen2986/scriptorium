@@ -1,5 +1,6 @@
 import { noeudsTome, lignesPlan, titreNoeud } from '../../modele/plan.js';
 import { LIEN } from '../../modele/liens.js';
+import { texteBrut } from '../../modele/recherche.js';
 import { nettoyer } from '../../ui/texte-riche.js';
 import { dessin } from '../../ui/icones.js';
 import { message } from '../../ui/message.js';
@@ -36,7 +37,7 @@ export async function vueLecture(page, { id, tomeId, noeudId }, { stockage }) {
   }
   const lignes = lignesPlan(await noeudsTome(stockage, tome.id));
   const textes = new Map((await Promise.all(lignes.map(l => stockage.get('textes', l.noeud.id))))
-    .filter(t => t?.html).map(t => [t.noeudId, t.html]));
+    .filter(t => texteBrut(t?.html) || t?.html?.includes('<hr')).map(t => [t.noeudId, t.html])); // un texte tapé puis effacé (« <br> ») ne compte pas
   const urlTome = `#/univers/${encodeURIComponent(u.id)}/manuscrit/${encodeURIComponent(tome.id)}`;
 
   const fil = page.querySelector('.fil');
