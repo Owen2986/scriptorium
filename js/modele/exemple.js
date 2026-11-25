@@ -94,7 +94,31 @@ export async function creerExempleSiBesoin(stockage) {
     if (tome && !(await stockage.query('noeudsManuscrit', 'tomeId', tome.id)).length) await stockage.lot(PLAN(tome));
     await stockage.put('meta', { cle: 'planExemple', valeur: true });
   }
+  if (!await stockage.get('meta', 'texteExemple')) {
+    const tome = u && (await stockage.query('tomes', 'universId', u.id)).find(t => t.titre === 'L’Héritier des brumes');
+    const noeuds = tome ? await stockage.query('noeudsManuscrit', 'tomeId', tome.id) : [];
+    const ops = [];
+    for (const n of noeuds) {
+      if (TEXTES[n.titre] && !await stockage.get('textes', n.id)) ops.push(['put', 'textes', { noeudId: n.id, html: TEXTES[n.titre] }]);
+    }
+    await stockage.lot([...ops, ['put', 'meta', { cle: 'texteExemple', valeur: true }]]);
+  }
 }
+
+// Texte des scènes du tome d'exemple (titre de la scène → texte).
+const p = (...l) => l.map(x => `<p>${x}</p>`).join('');
+const TEXTES = {
+  'Sur le quai': p('Le navire accosta à Port-Brume un peu avant l’aube, quand les cloches sonnent encore pour les pêcheurs.',
+    '[[Aldric Ventemer]] resta longtemps sur le pont. Vingt ans avaient passé, et la ville n’avait pas changé : la même brume, les mêmes toits noirs, la même odeur de sel et de goudron.',
+    'Dans la poche intérieure de son manteau, [[La Lettre scellée]] n’avait jamais été ouverte.'),
+  'La Lanterne Noire': p('La pluie n’avait pas cessé depuis le port. Aldric poussa la porte de [[La Lanterne Noire]] et l’odeur de suif lui revint d’un coup.',
+    'Derrière le comptoir, [[Garrec le Passeur]] essuyait le même verre qu’il y a vingt ans. Il leva les yeux, ne dit rien, et posa un second verre à côté du premier.',
+    '— Tu as gardé la lettre, dit-il enfin.'),
+  'Le palais': p('Le palais du gouverneur dominait la ville depuis la falaise. On y montait par un escalier de trois cents marches, et Aldric les compta toutes.',
+    'Les gardes portaient l’insigne de [[L’Ordre du Chêne]]. Aucun ne le reconnut.'),
+  'La lettre': p('[[Maëlle Corbin]] l’attendait dans la grande salle, debout devant la cheminée éteinte.',
+    '— Tu ne l’as pas ouverte, dit-elle. C’est bien. Elle ne t’était pas destinée.'),
+};
 
 // Plan du tome d'exemple : 2 chapitres, 2 scènes chacun (leur texte viendra avec l'écran d'écriture).
 const PLAN = tome => [['Les cloches de Port-Brume', ['Sur le quai', 'La Lanterne Noire']], ['La gouverneure', ['Le palais', 'La lettre']]]

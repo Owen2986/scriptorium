@@ -11,6 +11,7 @@ import { htmlMenu, brancherMenu } from '../../ui/menu.js';
 import { editeur, depuisTexteBrut, nettoyer } from '../../ui/texte-riche.js';
 import { cle, indexNoms, renommerLiens, suggestions, citeeDans } from '../../modele/liens.js';
 import { decorerLiens, bulleLiens, suggestionsLiens, suggestionsChamp } from '../../ui/liens.js';
+import { renommerManuscrit } from '../../modele/plan.js';
 import { ouvrirUnivers } from './commun.js';
 import { exporter } from './export.js';
 import { surligne } from './recherche.js';
@@ -36,6 +37,28 @@ export function avecType(page, types, faire) {
   if (types.length === 1) return faire(types[0]);
   if (!types.length) return alert('Créez d’abord un type de fiche (onglet « Types de fiches »).');
   choisirType(page, types, faire);
+}
+
+// Liens [[ ]] des `zones` : bulle « Ouvrir » / « Créer la fiche » et suggestions en tapant [[.
+// Renvoie `proposer(q, garder)` (suggestions parmi `liste`, pour d'autres champs).
+export function brancherLiens(page, zones, { stockage, u, types, liste, trouver, garder = () => true }) {
+  const creerNom = nom => avecType(page, types, t => creer(stockage, u, t, nom));
+  const decrire = nom => {
+    const f = trouver(nom);
+    if (!f) return { info: 'Aucune fiche à ce nom', bouton: 'Créer la fiche', action: () => creerNom(nom) };
+    const t = types.find(t => t.id === f.typeId);
+    return { info: t?.nom ?? '', titre: f.nom, bouton: 'Ouvrir', action: () => { location.hash = lienFiche(u, f); } };
+  };
+  // Suggestions : les fiches, avec leur type (ou le nom de la fiche pour un autre nom).
+  const proposer = (q, g = garder) => suggestions(liste.filter(g), q).map(({ nom, fiche: f, place }) => {
+    const t = types.find(t => t.id === f.typeId);
+    return { fiche: f, nom, place, info: nom === f.nom ? t?.nom ?? '' : f.nom, icone: iconeSvg(t?.icone), couleur: t?.couleur ?? 'var(--texte-doux)' };
+  });
+  for (const z of zones) {
+    bulleLiens(z, decrire);
+    suggestionsLiens(z, proposer, creerNom);
+  }
+  return proposer;
 }
 
 // Petites pastilles retirables (étiquettes, autres noms) ; `attr` repère le bouton ×.
@@ -272,22 +295,8 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
       { barre: false, nom: 'Secrets et notes d’auteur', decorer });
   };
   afficherTextes();
-  const decrire = nom => {
-    const f = trouver(nom);
-    if (!f) return { info: 'Aucune fiche à ce nom', bouton: 'Créer la fiche', action: () => avecType(page, types, t => creer(stockage, u, t, nom)) };
-    const t = types.find(t => t.id === f.typeId);
-    return { info: t?.nom ?? '', titre: f.nom, bouton: 'Ouvrir', action: () => { location.hash = lienFiche(u, f); } };
-  };
-  bulleLiens($('.zone-texte'), decrire);
-  bulleLiens($('.zone-secrets'), decrire);
-  // Suggestions en tapant [[ : les autres fiches, avec leur type (ou le nom de la fiche pour un autre nom).
-  const proposer = (q, garder = f => f !== fiche) => suggestions(liste.filter(garder), q).map(({ nom, fiche: f, place }) => {
-    const t = types.find(t => t.id === f.typeId);
-    return { fiche: f, nom, place, info: nom === f.nom ? t?.nom ?? '' : f.nom, icone: iconeSvg(t?.icone), couleur: t?.couleur ?? 'var(--texte-doux)' };
-  });
-  const creerDepuisLien = nom => avecType(page, types, t => creer(stockage, u, t, nom));
-  suggestionsLiens($('.zone-texte'), proposer, creerDepuisLien);
-  suggestionsLiens($('.zone-secrets'), proposer, creerDepuisLien);
+  const proposer = brancherLiens(page, [$('.zone-texte'), $('.zone-secrets')],
+    { stockage, u, types, liste, trouver, garder: f => f !== fiche });
   const redecorer = () => {
     index = indexNoms(liste);
     article.querySelectorAll('.lien').forEach(l => l.classList.toggle('absent', !trouver(l.dataset.nom)));
@@ -303,7 +312,9 @@ export async function vueFiche(page, { id, ficheId }, { stockage }) {
       const modifiees = await renommerLiens(stockage, liste, ancien, fiche.nom);
       if (modifiees.includes(fiche)) afficherTextes();
       const autres = modifiees.filter(f => f !== fiche).length;
-      if (autres) etat.textContent = `· Liens mis à jour dans ${autres} fiche${autres > 1 ? 's' : ''}`;
+      const textes = await renommerManuscrit(stockage, u.id, ancien, fiche.nom);
+      const ou = [autres && `${autres} fiche${autres > 1 ? 's' : ''}`, textes && `${textes} texte${textes > 1 ? 's' : ''} du manuscrit`].filter(Boolean);
+      if (ou.length) etat.textContent = `· Liens mis à jour dans ${ou.join(' et ')}`;
     }
     redecorer();
   });

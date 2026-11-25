@@ -10,7 +10,7 @@ import { contenuCorbeille, mettreALaCorbeille, restaurer, supprimerDefinitivemen
 import { etatFiche, differences, versionsFiche, garderVersion } from '../js/modele/versions.js';
 import { creerExempleSiBesoin } from '../js/modele/exemple.js';
 import { chercher, texteBrut, extrait } from '../js/modele/recherche.js';
-import { nouveauNoeud, lignesPlan, titreNoeud, motsPlan, ciblesPossibles, echanger } from '../js/modele/plan.js';
+import { nouveauNoeud, lignesPlan, titreNoeud, motsPlan, ciblesPossibles, echanger, ecrivables, aOuvrir, renommerManuscrit } from '../js/modele/plan.js';
 import { nouveauTome, tomesUnivers, motsTome, dupliquerTome, TRIS_TOMES } from '../js/modele/tomes.js';
 import { statistiques, compterMots } from '../js/modele/statistiques.js';
 import { versMarkdown, universMarkdown, proprietes } from '../js/modele/export.js';
@@ -474,6 +474,35 @@ test('plan : ordre de lecture, numéros de chapitres, mots, déplacer, corbeille
   await supprimerDefinitivement(s, 'noeud', await s.get('noeudsManuscrit', c1.id));
   egal([await s.get('noeudsManuscrit', s1.id), await s.get('textes', s1.id), await s.get('textes', c1.id)], [undefined, undefined, undefined]);
   egal((await s.tous('noeudsManuscrit')).length, 3);
+  s.fermer();
+});
+
+test('écriture : chapitres et scènes dans l’ordre, partie → premier chapitre, renommer une fiche dans le manuscrit', async () => {
+  const s = await creerStockage(NOM);
+  const tome = nouveauTome('u1', { titre: 'T' });
+  const n = (sorte, parentId, ordre, titre = '') => ({ ...nouveauNoeud(tome, sorte, parentId), ordre, titre });
+  const p1 = n('partie', null, 0, 'Début'), p2 = n('partie', null, 2, 'Vide');
+  const c1 = n('chapitre', p1.id, 0), s1 = n('scene', c1.id, 0, 'Quai'), c2 = n('chapitre', null, 1);
+  const lignes = lignesPlan([p1, p2, c1, s1, c2]);
+  egal(ecrivables(lignes).map(titreNoeud), ['Chapitre 1', 'Quai', 'Chapitre 2']);
+  egal(titreNoeud(aOuvrir(p1.id, lignes)), 'Chapitre 1');
+  egal(aOuvrir(p2.id, lignes), null);
+  egal(titreNoeud(aOuvrir(s1.id, lignes)), 'Quai');
+
+  await s.lot([['put', 'tomes', tome], ...[p1, c1, s1].map(x => ['put', 'noeudsManuscrit', x]),
+    ['put', 'textes', { noeudId: s1.id, html: '<p>[[aldric]] et [[Garrec]]</p>', notes: '<p>[[Aldric]]</p>' }],
+    ['put', 'textes', { noeudId: c1.id, html: '<p>rien</p>' }]]);
+  egal(await renommerManuscrit(s, 'u1', 'Aldric', 'Aldric Ventemer'), 1);
+  egal(await s.get('textes', s1.id), { noeudId: s1.id, html: '<p>[[Aldric Ventemer]] et [[Garrec]]</p>', notes: '<p>[[Aldric Ventemer]]</p>' });
+  s.fermer();
+});
+
+test('tome d’exemple : ses scènes ont un texte qui cite les fiches', async () => {
+  const s = await creerStockage(NOM);
+  await creerExempleSiBesoin(s);
+  const textes = await s.tous('textes');
+  egal(textes.length, 4);
+  if (!textes.some(t => t.html.includes('[[La Lanterne Noire]]'))) throw new Error('lien attendu');
   s.fermer();
 });
 

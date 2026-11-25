@@ -1,6 +1,7 @@
 // Plan d'un tome : parties, chapitres et scènes (store noeudsManuscrit), rangés librement.
 import { nouvelId } from './univers.js';
 import { compterMots } from './statistiques.js';
+import { renommerDans } from './liens.js';
 
 export const ETATS = { 'a-ecrire': 'À écrire', brouillon: 'Brouillon', 'a-relire': 'À relire', termine: 'Terminé' };
 export const SORTES_PLAN = { partie: 'Partie', chapitre: 'Chapitre', scene: 'Scène' };
@@ -77,4 +78,32 @@ export function echanger(noeud, lignes, sens) {
   [noeud.ordre, voisin.ordre] = [voisin.ordre, noeud.ordre];
   if (noeud.ordre === voisin.ordre) noeud.ordre += sens;
   return [noeud, voisin];
+}
+
+// Ce qui porte du texte (chapitres et scènes), dans l'ordre de lecture.
+export const ecrivables = lignes => lignes.filter(l => l.noeud.sorte !== 'partie');
+
+// Ligne à ouvrir pour l'élément `id` : lui-même, ou pour une partie son premier chapitre ou sa première scène (null si vide).
+export function aOuvrir(id, lignes) {
+  const i = lignes.findIndex(l => l.noeud.id === id);
+  if (i < 0 || lignes[i].noeud.sorte !== 'partie') return lignes[i] ?? null;
+  for (const l of lignes.slice(i + 1)) {
+    if (l.niveau <= lignes[i].niveau) break;
+    if (l.noeud.sorte !== 'partie') return l;
+  }
+  return null;
+}
+
+// Met à jour les [[ancien]] des textes et notes de tous les tomes de l'univers ; renvoie le nombre de textes modifiés.
+export async function renommerManuscrit(stockage, universId, ancien, nouveau) {
+  const tomes = await stockage.query('tomes', 'universId', universId);
+  const noeuds = (await Promise.all(tomes.map(t => noeudsTome(stockage, t.id)))).flat();
+  const ops = [];
+  for (const t of await Promise.all(noeuds.map(n => stockage.get('textes', n.id)))) {
+    if (!t) continue;
+    const html = renommerDans(t.html, ancien, nouveau), notes = renommerDans(t.notes, ancien, nouveau);
+    if (html !== (t.html ?? '') || notes !== (t.notes ?? '')) ops.push(['put', 'textes', { ...t, html, notes }]);
+  }
+  if (ops.length) await stockage.lot(ops);
+  return ops.length;
 }

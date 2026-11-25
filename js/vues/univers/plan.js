@@ -3,6 +3,7 @@ import { mettreALaCorbeille } from '../../modele/corbeille.js';
 import { brancherMenu } from '../../ui/menu.js';
 import { dessin } from '../../ui/icones.js';
 import { message } from '../../ui/message.js';
+import { lienEcriture } from './ecriture.js';
 
 const nombre = n => n.toLocaleString('fr');
 
@@ -52,6 +53,7 @@ export async function afficherPlan(section, stockage, tome) {
       li.innerHTML = `<span class="titre"><a href="#"></a></span>${meta ? `<span class="meta">${meta}</span>` : ''}
         ${menuLigne(n)}`;
       li.querySelector('.titre a').textContent = titreNoeud(l);
+      li.querySelector('.titre a').href = lienEcriture({ id: tome.universId }, tome, n);
       li.querySelector('.bouton-plus').setAttribute('aria-label', `Actions pour ${titreNoeud(l)}`);
       brancherMenu(li.querySelector('.ancre-menu'), action => agir(action, n));
       return li;
@@ -122,11 +124,6 @@ export async function afficherPlan(section, stockage, tome) {
   section.querySelector('.ajouts').addEventListener('click', e => {
     const sorte = e.target.closest('[data-ajout]')?.dataset.ajout;
     if (sorte) ajouter(sorte);
-  });
-  ul.addEventListener('click', e => {
-    if (!e.target.closest('.titre a')) return;
-    e.preventDefault();
-    message('L’écran d’écriture arrive bientôt');
   });
   afficher();
 }

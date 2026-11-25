@@ -6,6 +6,7 @@ import { dessin } from '../../ui/icones.js';
 import { message } from '../../ui/message.js';
 import { ouvrirUnivers } from './commun.js';
 import { afficherPlan } from './plan.js';
+import { ecrire } from './ecriture.js';
 
 const lienTome = (u, t) => `#/univers/${encodeURIComponent(u.id)}/manuscrit/${encodeURIComponent(t.id)}`;
 const nombre = n => n.toLocaleString('fr');
@@ -201,7 +202,7 @@ export async function vueTome(page, { id, tomeId }, { stockage }) {
   page.addEventListener('click', async e => {
     const action = e.target.closest('[data-action]')?.dataset.action;
     if (action === 'retirer') await changerCouverture(null);
-    if (action === 'ecrire') message('L’écran d’écriture arrive bientôt');
+    if (action === 'ecrire') await ecrire(stockage, u, tome);
     if (action === 'dupliquer') {
       const copie = await dupliquerTome(stockage, tome);
       location.hash = lienTome(u, copie);

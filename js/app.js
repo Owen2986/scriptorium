@@ -8,6 +8,7 @@ import { vueTypes, vueType } from './vues/univers/types.js';
 import { vueFiches, vueFiche } from './vues/univers/fiches.js';
 import { vueRecherche } from './vues/univers/recherche.js';
 import { vueManuscrit, vueTome } from './vues/univers/manuscrit.js';
+import { vueEcriture } from './vues/univers/ecriture.js';
 import { vueStatistiques } from './vues/univers/statistiques.js';
 import { vueCorbeille } from './vues/corbeille/corbeille.js';
 import { creerExempleSiBesoin } from './modele/exemple.js';
@@ -28,6 +29,7 @@ try {
   route('/univers/:id/fiches/:ficheId', vueFiche);
   route('/univers/:id/manuscrit', vueManuscrit);
   route('/univers/:id/manuscrit/:tomeId', vueTome);
+  route('/univers/:id/manuscrit/:tomeId/:noeudId', vueEcriture);
   route('/univers/:id/types', vueTypes);
   route('/univers/:id/types/:typeId', vueType);
   route('/univers/:id/recherche', vueRecherche);
