@@ -1,8 +1,8 @@
-// Petit message en bas de l'écran pendant 6 secondes, avec un bouton « Annuler » facultatif.
+// Petit message en bas de l'écran pendant 6 secondes, avec un bouton facultatif (« Annuler » par défaut).
 // Il reste affiché quand on change de page (il est hors de la zone que le routeur remplace).
 let actuel;
 
-export function message(texte, annuler) {
+export function message(texte, annuler, libelle = 'Annuler') {
   actuel?.remove();
   const m = document.createElement('div');
   m.className = 'message';
@@ -12,7 +12,7 @@ export function message(texte, annuler) {
   if (annuler) {
     const b = document.createElement('button');
     b.type = 'button';
-    b.textContent = 'Annuler';
+    b.textContent = libelle;
     b.addEventListener('click', () => { m.remove(); annuler(); });
     m.append(b);
   }

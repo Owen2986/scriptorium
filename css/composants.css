@@ -601,7 +601,7 @@ input.cache:focus-visible + .garde { outline: 2px solid var(--accent); outline-o
 .choix-deplacer button { width: 100%; justify-content: flex-start; text-align: left; padding-left: calc(var(--espace-3) + var(--niveau, 0) * 1.25rem); }
 
 /* Manuscrit : écran d'écriture (plan léger à gauche, panneau sur téléphone) */
-.ecriture { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: var(--espace-5); align-items: start; }
+.ecriture, .lecture { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: var(--espace-5); align-items: start; }
 .plan-leger { position: sticky; top: var(--espace-3); }
 .tete-plan { display: flex; align-items: center; justify-content: space-between; }
 .tete-plan h2 { margin: 0 0 var(--espace-2); font: 500 .875rem var(--police-texte, inherit); color: var(--texte-doux); }
@@ -630,7 +630,7 @@ input.titre-ecriture:hover { border-color: var(--bordure); }
 .ecriture .zone-texte .texte-riche.vide::before { content: "Commencez à écrire"; position: absolute; color: var(--texte-doux); pointer-events: none; }
 .ouvrir-plan, .fermer-plan, .voile { display: none; }
 @media (max-width: 48rem) {
-  .ecriture { grid-template-columns: minmax(0, 1fr); }
+  .ecriture, .lecture { grid-template-columns: minmax(0, 1fr); }
   .ouvrir-plan { display: inline-flex; gap: var(--espace-2); margin-bottom: var(--espace-3); }
   .plan-leger { position: fixed; z-index: 10; inset: 0 auto 0 0; width: min(20rem, 85vw); overflow-y: auto; padding: var(--espace-4) var(--espace-3); background: var(--fond); border-right: 1px solid var(--bordure); visibility: hidden; transform: translateX(-100%); }
   .plan-ouvert .plan-leger { visibility: visible; transform: none; }
@@ -656,3 +656,23 @@ input.titre-ecriture:hover { border-color: var(--bordure); }
 .sans-distraction .barre-texte .plein-ecran { margin-left: var(--espace-3); }
 .sans-distraction.montre :is(.barre-texte, .compteur), .sans-distraction .barre-texte:is(:hover, :focus-within) { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .sans-distraction :is(.barre-texte, .compteur) { transition: none; } }
+
+/* Lecture continue d'un tome, façon livre */
+.livre { width: 100%; max-width: 38rem; margin: 0 auto; padding-bottom: 60vh; } /* le dernier chapitre peut remonter en haut de l’écran */
+.livre .titre-tome { margin: var(--espace-4) 0 var(--espace-5); text-align: center; font: 500 2.25rem/1.2 var(--police-titre); }
+.livre .partie { margin: var(--espace-5) 0; text-align: center; font: 500 1.5rem var(--police-titre); }
+.livre .tete-chapitre { margin: var(--espace-5) 0 var(--espace-4); text-align: center; }
+.livre .tete-chapitre small { display: block; color: var(--texte-doux); }
+.livre .tete-chapitre h2 { margin: var(--espace-1) 0 0; font: 500 1.6rem var(--police-titre); }
+.livre .scene { position: relative; }
+.livre .scene :is(p, blockquote) { margin: 0; font-size: 1.1rem; line-height: 1.75; text-align: justify; hyphens: auto; }
+.livre .scene p { text-indent: 1.5em; }
+.livre .scene p:first-of-type, .livre .scene :is(h2, h3, hr, blockquote) + p { text-indent: 0; }
+.livre .scene blockquote { margin: var(--espace-3) var(--espace-4); font-style: italic; }
+.livre .ornement { margin: var(--espace-4) 0; text-align: center; letter-spacing: .6em; color: var(--texte-doux); }
+.livre .modifier { position: absolute; right: calc(100% + var(--espace-3)); top: .2rem; font-size: .8rem; color: var(--texte-doux); text-decoration: none; white-space: nowrap; }
+.livre .modifier:hover { text-decoration: underline; }
+@media (max-width: 64rem) { .livre .modifier { position: static; display: block; margin-bottom: var(--espace-1); text-align: right; } }
+@media (max-width: 48rem) { .livre .titre-tome { font-size: 1.75rem; } .livre .scene :is(p, blockquote) { font-size: 1.05rem; } }
+.plan-leger .lire-ici { display: block; margin-top: var(--espace-1); }
+a.bouton { text-decoration: none; }

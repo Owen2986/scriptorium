@@ -9,6 +9,7 @@ import { dessin } from '../../ui/icones.js';
 import { message } from '../../ui/message.js';
 import { ouvrirUnivers } from './commun.js';
 import { brancherLiens } from './fiches.js';
+import { lienLecture } from './lecture.js';
 
 export const lienEcriture = (u, tome, n) =>
   `#/univers/${encodeURIComponent(u.id)}/manuscrit/${encodeURIComponent(tome.id)}/${encodeURIComponent(n.id)}`;
@@ -72,6 +73,7 @@ export async function vueEcriture(page, { id, tomeId, noeudId }, { stockage }) {
         <div class="tete-plan"><h2>Plan</h2><button type="button" class="fermer-plan" data-action="fermer">Fermer</button></div>
         <ul></ul>
         <a class="organiser" href="${urlTome}">Organiser le plan</a>
+        <a class="organiser lire-ici" href="${lienLecture(u, tome, noeud)}">Lire d’ici</a>
       </aside>
       <article>
         <button type="button" class="ouvrir-plan" data-action="ouvrir" aria-expanded="false">${dessin('vue-liste')}Plan</button>

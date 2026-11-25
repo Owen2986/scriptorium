@@ -7,6 +7,7 @@ import { message } from '../../ui/message.js';
 import { ouvrirUnivers } from './commun.js';
 import { afficherPlan } from './plan.js';
 import { ecrire } from './ecriture.js';
+import { lienLecture } from './lecture.js';
 
 const lienTome = (u, t) => `#/univers/${encodeURIComponent(u.id)}/manuscrit/${encodeURIComponent(t.id)}`;
 const nombre = n => n.toLocaleString('fr');
@@ -148,6 +149,7 @@ export async function vueTome(page, { id, tomeId }, { stockage }) {
     </form>
     <div class="actions">
       <button type="button" class="principal" data-action="ecrire">Écrire</button>
+      <a class="bouton" href="${lienLecture(u, tome)}">Lire</a>
       <button type="button" data-action="dupliquer">Dupliquer le tome</button>
       <button type="button" class="danger" data-action="supprimer">Supprimer le tome</button>
     </div>
