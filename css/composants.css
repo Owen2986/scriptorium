@@ -639,3 +639,19 @@ input.titre-ecriture:hover { border-color: var(--bordure); }
   input.titre-ecriture { flex-basis: 100%; font-size: 1.4rem; } /* le titre entier, l'état dessous */
   .suivants a { flex: 1; max-width: none; }
 }
+
+/* Compteur de mots sous le texte */
+.compteur { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espace-1) var(--espace-3); margin-top: var(--espace-3); color: var(--texte-doux); font-size: .875rem; font-variant-numeric: tabular-nums; }
+.compteur .progression { flex: 1 1 8rem; max-width: 12rem; margin: 0; }
+.barre-texte .plein-ecran { margin-left: auto; }
+
+/* Mode sans distraction : titre et texte seuls ; barre et compteur en bougeant la souris ou en touchant le haut */
+.sans-distraction :is(.entete, .fil, .barre-univers, .plan-leger, .voile, .ouvrir-plan, .numero-chapitre, .tete-ecriture select, .etat-enregistrement, .secrets, .suivants) { display: none; }
+.sans-distraction .ecriture { display: block; max-width: 42rem; margin: 0 auto; padding-top: var(--espace-5); }
+.sans-distraction .ecriture .zone-texte .texte-riche { min-height: 70vh; font-size: 1.2rem; }
+.sans-distraction :is(.barre-texte, .compteur) { position: fixed; z-index: 5; left: 0; right: 0; justify-content: center; margin: 0; padding: var(--espace-2) var(--espace-3); background: var(--fond); opacity: 0; transition: opacity .3s; }
+.sans-distraction .barre-texte { top: 0; }
+.sans-distraction .compteur { bottom: 0; }
+.sans-distraction .barre-texte .plein-ecran { margin-left: var(--espace-3); }
+.sans-distraction.montre :is(.barre-texte, .compteur), .sans-distraction .barre-texte:is(:hover, :focus-within) { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .sans-distraction :is(.barre-texte, .compteur) { transition: none; } }

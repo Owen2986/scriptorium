@@ -1,4 +1,5 @@
-import { ETATS, nouveauNoeud, noeudsTome, lignesPlan, titreNoeud, ecrivables, aOuvrir } from '../../modele/plan.js';
+import { ETATS, nouveauNoeud, noeudsTome, lignesPlan, titreNoeud, ecrivables, aOuvrir, motsPlan } from '../../modele/plan.js';
+import { compterMots } from '../../modele/statistiques.js';
 import { typesUnivers } from '../../modele/types.js';
 import { fichesUnivers } from '../../modele/fiches.js';
 import { cle, indexNoms } from '../../modele/liens.js';
@@ -45,7 +46,7 @@ export async function vueEcriture(page, { id, tomeId, noeudId }, { stockage }) {
   }
   const noeud = ligne.noeud;
   const texte = await stockage.get('textes', noeud.id) ?? { noeudId: noeud.id, html: '' };
-  const [types, fiches] = await Promise.all([typesUnivers(stockage, u.id), fichesUnivers(stockage, u.id)]);
+  const [types, fiches, mots] = await Promise.all([typesUnivers(stockage, u.id), fichesUnivers(stockage, u.id), motsPlan(stockage, lignes)]);
   const index = indexNoms(fiches);
   const trouver = nom => index.get(cle(nom));
   const suite = ecrivables(lignes);
@@ -82,6 +83,7 @@ export async function vueEcriture(page, { id, tomeId, noeudId }, { stockage }) {
           <span class="etat-enregistrement" aria-live="polite"></span>
         </div>
         <div class="zone-texte"></div>
+        <div class="compteur" aria-live="off"></div>
         <details class="carte secrets"${texte.notes ? ' open' : ''}>
           <summary><svg class="icone" aria-hidden="true"><use href="icones/types.svg#key"></use></svg> Notes d’auteur</summary>
           <div class="zone-secrets"></div>
@@ -145,6 +147,64 @@ export async function vueEcriture(page, { id, tomeId, noeudId }, { stockage }) {
   editeur($('.zone-secrets'), texte.notes, html => { texte.notes = html; enregistrerTexte(); },
     { barre: false, nom: 'Notes d’auteur', decorer });
   brancherLiens(page, [$('.zone-texte'), $('.zone-secrets')], { stockage, u, types, liste: fiches, trouver });
+
+  // Compteur : mots de l'élément ouvert, de son chapitre et du tome (les autres textes sont comptés une fois, à l'ouverture).
+  const chapitre = noeud.sorte === 'chapitre'
+    ? (lignes.some(l => l.noeud.parentId === noeud.id) ? ligne : null) // un chapitre sans scène : son total = ses mots
+    : [...parents].reverse().map(p => lignes.find(l => l.noeud === p)).find(l => l?.noeud.sorte === 'chapitre');
+  const propres = compterMots(texte.html);
+  const totalTome = lignes.filter(l => l.niveau === 0).reduce((t, l) => t + mots.get(l.noeud.id), 0);
+  const nombre = n => n.toLocaleString('fr');
+  const compter = () => {
+    const ecart = compterMots(texte.html) - propres;
+    const tomeN = totalTome + ecart;
+    $('.compteur').innerHTML = [`${nombre(propres + ecart)} mot${propres + ecart > 1 ? 's' : ''}`,
+      chapitre && `Chapitre ${chapitre.numero} : ${nombre(mots.get(chapitre.noeud.id) + ecart)}`,
+      `Tome : ${nombre(tomeN)}${tome.objectif ? ` sur ${nombre(tome.objectif)}` : ''}`].filter(Boolean).map(t => `<span>${t}</span>`).join('')
+      + (tome.objectif ? `<div class="progression"><i style="width:${Math.min(100, tomeN / tome.objectif * 100)}%"></i></div>` : '');
+  };
+  compter();
+  zone.addEventListener('input', compter);
+
+  // Mode sans distraction : titre et texte seuls, vrai plein écran si le navigateur le permet (pas sur iPhone).
+  const corps = document.body;
+  const bouton = document.createElement('button');
+  bouton.type = 'button';
+  bouton.className = 'plein-ecran';
+  bouton.textContent = 'Plein écran';
+  $('.barre-texte').insertBefore(bouton, $('.annuler-retablir'));
+  let minuterieBarre;
+  const montrer = () => {
+    corps.classList.add('montre');
+    clearTimeout(minuterieBarre);
+    minuterieBarre = setTimeout(() => corps.classList.remove('montre'), 2500);
+  };
+  const entrer = () => {
+    corps.classList.add('sans-distraction');
+    bouton.textContent = 'Quitter';
+    document.documentElement.requestFullscreen?.().catch(() => {}); // refusé : l'appli se fait discrète quand même
+    zone.focus();
+  };
+  const quitter = () => {
+    if (!corps.classList.contains('sans-distraction')) return;
+    corps.classList.remove('sans-distraction', 'montre');
+    bouton.textContent = 'Plein écran';
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  };
+  bouton.addEventListener('click', () => corps.classList.contains('sans-distraction') ? quitter() : entrer());
+  const echap = e => { if (e.key === 'Escape' && !e.defaultPrevented) quitter(); };
+  const sortiePleinEcran = () => { if (!document.fullscreenElement) quitter(); };
+  const bouge = () => { if (corps.classList.contains('sans-distraction')) montrer(); };
+  const touche = e => { if (e.touches[0]?.clientY < 80) bouge(); };
+  const tape = () => { clearTimeout(minuterieBarre); corps.classList.remove('montre'); };
+  const ecouteurs = [['keydown', echap], ['fullscreenchange', sortiePleinEcran], ['mousemove', bouge], ['touchstart', touche]];
+  ecouteurs.forEach(([type, f]) => document.addEventListener(type, f));
+  zone.addEventListener('keydown', tape);
+  // En quittant la page : on sort du mode et on retire les écouteurs posés sur tout le document.
+  addEventListener('hashchange', () => {
+    quitter();
+    ecouteurs.forEach(([type, f]) => document.removeEventListener(type, f));
+  }, { once: true });
 
   // Téléphone : le plan est un panneau qu'on ouvre et ferme.
   const ouvrir = $('.ouvrir-plan');
