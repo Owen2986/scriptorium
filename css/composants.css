@@ -623,7 +623,11 @@ input.titre-ecriture:hover { border-color: var(--bordure); }
 .suivants a:hover { border-color: var(--texte-doux); }
 .suivants small { color: var(--texte-doux); }
 .suivants .apres { margin-left: auto; text-align: right; }
-.etat-enregistrement { min-height: 1.5em; margin: var(--espace-2) 0 0; color: var(--texte-doux); font-size: .875rem; }
+.etat-enregistrement { color: var(--texte-doux); font-size: .875rem; }
+.tete-ecriture select.etat { padding-left: 1.6rem; background: var(--fond) no-repeat .7rem 50% / .55rem .55rem radial-gradient(circle, var(--pastille) 60%, transparent 62%); }
+.tete-ecriture select.etat::before { content: none; }
+.ecriture .texte-riche { position: relative; }
+.ecriture .zone-texte .texte-riche.vide::before { content: "Commencez à écrire"; position: absolute; color: var(--texte-doux); pointer-events: none; }
 .ouvrir-plan, .fermer-plan, .voile { display: none; }
 @media (max-width: 48rem) {
   .ecriture { grid-template-columns: minmax(0, 1fr); }

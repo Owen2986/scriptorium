@@ -77,8 +77,9 @@ export async function vueEcriture(page, { id, tomeId, noeudId }, { stockage }) {
         ${noeud.sorte === 'chapitre' ? `<small class="numero-chapitre">Chapitre ${ligne.numero}</small>` : ''}
         <div class="tete-ecriture">
           <input class="titre-ecriture" autocomplete="off" aria-label="Titre">
-          <select aria-label="État">${Object.entries(ETATS).map(([k, libelle]) =>
+          <select class="etat ${noeud.etat}" aria-label="État">${Object.entries(ETATS).map(([k, libelle]) =>
             `<option value="${k}"${k === noeud.etat ? ' selected' : ''}>${libelle}</option>`).join('')}</select>
+          <span class="etat-enregistrement" aria-live="polite"></span>
         </div>
         <div class="zone-texte"></div>
         <details class="carte secrets"${texte.notes ? ' open' : ''}>
@@ -86,7 +87,6 @@ export async function vueEcriture(page, { id, tomeId, noeudId }, { stockage }) {
           <div class="zone-secrets"></div>
         </details>
         <nav class="suivants" aria-label="Chapitres et scènes voisins"></nav>
-        <p class="etat-enregistrement" aria-live="polite"></p>
       </article>
     </div>`);
   const $ = s => page.querySelector(s);
@@ -130,12 +130,18 @@ export async function vueEcriture(page, { id, tomeId, noeudId }, { stockage }) {
   });
   $('.tete-ecriture select').addEventListener('change', e => {
     noeud.etat = e.target.value;
+    e.target.className = `etat ${noeud.etat}`;
     Object.assign(lienActuel.querySelector('.etat'), { className: `etat ${noeud.etat}`, title: ETATS[noeud.etat] });
     enregistrerNoeud();
   });
 
   const decorer = racine => decorerLiens(racine, trouver);
   editeur($('.zone-texte'), texte.html, html => { texte.html = html; enregistrerTexte(); }, { nom: 'Texte', decorer });
+  // « Commencez à écrire » tant que le texte est vide (un séparateur compte comme du contenu).
+  const zone = $('.zone-texte .texte-riche');
+  const vide = () => zone.classList.toggle('vide', !zone.textContent.trim() && !zone.querySelector('hr'));
+  zone.addEventListener('input', vide);
+  vide();
   editeur($('.zone-secrets'), texte.notes, html => { texte.notes = html; enregistrerTexte(); },
     { barre: false, nom: 'Notes d’auteur', decorer });
   brancherLiens(page, [$('.zone-texte'), $('.zone-secrets')], { stockage, u, types, liste: fiches, trouver });
