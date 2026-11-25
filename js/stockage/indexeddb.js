@@ -19,7 +19,7 @@ export async function ouvrir(nom, migrations = MIGRATIONS) {
   r.onupgradeneeded = e => {
     for (let v = e.oldVersion; v < cible; v++) migrations[v](r.result, r.transaction);
   };
-  r.onblocked = () => console.warn('Scriptorium est ouvert dans un autre onglet : fermez-le pour terminer la mise à jour.');
+  r.onblocked = () => console.warn('World & Lore est ouvert dans un autre onglet : fermez-le pour terminer la mise à jour.');
   const db = await attendre(r);
   db.onversionchange = () => db.close(); // laisse un autre onglet faire sa migration
   return db;

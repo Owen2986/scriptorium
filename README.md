@@ -1,4 +1,4 @@
-# Scriptorium
+# World & Lore
 
 Atelier d'écriture et de worldbuilding qui tourne dans le navigateur, sans serveur ni compte. Les données restent sur l'appareil (IndexedDB).
 

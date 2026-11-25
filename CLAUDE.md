@@ -1,4 +1,4 @@
-# Scriptorium : fichier de suivi du projet
+# World & Lore (ex-Scriptorium) : fichier de suivi du projet
 
 > **Ce fichier est la source de vérité du projet.** Le lire suffit pour savoir ce qu'on fait, où on en est et comment travailler.
 > Claude Code le lit automatiquement au début de chaque session, sur n'importe quel appareil.
@@ -39,7 +39,7 @@
 
 ## Le projet
 
-**Scriptorium** : atelier d'écriture et de worldbuilding, site web statique qui marche aussi hors ligne (PWA). Données stockées sur l'appareil (IndexedDB), sans serveur ni compte.
+**World & Lore** (nom choisi le 2026-11-25, avant : Scriptorium) : atelier d'écriture et de worldbuilding, site web statique qui marche aussi hors ligne (PWA). Données stockées sur l'appareil (IndexedDB), sans serveur ni compte.
 
 ### Décisions de cadrage (étape 0, validées)
 
@@ -178,6 +178,8 @@
 - **Morceau 4, choix de l’utilisateur (2026-11-25)** : compteur sous le texte, en petit (« N mots · chapitre N · tome N sur objectif » + fine barre de progression, sans barre s’il n’y a pas d’objectif, mis à jour en tapant) ; mode sans distraction = titre + texte seuls, centrés, la barre de mise en forme et le compteur apparaissent en bougeant la souris ou en touchant le haut de l’écran ; vrai plein écran du navigateur (sauf iPhone, qui ne le permet pas : seule l’appli se fait discrète) ; entrer par un bouton « Plein écran » au bout de la barre de mise en forme, sortir par Échap ou un petit bouton « Quitter » discret en haut.
 - **Maquette du morceau 4 validée (2026-11-25)**, avec « Quitter » à la place de « Plein écran » dans la barre (au lieu d’un bouton séparé, qui se superposait à la barre sur téléphone).
 - **Étape 3, morceau 4 fait (2026-11-25)** (`js/vues/univers/ecriture.js`) : compteur sous le texte (`.compteur`) : mots de l’élément ouvert, « Chapitre N : total » (pour une scène : son chapitre ; pour un chapitre : seulement s’il a des scènes), « Tome : total sur objectif » + barre `.progression` (sans objectif : ni « sur » ni barre) ; les autres textes sont comptés une fois à l’ouverture (`motsPlan`), puis seul l’écart du texte ouvert change en tapant. Mode sans distraction : bouton « Plein écran » au bout de la barre (devient « Quitter ») ; classe `sans-distraction` sur `body` (titre + texte seuls, 42rem, centrés) + `requestFullscreen` (refus ignoré, ex. iPhone) ; barre (en haut) et compteur (en bas) visibles 2,5 s après un mouvement de souris ou un toucher en haut de l’écran (80 px), cachés dès qu’on tape ; sortie par le bouton, Échap (sauf si une liste de suggestions l’a déjà pris), la sortie du plein écran du navigateur, ou un changement de page (écouteurs du document retirés). 30 tests OK ; vérifié dans Chrome sans fenêtre à 1280 et 375 px, sans débordement ni erreur. Captures dans `~/Images/apercu-m4/` (`vrai-*`). **Unslop du morceau 4 (2026-11-25)** : appliqué = plus de cadre autour du texte en mode sans distraction ; abandonné = « · » entre les chiffres du compteur (une ligne commençait par « · » sur téléphone). Captures dans `~/Images/apercu-unslop-m4/`. **Morceau 4 terminé.** **Prochaine action** : morceau 5 (lecture continue du tome), commencer par poser les questions.
+- **Nouveau nom (2026-11-25) : World & Lore** (« Scriptorium » existe déjà : scriptorium.fr). Recherche web rapide : aucun outil de ce nom (pas de vérification INPI/EUIPO). « World And Lore » / `worldandlore` quand le « & » pose problème (dépôt, adresse, fichiers). Changé : titre de la page, logo, README, page des tests, message de la console. **Gardé exprès** : les noms internes (base IndexedDB `scriptorium`, clés `localStorage` `scriptorium.*`), pour que personne ne perde ses univers ni ses réglages. Extension des sauvegardes prévue : `.worldandlore` (la sauvegarde en zip n'est pas encore faite). Dépôt GitHub à renommer en `worldandlore` par l'utilisateur (Settings du dépôt) ; puis remote à mettre à jour.
+- **Mise en ligne publique (2026-11-25)** : GitHub Pages depuis la branche **master** (version stable figée pour les testeurs, mise à jour seulement à la demande), `.nojekyll` ajouté. L'utilisateur active Pages dans Settings → Pages (Deploy from a branch, master, / (root)). Adresse prévue après renommage : https://owen2986.github.io/worldandlore/
 - **PC Linux, envoi GitHub (2026-11-25)** : la clé SSH du PC avait disparu du compte GitHub ; remise par l'utilisateur dans github.com/settings/keys (titre « PC Linux »). Si « Permission denied (publickey) » revient : refaire pareil avec `~/.ssh/id_ed25519.pub`.
 - **Tester sur le téléphone (Wi-Fi de la maison)** : sur l'ordinateur `python -m http.server 8080 --bind 0.0.0.0` dans `scriptorium`, puis sur le téléphone (connecté au même Wi-Fi, pas en 4G) `http://192.168.1.235:8080`. Le lancement du serveur par Claude a été bloqué par la sécurité de Claude Code : l'utilisateur doit le lancer lui-même ou l'autoriser. Serveur intégré de WebStorm sur le port 63342 (adresse exacte du projet pas trouvée). Autre option proposée : GitHub Pages dès maintenant (pas encore décidé).
 
@@ -273,3 +275,4 @@ Une ligne par chose faite : date, appareil, quoi.
 - 2026-11-25, PC Linux : morceau 4 de l'étape 3 (compteur, mode sans distraction), choix enregistrés.
 - 2026-11-25, PC Linux : maquette du morceau 4 validée ; morceau 4 (compteur de mots, mode sans distraction) fait, 30 tests OK, vérifié dans Chrome.
 - 2026-11-25, PC Linux : unslop du morceau 4, cadre du texte retiré en plein écran ; morceau 4 terminé.
+- 2026-11-25, PC Linux : master mis à jour pour une mise en ligne publique (GitHub Pages) ; nouveau nom choisi : World & Lore (affiché dans l'appli, noms internes gardés).
